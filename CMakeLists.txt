@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CUDA_STANDARD 14)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
-# set CUDA compute capability, 88 for 4060Ti
+# set CUDA compute capability, 89 for 4060Ti
 # https://developer.nvidia.com/cuda-gpus
 set(CMAKE_CUDA_ARCHITECTURES 89)
 
@@ -34,6 +34,34 @@ target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/deps/glad/include)
 # require OpenGL
 find_package(OpenGL REQUIRED)
 
+# fetch ImGUI
+FetchContent_Populate(imgui
+  URL https://github.com/ocornut/imgui/archive/docking.zip
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imgui
+)
+
+add_library(imgui_glfw STATIC
+  build/_deps/imgui/imgui.cpp
+  build/_deps/imgui/imgui_draw.cpp
+  build/_deps/imgui/imgui_demo.cpp
+  build/_deps/imgui/imgui_tables.cpp
+  build/_deps/imgui/imgui_widgets.cpp
+
+  build/_deps/imgui/backends/imgui_impl_glfw.cpp
+  build/_deps/imgui/backends/imgui_impl_opengl3.cpp
+)
+
+target_include_directories(imgui_glfw
+PUBLIC
+  ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui
+  ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui/backends
+)
+
+target_link_libraries(imgui_glfw PUBLIC glfw)
+
+find_package(X11 REQUIRED)
+target_link_libraries(imgui_glfw PUBLIC ${X11_LIBRARIES})
+
 # define executable
 add_executable(${PROJECT_NAME} 
     kernel.cu
@@ -51,9 +79,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 # link libraries (GLFW, OpenGL)
-target_link_libraries(${PROJECT_NAME} PRIVATE 
+target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PUBLIC 
+    glfw
+    imgui_glfw 
     glad
-    glfw 
     OpenGL::GL
 )
 

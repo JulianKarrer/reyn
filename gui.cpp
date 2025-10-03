@@ -1,5 +1,9 @@
 #include "gui.h"
 
+// constants
+const char *FONT_PATH{"res/JBM.ttf"};
+
+// shaders
 const char *VERTEX_SHADER = R"GLSL(
     #version 330 core
     layout (location = 0) in vec4 aPos;
@@ -64,23 +68,49 @@ GLuint GUI::compile_shader(void)
     return program;
 };
 
-void GUI::framebuffer_size_callback(GLFWwindow *window, int width, int height)
+// CALLBACKS
+
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
 };
 
 void GUI::glfw_process_input()
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
+    // update current window size
+    glfwGetFramebufferSize(window, &window_width, &window_height);
+
+    // only react to cursor events if window is focused
+    if (
+        glfwGetWindowAttrib(window, GLFW_FOCUSED) &&
+        glfwGetWindowAttrib(window, GLFW_FOCUSED) &&
+        !ImGui::GetIO().WantCaptureMouse)
+    {
+        // query normalized cursor position in [0.0; 1.0] x [0.0; 1.0]
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        xpos = std::clamp(xpos / window_width, 0., 1.);
+        ypos = std::clamp(ypos / window_height, 0., 1.);
+
+        // query cursor state
+        int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+        pressing = (state == GLFW_PRESS);
+
+        // debug output
+        std::cout << "x:" << xpos << " y:" << ypos << " pressed:" << pressing << std::endl;
+    }
+};
+
+// QUERY WHETHER CLOSE WAS REQUESTED
 
 bool GUI::exit_requested()
 {
-    return glfwWindowShouldClose(window);
+    return exit_pressed || glfwWindowShouldClose(window);
 }
 
-GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure)
+// CONSTRUCTOR
+
+GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, bool enable_vsync)
 {
     // save parameters
     this->N = N;
@@ -95,8 +125,10 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // create a window
-    this->window = glfwCreateWindow(init_w, init_h, "REYN", NULL, NULL);
-    if (window == NULL)
+    const float main_scale{ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor())};
+    this->window = glfwCreateWindow((int)(init_w * main_scale), (int)(init_h * main_scale), "REYN", NULL, NULL);
+
+    if (!window)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -105,7 +137,38 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure)
     }
     // set current context and register resize handler
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, GUI::framebuffer_size_callback);
+    glfwSwapInterval(static_cast<int>(enable_vsync));
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // SET UP IMGUI
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    this->io = &ImGui::GetIO();
+    (void)io;
+    io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+    io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
+    io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+    // set style
+    ImGui::StyleColorsDark();
+    ImGuiStyle &style = ImGui::GetStyle();
+    // manage scaling and viewports
+    style.ScaleAllSizes(main_scale);
+    style.FontScaleDpi = main_scale;
+    io->ConfigDpiScaleFonts = true;
+    io->ConfigDpiScaleViewports = true;
+    if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+    // load font
+    style.FontSizeBase = 16.0f;
+    io->Fonts->AddFontDefault();
+    font = io->Fonts->AddFontFromFileTTF(FONT_PATH, style.FontSizeBase);
+    // initialize ImGui
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 150");
 
     // set up glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -173,10 +236,55 @@ void GUI::show_updated()
     glBindVertexArray(vao);
     glDrawArrays(GL_POINTS, 0, N);
     glBindVertexArray(0);
-    // swap back and front buffers
-    glfwSwapBuffers(window);
+
     // poll for window events
     glfwPollEvents();
+
+    // update ImGUI
+    imgui_draw();
+
+    // swap back and front buffers
+    glfwSwapBuffers(window);
+}
+
+void GUI::imgui_draw()
+{
+    // update the FPS count in the window title using the ImGui framerate counter
+    const int max_fps_str_size{25};
+    char fps_str[max_fps_str_size];
+    snprintf(fps_str, max_fps_str_size, "REYN - GUI %.1f FPS", io->Framerate);
+    glfwSetWindowTitle(window, fps_str);
+
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // // docking setup
+    // ImGuiID id;
+    // ImGui::DockSpaceOverViewport(id, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+
+    // use custom font
+    ImGui::PushFont(font);
+
+    // start of contents ~~~~~
+    ImGui::Begin("SETTINGS");
+    ImGui::Text("Frame time %.3fµs (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
+    if (ImGui::Button("Exit"))
+        exit_pressed = true;
+
+    // end of contents ~~~~~~~
+
+    ImGui::PopFont();
+    ImGui::End();
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        GLFWwindow *backup_current_context = glfwGetCurrentContext();
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+        glfwMakeContextCurrent(backup_current_context);
+    }
 }
 
 GUI::~GUI()

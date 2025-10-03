@@ -12,7 +12,7 @@ int main()
                   << std::endl;
         exit(1); }};
 
-    GUI gui{GUI(N, 800, 600, on_failure)};
+    GUI gui{GUI(N, 1280, 720, on_failure, true)};
 
     while (true)
     {
