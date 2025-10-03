@@ -20,10 +20,10 @@ int main()
             break;
 
         double time{glfwGetTime()};
-        float4 *d_vertices{gui.get_buffer()};
+        float3 *x{gui.get_buffer()};
 
         // launch CUDA kernel
-        launch_kernel(d_vertices, time, N);
+        launch_kernel(x, time, N);
 
         gui.show_updated();
     }

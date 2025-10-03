@@ -1,5 +1,5 @@
 # use recent CMAKE version and define project name and languages
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.6)
 project(reyn LANGUAGES CUDA CXX C ) # C is required for glad
 
 # check if cuda is available
@@ -32,6 +32,7 @@ add_library(glad STATIC deps/glad/src/glad.c)
 target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/deps/glad/include)
 
 # require OpenGL
+set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 
 # fetch ImGUI
@@ -62,6 +63,16 @@ target_link_libraries(imgui_glfw PUBLIC glfw)
 find_package(X11 REQUIRED)
 target_link_libraries(imgui_glfw PUBLIC ${X11_LIBRARIES})
 
+# fetch GLM
+FetchContent_Declare(
+	glm
+	GIT_REPOSITORY	https://github.com/g-truc/glm.git
+	GIT_TAG 	bf71a834948186f4097caa076cd2663c69a10e1e #refs/tags/1.0.1
+)
+
+FetchContent_MakeAvailable(glm)
+
+
 # define executable
 add_executable(${PROJECT_NAME} 
     kernel.cu
@@ -84,6 +95,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
     imgui_glfw 
     glad
+    glm::glm
     OpenGL::GL
 )
 

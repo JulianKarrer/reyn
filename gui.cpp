@@ -6,9 +6,11 @@ const char *FONT_PATH{"res/JBM.ttf"};
 // shaders
 const char *VERTEX_SHADER = R"GLSL(
     #version 330 core
-    layout (location = 0) in vec4 aPos;
+    layout (location = 0) in vec3 aPos;
+    uniform mat4 view;
+    uniform mat4 proj;
     void main() {
-        gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+        gl_Position = proj * view * vec4(aPos.x, aPos.y, aPos.z, 1.0);
         gl_PointSize = 10.0;
     }
 )GLSL";
@@ -24,6 +26,8 @@ const char *FRAGMENT_SHADER = R"GLSL(
         FragColor = vec4(1.0, 0.5, 0.2, 1.0); // orange
     }
 )GLSL";
+
+// OpenGL helper functions
 
 /// OpenGL error checking macro that generalizes using a getIv command for a specified flag
 /// such as `GL_COMPILE_STATUS` or `GL_LINK_STATUS`, checking for success of the operation
@@ -68,6 +72,52 @@ GLuint GUI::compile_shader(void)
     return program;
 };
 
+glm::mat4 GUI::get_proj()
+{
+    return glm::perspective(
+        glm::radians(fov),                          // fov
+        (float)window_width / (float)window_height, // aspect ratio
+        1e-3f,                                      // near plane
+        1e3f                                        // far plane
+    );
+};
+
+float wrap_around(float val, float lower, float upper)
+{
+    while (val > upper)
+    {
+        val -= upper - lower;
+    }
+    while (val < lower)
+    {
+        val += upper - lower;
+    }
+    return val;
+}
+
+glm::mat4 GUI::get_view()
+{
+    // https://learnopengl.com/Getting-started/Camera
+    // TODO: remove unnecessary normalizations
+
+    // compute camera position and view direction from spherical coordinates,
+    // wrapping overflowing values around
+    const float theta_cur{wrap_around(theta + d_theta, 0, M_PI)};
+    const float phi_cur{wrap_around(phi + d_phi, 0, 2 * M_PI)};
+    const glm::vec3 camera_position{glm::vec3(
+        radius * sinf(theta_cur) * cosf(phi_cur),
+        radius * cosf(theta_cur),
+        radius * sinf(theta_cur) * sinf(phi_cur))};
+    const glm::vec3 camera_dir_rev{glm::normalize(camera_position - camera_target)};
+    // standard up direction is positive y
+    const glm::vec3 world_up{glm::vec3(0.f, 1.f, 0.f)};
+    // compute the up and right unit vectors with respect to the cameras view
+    const glm::vec3 right = glm::normalize(glm::cross(world_up, camera_dir_rev));
+    const glm::vec3 up{glm::cross(camera_dir_rev, right)};
+    // return the view matrix using the `glm::lookAt` function
+    return glm::lookAt(camera_position, camera_target, up);
+};
+
 // CALLBACKS
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -93,11 +143,33 @@ void GUI::glfw_process_input()
         ypos = std::clamp(ypos / window_height, 0., 1.);
 
         // query cursor state
-        int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-        pressing = (state == GLFW_PRESS);
+        const int state{glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT)};
+        const bool pressed{state == GLFW_PRESS};
+        if (dragging == false && pressed)
+        {
+            // start dragging
+            dragging = true;
+            drag_start_x = xpos;
+            drag_start_y = ypos;
+        }
+        else if (dragging == true && pressed)
+        {
+            // update dragging
+            d_phi = -2.f * M_PI * (drag_start_x - xpos);
+            d_theta = M_PI * (drag_start_y - ypos);
+        }
+        else if (dragging == true && !pressed)
+        {
+            // stop dragging
+            dragging = false;
+            phi += d_phi;
+            d_phi = 0.;
+            theta += d_theta;
+            d_theta = 0;
+        }
 
         // debug output
-        std::cout << "x:" << xpos << " y:" << ypos << " pressed:" << pressing << std::endl;
+        std::cout << "x:" << xpos << " y:" << ypos << " pressed:" << dragging << std::endl;
     }
 };
 
@@ -145,10 +217,10 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
     ImGui::CreateContext();
     this->io = &ImGui::GetIO();
     (void)io;
-    io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
-    io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // Enable Docking
-    io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // Enable Multi-Viewport / Platform Windows
+    io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // keyboard controls
+    io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // gamepad controls
+    io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // enable docking
+    io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // multi viewport
     // set style
     ImGui::StyleColorsDark();
     ImGuiStyle &style = ImGui::GetStyle();
@@ -163,7 +235,7 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
     // load font
-    style.FontSizeBase = 16.0f;
+    style.FontSizeBase = 18.0f;
     io->Fonts->AddFontDefault();
     font = io->Fonts->AddFontFromFileTTF(FONT_PATH, style.FontSizeBase);
     // initialize ImGui
@@ -194,7 +266,7 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    glBufferData(GL_ARRAY_BUFFER, N * sizeof(float4), nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, N * sizeof(float3), nullptr, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // expose VBO to CUDA
@@ -204,12 +276,12 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float4), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float3), (void *)0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 }
 
-float4 *GUI::get_buffer()
+float3 *GUI::get_buffer()
 {
     // process inputs
     glfw_process_input();
@@ -219,7 +291,7 @@ float4 *GUI::get_buffer()
     // map the buffer for CUDA access
     CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_vbo_resource, 0));
 
-    float4 *vertices = nullptr;
+    float3 *vertices = nullptr;
     size_t num_bytes;
     CUDA_CHECK(cudaGraphicsResourceGetMappedPointer((void **)&vertices, &num_bytes, cuda_vbo_resource));
 
@@ -233,7 +305,20 @@ void GUI::show_updated()
 
     // OpenGL rendering commands
     glUseProgram(shader_program);
+
+    // send uniforms
+    glUniformMatrix4fv(
+        glGetUniformLocation(shader_program, "view"),
+        1, GL_FALSE,
+        glm::value_ptr(get_view()));
+
+    glUniformMatrix4fv(
+        glGetUniformLocation(shader_program, "proj"),
+        1, GL_FALSE,
+        glm::value_ptr(get_proj()));
+
     glBindVertexArray(vao);
+
     glDrawArrays(GL_POINTS, 0, N);
     glBindVertexArray(0);
 

@@ -4,7 +4,7 @@
 #include "common.h"
 
 // Simple kernel that creates a small grid of particles with some animation
-__global__ void generate_points_kernel(float4 *positions, double time, int total_points)
+__global__ void generate_points_kernel(float3 *x, double time, int total_points)
 {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -21,19 +21,18 @@ __global__ void generate_points_kernel(float4 *positions, double time, int total
     float radius = 0.01f;
     float angle = time + idx * 0.1f;
 
-    positions[idx].x = base_x + radius * cosf(angle);
-    positions[idx].y = base_y + radius * sinf(angle);
-    positions[idx].z = 0.0f;
-    positions[idx].w = 1.0f;
+    x[idx].x = base_x + radius * cosf(angle);
+    x[idx].y = base_y + radius * sinf(angle);
+    x[idx].z = radius * sinf(angle);
 }
 
-extern "C" void launch_kernel(float4 *pos, double t, int total_points)
+extern "C" void launch_kernel(float3 *x, double t, int total_points)
 {
     int blockSize = 256;
     int numBlocks = (total_points + blockSize - 1) / blockSize;
 
     // launch kernel and check for errors
-    generate_points_kernel<<<numBlocks, blockSize>>>(pos, t, total_points);
+    generate_points_kernel<<<numBlocks, blockSize>>>(x, t, total_points);
     CUDA_CHECK(cudaGetLastError());
 
     // block and wait for kernel to finish

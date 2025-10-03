@@ -6,6 +6,9 @@
 #include "imgui_impl_opengl3.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <cuda_gl_interop.h>
 #include <iostream>
 #include <vector>
@@ -40,7 +43,7 @@ public:
     /// @return `bool` indicating whether a close has been requested
     bool exit_requested();
 
-    float4 *get_buffer();
+    float3 *get_buffer();
 
     void show_updated();
 
@@ -51,9 +54,11 @@ private:
     int N;
 
     // internals for GUI
-    // whether the user is currently pressing the cursor with left click
     bool exit_pressed{false};
-    bool pressing{false};
+    /// @brief whether the user is currently pressing the cursor with left click
+    bool dragging{false};
+    float drag_start_x{0.};
+    float drag_start_y{0.};
 
     // GLFW resources
     GLFWwindow *window;
@@ -64,6 +69,25 @@ private:
 
     // OpenGL resources
     GLuint shader_program, vao, vbo;
+    float fov{45.0};
+    /// @brief Get a projection matrix representing the current camera frustum, which depends on the fov, aspect ratio, near and far planes
+    ///
+    /// TODO: set this only when FOV or aspect ratio changes
+    /// @return projection matrix for use in vertex shader as a uniform
+    glm::mat4 get_proj();
+    /// @brief Get a view matrix, representing the orientation of the camera in world space, depending on camera positions and where the camera is pointed
+    /// @return view matrix for use in vertex shader as a uniform
+    glm::mat4 get_view();
+    /// @brief The φ-angle of the camera in spherical coordinates
+    float phi{0.f};
+    float d_phi{0.f};
+    /// @brief The θ-angle of the camera in spherical coordinates
+    float theta{M_PI / 2.0f};
+    float d_theta{0.f};
+    /// @brief The radius of the camera around the `camera_target` position in spherical cooridnates
+    float radius{10.f};
+    /// @brief The position that the camera is looking directly at
+    glm::vec3 camera_target{glm::vec3(0.f)};
 
     // CUDA resources
     cudaGraphicsResource *cuda_vbo_resource = nullptr;
