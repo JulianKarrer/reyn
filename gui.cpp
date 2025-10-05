@@ -72,9 +72,9 @@ GLuint GUI::compile_shader(void)
     return program;
 };
 
-glm::mat4 GUI::get_proj()
+void GUI::update_proj()
 {
-    return glm::perspective(
+    proj = glm::perspective(
         glm::radians(fov),                          // fov
         (float)window_width / (float)window_height, // aspect ratio
         1e-3f,                                      // near plane
@@ -98,32 +98,48 @@ float wrap_around(float val, float lower, float upper)
 glm::mat4 GUI::get_view()
 {
     // https://learnopengl.com/Getting-started/Camera
-    // TODO: remove unnecessary normalizations
-
     // compute camera position and view direction from spherical coordinates,
     // wrapping overflowing values around
     const float theta_cur{wrap_around(theta + d_theta, 0, M_PI)};
     const float phi_cur{wrap_around(phi + d_phi, 0, 2 * M_PI)};
+    const float radius{radius_init * radius_scroll_factor};
     const glm::vec3 camera_position{glm::vec3(
         radius * sinf(theta_cur) * cosf(phi_cur),
         radius * cosf(theta_cur),
         radius * sinf(theta_cur) * sinf(phi_cur))};
-    const glm::vec3 camera_dir_rev{glm::normalize(camera_position - camera_target)};
+    const glm::vec3 camera_dir_rev{camera_position - camera_target};
     // standard up direction is positive y
     const glm::vec3 world_up{glm::vec3(0.f, 1.f, 0.f)};
     // compute the up and right unit vectors with respect to the cameras view
-    const glm::vec3 right = glm::normalize(glm::cross(world_up, camera_dir_rev));
+    const glm::vec3 right = glm::cross(world_up, camera_dir_rev);
     const glm::vec3 up{glm::cross(camera_dir_rev, right)};
     // return the view matrix using the `glm::lookAt` function
-    return glm::lookAt(camera_position, camera_target, up);
+    return glm::lookAt(camera_position, camera_target, glm::normalize(up));
 };
 
 // CALLBACKS
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
+    const auto gui = (GUI *)glfwGetWindowUserPointer(window);
+    if (gui)
+    {
+        gui->window_width = width;
+        gui->window_height = height;
+        gui->update_proj();
+    }
     glViewport(0, 0, width, height);
 };
+
+/// A callback reacting to user scroll, which changes the radius of the orbital controls
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
+    const auto gui = (GUI *)glfwGetWindowUserPointer(window);
+    if (gui)
+    {
+        gui->radius_scroll_factor = std::clamp(gui->radius_scroll_factor * (1.0f - (float)yoffset * gui->scroll_speed), 0.01f, 100.f);
+    }
+}
 
 void GUI::glfw_process_input()
 {
@@ -167,9 +183,6 @@ void GUI::glfw_process_input()
             theta += d_theta;
             d_theta = 0;
         }
-
-        // debug output
-        std::cout << "x:" << xpos << " y:" << ypos << " pressed:" << dragging << std::endl;
     }
 };
 
@@ -188,6 +201,7 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
     this->N = N;
     this->window_width = init_w;
     this->window_height = init_h;
+    update_proj();
 
     // initialize GLFW with the OpenGL version 3.3
     glfwInit();
@@ -207,10 +221,18 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
         on_failure();
         return;
     }
-    // set current context and register resize handler
+    // set current context
     glfwMakeContextCurrent(window);
+    // set update interval: 1 is vsync, 0 as as fast as possible
     glfwSwapInterval(static_cast<int>(enable_vsync));
+    // save the pointer to this gui object in the window instance for access via
+    // `glfwGetWindowUserPointer` in callbacks
+    glfwSetWindowUserPointer(window, (void *)(this));
+    // set callbacks for resizeing and scrolling
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    // maximize the window
+    glfwMaximizeWindow(window);
 
     // SET UP IMGUI
     IMGUI_CHECKVERSION();
@@ -235,7 +257,7 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
     // load font
-    style.FontSizeBase = 18.0f;
+    style.FontSizeBase = 16.0f;
     io->Fonts->AddFontDefault();
     font = io->Fonts->AddFontFromFileTTF(FONT_PATH, style.FontSizeBase);
     // initialize ImGui
@@ -315,7 +337,7 @@ void GUI::show_updated()
     glUniformMatrix4fv(
         glGetUniformLocation(shader_program, "proj"),
         1, GL_FALSE,
-        glm::value_ptr(get_proj()));
+        glm::value_ptr(proj));
 
     glBindVertexArray(vao);
 
@@ -356,6 +378,7 @@ void GUI::imgui_draw()
     ImGui::Text("Frame time %.3fµs (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
     if (ImGui::Button("Exit"))
         exit_pressed = true;
+    ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f);
 
     // end of contents ~~~~~~~
 

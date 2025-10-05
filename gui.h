@@ -43,11 +43,23 @@ public:
     /// @return `bool` indicating whether a close has been requested
     bool exit_requested();
 
+    /// @brief Update thje projection matrix representing the current camera frustum, which depends on the fov, aspect ratio, near and far planes.
+    ///
+    /// Updates the private internal `proj` variable and should be called initially, as well as when window width or height may have changed.
+    void update_proj();
+
     float3 *get_buffer();
 
     void show_updated();
 
-    int window_width, window_height;
+    /// Current width of the GUI window
+    int window_width;
+    /// Current height of the GUI window
+    int window_height;
+    /// The multiplier applied to the initial radius based on scroll position
+    float radius_scroll_factor{1.f};
+    /// @brief The scroll speed as the fraction of `radius_scroll_factor` that is added or taken away per line scrolled
+    float scroll_speed{0.05f};
 
 private:
     /// current number of particles
@@ -57,8 +69,12 @@ private:
     bool exit_pressed{false};
     /// @brief whether the user is currently pressing the cursor with left click
     bool dragging{false};
+    /// @brief x-position in normalized coordinates [0;1]^2 of where the current mouse dragging operation started
     float drag_start_x{0.};
+    /// @brief y-position in normalized coordinates [0;1]^2 of where the current mouse dragging operation started
     float drag_start_y{0.};
+    /// @brief The initial or base radius of the camera around the `camera_target` position in spherical cooridnates, before scrolling
+    float radius_init{10.f};
 
     // GLFW resources
     GLFWwindow *window;
@@ -70,22 +86,16 @@ private:
     // OpenGL resources
     GLuint shader_program, vao, vbo;
     float fov{45.0};
-    /// @brief Get a projection matrix representing the current camera frustum, which depends on the fov, aspect ratio, near and far planes
-    ///
-    /// TODO: set this only when FOV or aspect ratio changes
-    /// @return projection matrix for use in vertex shader as a uniform
-    glm::mat4 get_proj();
+    glm::mat4 proj;
     /// @brief Get a view matrix, representing the orientation of the camera in world space, depending on camera positions and where the camera is pointed
     /// @return view matrix for use in vertex shader as a uniform
     glm::mat4 get_view();
     /// @brief The φ-angle of the camera in spherical coordinates
-    float phi{0.f};
+    float phi{M_PI / 2.0f};
     float d_phi{0.f};
     /// @brief The θ-angle of the camera in spherical coordinates
     float theta{M_PI / 2.0f};
     float d_theta{0.f};
-    /// @brief The radius of the camera around the `camera_target` position in spherical cooridnates
-    float radius{10.f};
     /// @brief The position that the camera is looking directly at
     glm::vec3 camera_target{glm::vec3(0.f)};
 

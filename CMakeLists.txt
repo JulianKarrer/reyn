@@ -6,6 +6,25 @@ project(reyn LANGUAGES CUDA CXX C ) # C is required for glad
 include(CheckLanguage)
 check_language(CUDA)
 
+# set optimization level
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+set(CMAKE_BUILD_TYPE_RELEASE "Release" CACHE STRING "Release build type")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --use_fast_math -Xcompiler -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native -DNDEBUG -fno-exceptions -flto")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto")
+
+# use the scccache compiler wrapper for caching to speed up compilation
+find_program(SCCACHE_PROGRAM sccache)
+if (SCCACHE_PROGRAM)
+    set(CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
+    message(STATUS "Sccache found: ${SCCACHE_PROGRAM}")
+else ()
+    message(STATUS "Sccache not found")
+endif ()
+
 # set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
