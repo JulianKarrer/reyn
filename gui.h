@@ -91,13 +91,17 @@ private:
     /// @return view matrix for use in vertex shader as a uniform
     glm::mat4 get_view();
     /// @brief The φ-angle of the camera in spherical coordinates
-    float phi{M_PI / 2.0f};
+    float phi{-M_PI / 2.0f};
     float d_phi{0.f};
     /// @brief The θ-angle of the camera in spherical coordinates
     float theta{M_PI / 2.0f};
     float d_theta{0.f};
     /// @brief The position that the camera is looking directly at
     glm::vec3 camera_target{glm::vec3(0.f)};
+
+    // shading:
+    /// @brief The direction of the light source for shading
+    glm::vec3 light_direction{glm::vec3(1.f)};
 
     // CUDA resources
     cudaGraphicsResource *cuda_vbo_resource = nullptr;

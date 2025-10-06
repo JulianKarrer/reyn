@@ -4,27 +4,87 @@
 const char *FONT_PATH{"res/JBM.ttf"};
 
 // shaders
+
+/// Vertex shader for creating billboard spheres from glPoints
 const char *VERTEX_SHADER = R"GLSL(
     #version 330 core
     layout (location = 0) in vec3 aPos;
-    uniform mat4 view;
-    uniform mat4 proj;
+    uniform mat4 view; // view matrix
+    uniform mat4 proj; // projection matrix
+    uniform vec2 viewport; // viewport size
+    uniform float radius; // particle radius
+
+    flat out vec4 centre_vs;
+
     void main() {
-        gl_Position = proj * view * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-        gl_PointSize = 10.0;
+        // compute the centre of the sphere in view space and clip space
+        centre_vs = view * vec4(aPos, 1.0);
+        gl_Position = proj * centre_vs;
+
+        // if the sphere is behind the camera, disregard it by setting point size to zero
+        float dist = -centre_vs.z;
+        if (dist <= 0.0) {
+            gl_PointSize = 0.0;
+            return;
+        }
+        // compute the size of the sphere from the projection matrix, distance and 
+        // viewport height
+        // https://stackoverflow.com/questions/907756/
+        float size_pixels = (proj[1][1] * radius * viewport.y) / dist;
+        gl_PointSize = size_pixels;
     }
 )GLSL";
 
+/// Fragment shader inspired by Simon Green's 2010 GDC presentation
+/// for creating billboard spheres from glPoints
+/// https://developer.download.nvidia.com/presentations/2010/gdc/Direct3D_Effects.pdf
 const char *FRAGMENT_SHADER = R"GLSL(
     #version 330 core
+
+    uniform vec3 light_dir; // direction of the light source in world space
+    uniform float radius; // particle radius in world space
+    uniform mat4 view; // view matrix
+    uniform mat4 proj; // projection matrix
+    uniform float shininess; // shininess for blinn-phong shading
+
+    flat in vec4 centre_vs; // view-space position of the centre of the particle
     out vec4 FragColor;
+
     void main() {
-        vec2 coord = gl_PointCoord - vec2(0.5);
-        if (length(coord) > 0.5) {
-            discard;
-        }
-        FragColor = vec4(1.0, 0.5, 0.2, 1.0); // orange
+        // rescale fragment coordinate to [-1;1]^2
+        vec2 coord = gl_PointCoord * 2. - 1.;
+        float length_squared = dot(coord, coord);
+        // discard fragments outside a circle
+        if (length_squared > 1.) discard; 
+        // calculate the normal in view space
+        float z = sqrt(1. - length_squared);
+        vec3 normal_vs = vec3(coord, z);
+
+        // calculate the position of the fragment view space
+        vec3 frag_pos_vs = centre_vs.xyz + normal_vs * radius;
+        // then project to clip space to obtain correct depth
+        vec4 frag_pos_cs = proj * vec4(frag_pos_vs, 1.);
+        float z_cs = frag_pos_cs.z / frag_pos_cs.w;
+        // remap depth from [-1;1] to [0;1] and write to depth buffer
+        gl_FragDepth = z_cs * 0.5 + 0.5;
+
+        // shading
+        // vec3 light_vs = normalize((view * vec4(normalize(-light_dir), 0.0)).xyz);
+        // float diffuse = max(0.0, dot(normal_vs, light_vs));
+        // vec3 albedo = normalize(vec3(135.,206.,250.));
+        // FragColor = vec4(albedo * max(.5, diffuse), 1.0);
+
+        vec3 light_vs = normalize((view * vec4(normalize(-light_dir), 0.0)).xyz);
+        float lambertian = max(0.0, dot(normal_vs, light_vs));
+        vec3 view_dir = normalize(-frag_pos_vs); // camera at origin in view-space
+        vec3 reflect_dir = reflect(-light_vs, normal_vs);
+        float spec = pow(max(0.0, dot(view_dir, reflect_dir)), 64.0); // shininess is exponent
+        vec3 albedo = normalize(vec3(135.,206.,250.));
+        vec3 ambient = 0.5 * albedo;
+        vec3 color = ambient + (0.9 * lambertian) * albedo + 0.6 * spec;
+        FragColor = vec4(color, 1.0);
     }
+
 )GLSL";
 
 // OpenGL helper functions
@@ -277,9 +337,8 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
     // enable point rendering features
-    glEnable(GL_PROGRAM_POINT_SIZE);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_PROGRAM_POINT_SIZE); // enable varying, programmable point sizes
+    glEnable(GL_DEPTH_TEST);         // enable depth testing
 
     // create shader program
     shader_program = compile_shader();
@@ -308,7 +367,7 @@ float3 *GUI::get_buffer()
     // process inputs
     glfw_process_input();
     // clear the screen
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // map the buffer for CUDA access
     CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_vbo_resource, 0));
@@ -330,14 +389,30 @@ void GUI::show_updated()
 
     // send uniforms
     glUniformMatrix4fv(
-        glGetUniformLocation(shader_program, "view"),
-        1, GL_FALSE,
-        glm::value_ptr(get_view()));
-
+        glGetUniformLocation(shader_program, "view"), // location
+        1,                                            // count
+        GL_FALSE,                                     // transpose
+        glm::value_ptr(get_view())                    // value
+    );
     glUniformMatrix4fv(
-        glGetUniformLocation(shader_program, "proj"),
-        1, GL_FALSE,
-        glm::value_ptr(proj));
+        glGetUniformLocation(shader_program, "proj"), // location
+        1,                                            // count
+        GL_FALSE,                                     // transpose
+        glm::value_ptr(proj)                          // value
+    );
+    glUniform2f(
+        glGetUniformLocation(shader_program, "viewport"), // location
+        (float)window_width,                              // value 1
+        (float)window_height                              // value 2
+    );
+    glUniform1f(
+        glGetUniformLocation(shader_program, "radius"), // location
+        (float)0.1                                      // value
+    );
+    glUniform3fv(
+        glGetUniformLocation(shader_program, "light_dir"), // location
+        1,                                                 // count
+        glm::value_ptr(light_direction));
 
     glBindVertexArray(vao);
 
@@ -379,6 +454,12 @@ void GUI::imgui_draw()
     if (ImGui::Button("Exit"))
         exit_pressed = true;
     ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f);
+
+    float light_dir[3]{light_direction.x, light_direction.y, light_direction.z};
+    ImGui::SliderFloat3("Light Direction", light_dir, -1., 1.);
+    light_direction.x = light_dir[0];
+    light_direction.y = light_dir[1];
+    light_direction.z = light_dir[2];
 
     // end of contents ~~~~~~~
 
