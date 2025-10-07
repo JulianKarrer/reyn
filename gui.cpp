@@ -132,13 +132,13 @@ GLuint GUI::compile_shader(void)
     return program;
 };
 
-void GUI::update_proj()
+void GUI::_update_proj()
 {
     proj = glm::perspective(
-        glm::radians(fov),                          // fov
-        (float)window_width / (float)window_height, // aspect ratio
-        1e-3f,                                      // near plane
-        1e3f                                        // far plane
+        glm::radians(fov),                            // fov
+        (float)_window_width / (float)_window_height, // aspect ratio
+        1e-3f,                                        // near plane
+        1e3f                                          // far plane
     );
 };
 
@@ -162,7 +162,7 @@ glm::mat4 GUI::get_view()
     // wrapping overflowing values around
     const float theta_cur{wrap_around(theta + d_theta, 0, M_PI)};
     const float phi_cur{wrap_around(phi + d_phi, 0, 2 * M_PI)};
-    const float radius{radius_init * radius_scroll_factor};
+    const float radius{radius_init * _radius_scroll_factor};
     const glm::vec3 camera_position{glm::vec3(
         radius * sinf(theta_cur) * cosf(phi_cur),
         radius * cosf(theta_cur),
@@ -178,33 +178,33 @@ glm::mat4 GUI::get_view()
 };
 
 // CALLBACKS
-
+/// Callback reacting to user resize of the window, adjusting the OpenGL viewport, updating the `_window_width` and `_window_height` variables and updating the camera projection matrix.
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     const auto gui = (GUI *)glfwGetWindowUserPointer(window);
     if (gui)
     {
-        gui->window_width = width;
-        gui->window_height = height;
-        gui->update_proj();
+        gui->_window_width = width;
+        gui->_window_height = height;
+        gui->_update_proj();
     }
     glViewport(0, 0, width, height);
 };
 
-/// A callback reacting to user scroll, which changes the radius of the orbital controls
+/// Callback reacting to user scroll, which changes the radius of the orbital controls
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
     const auto gui = (GUI *)glfwGetWindowUserPointer(window);
     if (gui)
     {
-        gui->radius_scroll_factor = std::clamp(gui->radius_scroll_factor * (1.0f - (float)yoffset * gui->scroll_speed), 0.01f, 100.f);
+        gui->_radius_scroll_factor = std::clamp(gui->_radius_scroll_factor * (1.0f - (float)yoffset * gui->_scroll_speed), 0.01f, 100.f);
     }
 }
 
 void GUI::glfw_process_input()
 {
     // update current window size
-    glfwGetFramebufferSize(window, &window_width, &window_height);
+    glfwGetFramebufferSize(window, &_window_width, &_window_height);
 
     // only react to cursor events if window is focused
     if (
@@ -215,8 +215,8 @@ void GUI::glfw_process_input()
         // query normalized cursor position in [0.0; 1.0] x [0.0; 1.0]
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        xpos = std::clamp(xpos / window_width, 0., 1.);
-        ypos = std::clamp(ypos / window_height, 0., 1.);
+        xpos = std::clamp(xpos / _window_width, 0., 1.);
+        ypos = std::clamp(ypos / _window_height, 0., 1.);
 
         // query cursor state
         const int state{glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT)};
@@ -248,20 +248,17 @@ void GUI::glfw_process_input()
 
 // QUERY WHETHER CLOSE WAS REQUESTED
 
-bool GUI::exit_requested()
-{
-    return exit_pressed || glfwWindowShouldClose(window);
-}
-
 // CONSTRUCTOR
 
-GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, bool enable_vsync)
+GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, bool enable_vsync, double target_fps)
 {
     // save parameters
     this->N = N;
-    this->window_width = init_w;
-    this->window_height = init_h;
-    update_proj();
+    this->_window_width = init_w;
+    this->_window_height = init_h;
+    this->_window_height = init_h;
+    this->target_fps = target_fps;
+    _update_proj();
 
     // initialize GLFW with the OpenGL version 3.3
     glfwInit();
@@ -346,7 +343,6 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
     // create VBO
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
     glBufferData(GL_ARRAY_BUFFER, N * sizeof(float3), nullptr, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -364,11 +360,6 @@ GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, 
 
 float3 *GUI::get_buffer()
 {
-    // process inputs
-    glfw_process_input();
-    // clear the screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     // map the buffer for CUDA access
     CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_vbo_resource, 0));
 
@@ -379,8 +370,42 @@ float3 *GUI::get_buffer()
     return vertices;
 }
 
-void GUI::show_updated()
+void GUI::run(std::function<void(float3 *, int)> simulation)
 {
+    auto prev{std::chrono::steady_clock::now()};
+    while (!exit_requested)
+    {
+        float3 *x{get_buffer()};
+        while (update())
+        {
+            // inner simulation loop is here, use the callback
+            simulation(x, N);
+            // update simulation fps
+            const auto now{std::chrono::steady_clock::now()};
+            sim_fps = 1000ms / (now - prev);
+            prev = now;
+        }
+    }
+}
+
+bool GUI::update()
+{
+    const auto now{std::chrono::steady_clock::now()};
+    const std::chrono::duration<double> diff{now - last_update};
+    if (diff / 1s < 1.f / target_fps)
+    {
+        // a gui update is not yet required due to throttling:
+        // immediately return and do another simulation step
+        return true;
+    }
+    // otherwise save the time stamp and start rendering
+    last_update = now;
+
+    // process inputs
+    glfw_process_input();
+    // clear the screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     // unmap vertex buffer from CUDA for use by OpenGL
     CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_vbo_resource, 0));
 
@@ -402,8 +427,8 @@ void GUI::show_updated()
     );
     glUniform2f(
         glGetUniformLocation(shader_program, "viewport"), // location
-        (float)window_width,                              // value 1
-        (float)window_height                              // value 2
+        (float)_window_width,                             // value 1
+        (float)_window_height                             // value 2
     );
     glUniform1f(
         glGetUniformLocation(shader_program, "radius"), // location
@@ -421,12 +446,15 @@ void GUI::show_updated()
 
     // poll for window events
     glfwPollEvents();
+    exit_requested |= glfwWindowShouldClose(window);
 
     // update ImGUI
     imgui_draw();
 
     // swap back and front buffers
     glfwSwapBuffers(window);
+
+    return false;
 }
 
 void GUI::imgui_draw()
@@ -434,7 +462,7 @@ void GUI::imgui_draw()
     // update the FPS count in the window title using the ImGui framerate counter
     const int max_fps_str_size{25};
     char fps_str[max_fps_str_size];
-    snprintf(fps_str, max_fps_str_size, "REYN - GUI %.1f FPS", io->Framerate);
+    snprintf(fps_str, max_fps_str_size, "REYN | FPS %.1f / %.1f", io->Framerate, sim_fps);
     glfwSetWindowTitle(window, fps_str);
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -450,9 +478,10 @@ void GUI::imgui_draw()
 
     // start of contents ~~~~~
     ImGui::Begin("SETTINGS");
-    ImGui::Text("Frame time %.3fµs (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
+    ImGui::Text("GUI Frame time %.3fms (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
+    ImGui::Text("SIM Frame time %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
     if (ImGui::Button("Exit"))
-        exit_pressed = true;
+        exit_requested = true;
     ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f);
 
     float light_dir[3]{light_direction.x, light_direction.y, light_direction.z};

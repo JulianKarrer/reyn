@@ -1,10 +1,17 @@
 #include "gui.h"
 #include "kernel.cuh"
 
+void simulation(float3 *x, int N)
+{
+    static double time{0.};
+    time += 0.0001;
+    // launch CUDA kernel
+    launch_kernel(x, time, N);
+}
+
 int main()
 {
     int N{100};
-
     auto on_failure{
         []()
         {
@@ -12,20 +19,7 @@ int main()
                   << std::endl;
         exit(1); }};
 
-    GUI gui{GUI(N, 1280, 720, on_failure, true)};
-
-    while (true)
-    {
-        if (gui.exit_requested())
-            break;
-
-        double time{glfwGetTime()};
-        float3 *x{gui.get_buffer()};
-
-        // launch CUDA kernel
-        launch_kernel(x, time, N);
-
-        gui.show_updated();
-    }
+    GUI gui(N, 1280, 720, on_failure, true);
+    gui.run(&simulation);
     return 0;
 }
