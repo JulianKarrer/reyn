@@ -1,3 +1,4 @@
+
 #ifndef GUI_H_
 #define GUI_H_
 
@@ -18,6 +19,9 @@
 using namespace std::literals;
 #include <algorithm>
 
+// forwards declaration to avoid circular depenedency
+class Particles;
+
 /// @brief Object managing a graphical user interface.
 /// Uses GLFW for cross-platform windowing and sets up
 /// OpenGL <-> CUDA interop for displaying the contents
@@ -34,7 +38,7 @@ public:
     /// @param enable_vsync whether or not the GUI framerate should be limited by the V-synced refresh rate
     /// @param target_fps the target maximum frame rate of the GUI, which is used for throttling in case the simulation runs at a higher rate than what is required by the GUI
     GUI(
-        const int N,
+        const int _N,
         int init_w,
         int init_h,
         std::function<void()> on_failure,
@@ -45,7 +49,10 @@ public:
     /// @brief Given a callback function to update the simulation state, run the simulation.
     /// The simulation is run at the highest possible rate, while the GUI is throttled to a reasonable number of frames per second, as defined in the constructor.
     /// @param simulation a function that accepts a position buffer and number of particles and may update the contents of the buffer
-    void run(std::function<void(float3 *, int)> simulation);
+    void run(std::function<void(Particles &, int)> simulation, Particles &state);
+
+    /// @brief Map the VBO for use by CUDA and obtain a pointer to the buffer for particle positions
+    float3 *get_buffer();
 
     /// @brief Update the projection matrix representing the current camera frustum, which depends on the fov, aspect ratio, near and far planes.
     ///
@@ -62,7 +69,7 @@ public:
 
 private:
     /// current number of particles
-    int N;
+    const int N;
 
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
@@ -121,8 +128,6 @@ private:
     void imgui_draw();
 
     // main functions for running the gui
-    /// @brief Map the VBO for use by CUDA and obtain a pointer to the buffer for particle positions
-    float3 *get_buffer();
     /// @brief Update the GUI, rendering the current particles to screen.
     /// @return `bool` indicating whether an update was actually performed or if there is still time until the next GUI update is necessary, since the simulation might run at a much faster rate than what is required by the GUI (e.g. 60FPS)
     bool update();

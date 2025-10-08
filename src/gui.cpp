@@ -1,4 +1,5 @@
 #include "gui.h"
+#include "particles.h"
 
 // constants
 const char *FONT_PATH{"res/JBM.ttf"};
@@ -69,20 +70,20 @@ const char *FRAGMENT_SHADER = R"GLSL(
         gl_FragDepth = z_cs * 0.5 + 0.5;
 
         // shading
-        // vec3 light_vs = normalize((view * vec4(normalize(-light_dir), 0.0)).xyz);
-        // float diffuse = max(0.0, dot(normal_vs, light_vs));
-        // vec3 albedo = normalize(vec3(135.,206.,250.));
-        // FragColor = vec4(albedo * max(.5, diffuse), 1.0);
-
-        vec3 light_vs = normalize((view * vec4(normalize(-light_dir), 0.0)).xyz);
-        float lambertian = max(0.0, dot(normal_vs, light_vs));
-        vec3 view_dir = normalize(-frag_pos_vs); // camera at origin in view-space
-        vec3 reflect_dir = reflect(-light_vs, normal_vs);
-        float spec = pow(max(0.0, dot(view_dir, reflect_dir)), 64.0); // shininess is exponent
+        float diffuse = max(0.0, normalize(normal_vs).z);
         vec3 albedo = normalize(vec3(135.,206.,250.));
-        vec3 ambient = 0.5 * albedo;
-        vec3 color = ambient + (0.9 * lambertian) * albedo + 0.6 * spec;
-        FragColor = vec4(color, 1.0);
+        // FragColor = vec4(albedo * max(.3, diffuse), 1.0);
+        FragColor = vec4(albedo * diffuse, 1.0);
+
+        // vec3 light_vs = normalize((view * vec4(normalize(-light_dir), 0.0)).xyz);
+        // float lambertian = max(0.0, dot(normal_vs, light_vs));
+        // vec3 view_dir = normalize(-frag_pos_vs); // camera at origin in view-space
+        // vec3 reflect_dir = reflect(-light_vs, normal_vs);
+        // float spec = pow(max(0.0, dot(view_dir, reflect_dir)), 64.0); // shininess is exponent
+        // vec3 albedo = normalize(vec3(135.,206.,250.));
+        // vec3 ambient = 0.5 * albedo;
+        // vec3 color = ambient + (0.9 * lambertian) * albedo + 0.6 * spec;
+        // FragColor = vec4(color, 1.0);
     }
 
 )GLSL";
@@ -250,10 +251,9 @@ void GUI::glfw_process_input()
 
 // CONSTRUCTOR
 
-GUI::GUI(const int N, int init_w, int init_h, std::function<void()> on_failure, bool enable_vsync, double target_fps)
+GUI::GUI(const int _N, int init_w, int init_h, std::function<void()> on_failure, bool enable_vsync, double target_fps) : N(_N)
 {
     // save parameters
-    this->N = N;
     this->_window_width = init_w;
     this->_window_height = init_h;
     this->_window_height = init_h;
@@ -370,16 +370,17 @@ float3 *GUI::get_buffer()
     return vertices;
 }
 
-void GUI::run(std::function<void(float3 *, int)> simulation)
+void GUI::run(std::function<void(Particles &, int)> simulation, Particles &state)
 {
     auto prev{std::chrono::steady_clock::now()};
     while (!exit_requested)
     {
         float3 *x{get_buffer()};
+        state.set_x(x);
         while (update())
         {
             // inner simulation loop is here, use the callback
-            simulation(x, N);
+            simulation(state, N);
             // update simulation fps
             const auto now{std::chrono::steady_clock::now()};
             sim_fps = 1000ms / (now - prev);

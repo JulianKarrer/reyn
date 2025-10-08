@@ -93,10 +93,26 @@ FetchContent_MakeAvailable(glm)
 
 
 # define executable
-add_executable(${PROJECT_NAME} 
-    kernel.cu
-    gui.cpp
-    main.cpp
+set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
+set(REYN_SOURCES
+    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/gui.cpp
+    ${SRC_DIR}/kernel.cu
+    ${SRC_DIR}/particles.cpp
+)
+set(REYN_HEADERS
+    ${SRC_DIR}/common.h
+    ${SRC_DIR}/gui.h
+    ${SRC_DIR}/kernel.cuh
+    ${SRC_DIR}/particles.h
+)
+add_executable(${PROJECT_NAME}
+    ${REYN_SOURCES}
+    ${REYN_HEADERS}
+)
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${SRC_DIR}
 )
 
 # handle cuda compilation
@@ -108,6 +124,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
 
+# ensure cuda runtime is there
+find_package(CUDAToolkit REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart)
+
 # link libraries (GLFW, OpenGL)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PUBLIC 
@@ -117,7 +137,3 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glm::glm
     OpenGL::GL
 )
-
-# ensure cuda runtime is there
-find_package(CUDAToolkit REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart)

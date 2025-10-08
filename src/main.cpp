@@ -1,12 +1,14 @@
 #include "gui.h"
+#include "particles.h"
 #include "kernel.cuh"
 
-void simulation(float3 *x, int N)
+void step(Particles &state, int N)
 {
     static double time{0.};
+
     time += 0.0001;
     // launch CUDA kernel
-    launch_kernel(x, time, N);
+    launch_kernel(state.x, time, N);
 }
 
 int main()
@@ -18,8 +20,9 @@ int main()
         std::cout << "Error initializing GUI, exiting.\n"
                   << std::endl;
         exit(1); }};
-
     GUI gui(N, 1280, 720, on_failure, true);
-    gui.run(&simulation);
+    Particles state(gui, N, 0.1, 1.);
+
+    gui.run(&step, state);
     return 0;
 }
