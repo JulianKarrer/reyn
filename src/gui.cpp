@@ -372,36 +372,40 @@ float3 *GUI::get_buffer()
 
 void GUI::run(std::function<void(Particles &, int)> simulation, Particles &state)
 {
+    // start a timer in another thread that periodically sets an atomic bool to true to signal the main thread to update and render the GUI at the target FPS
+    std::thread timer([this]()
+                      { 
+        const auto wait_time {1s / target_fps};
+        while (!exit_requested){
+            should_render.store(true); 
+            std::this_thread::sleep_for(wait_time);
+        } });
+
+    // initialize a time stamp used for measuring the FPS of the simulation
     auto prev{std::chrono::steady_clock::now()};
+
+    // main loop:
     while (!exit_requested)
     {
         float3 *x{get_buffer()};
         state.set_x(x);
-        while (update())
+        while (!should_render.load())
         {
             // inner simulation loop is here, use the callback
             simulation(state, N);
-            // update simulation fps
+            // update simulation fps, slowly interpolating towards the new value
             const auto now{std::chrono::steady_clock::now()};
-            sim_fps = 1000ms / (now - prev);
+            sim_fps = 0.9999 * sim_fps + 0.0001 * (1000ms / (now - prev));
             prev = now;
         }
+        update();
+        should_render.store(false);
     }
+    timer.join();
 }
 
-bool GUI::update()
+void GUI::update()
 {
-    const auto now{std::chrono::steady_clock::now()};
-    const std::chrono::duration<double> diff{now - last_update};
-    if (diff / 1s < 1.f / target_fps)
-    {
-        // a gui update is not yet required due to throttling:
-        // immediately return and do another simulation step
-        return true;
-    }
-    // otherwise save the time stamp and start rendering
-    last_update = now;
-
     // process inputs
     glfw_process_input();
     // clear the screen
@@ -454,14 +458,12 @@ bool GUI::update()
 
     // swap back and front buffers
     glfwSwapBuffers(window);
-
-    return false;
 }
 
 void GUI::imgui_draw()
 {
     // update the FPS count in the window title using the ImGui framerate counter
-    const int max_fps_str_size{25};
+    const int max_fps_str_size{40};
     char fps_str[max_fps_str_size];
     snprintf(fps_str, max_fps_str_size, "REYN | FPS %.1f / %.1f", io->Framerate, sim_fps);
     glfwSetWindowTitle(window, fps_str);

@@ -18,6 +18,8 @@
 #include <chrono>
 using namespace std::literals;
 #include <algorithm>
+#include <thread>
+#include <atomic>
 
 // forwards declaration to avoid circular depenedency
 class Particles;
@@ -43,7 +45,7 @@ public:
         int init_h,
         std::function<void()> on_failure,
         bool enable_vsync = false,
-        double target_fps = 30.);
+        double target_fps = 165.);
     ~GUI();
 
     /// @brief Given a callback function to update the simulation state, run the simulation.
@@ -78,8 +80,8 @@ private:
     double target_fps{60.};
     /// @brief Measuered frames per second of the simulation
     double sim_fps{0.};
-    /// @brief timestamp of the beginning of the last render update
-    std::chrono::time_point<std::chrono::steady_clock> last_update;
+    /// @brief A atomic boolean set by a timer thread, indicating whether enough time has elapsed for the GUI (main) thread to render an update to screen. Otherwise, more simulation steps will be performed before the next GUI update is rendered.
+    std::atomic<bool> should_render{false};
     /// @brief whether the user is currently pressing the cursor with left click
     bool dragging{false};
     /// @brief x-position in normalized coordinates [0;1]^2 of where the current mouse dragging operation started
@@ -129,8 +131,7 @@ private:
 
     // main functions for running the gui
     /// @brief Update the GUI, rendering the current particles to screen.
-    /// @return `bool` indicating whether an update was actually performed or if there is still time until the next GUI update is necessary, since the simulation might run at a much faster rate than what is required by the GUI (e.g. 60FPS)
-    bool update();
+    void update();
 };
 
 #endif // GUI_H_
