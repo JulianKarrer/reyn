@@ -18,17 +18,24 @@ void init(Particles &state, int N)
 
 int main()
 {
-    int N{1};
-    auto on_failure{
-        []()
-        {
-        std::cout << "Error initializing GUI, exiting.\n"
-                  << std::endl;
-        exit(1); }};
-    GUI gui(N, 1280, 720, on_failure, true);
-    Particles state(&gui, 0.1, 1.);
-    std::cout << "now running:" << std::endl;
+    try
+    {
+        GUI gui(1280, 720, true);
+        Particles state(&gui, 0.1, 1.);
+        gui.run(&step, &init, state);
+    }
+    catch (const std::exception &e)
+    {
+        // print any errors thrown to stderr and terminate with error
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
+    catch (...)
+    {
+        // catch-all: detect non-standard exceptions and terminate with error
+        std::cerr << "An unspecified exception has occured. Terminating." << std::endl;
+        return 1;
+    }
 
-    gui.run(&step, &init, state);
     return 0;
 }

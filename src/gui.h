@@ -39,10 +39,8 @@ public:
     /// @param enable_vsync whether or not the GUI framerate should be limited by the V-synced refresh rate
     /// @param target_fps the target maximum frame rate of the GUI, which is used for throttling in case the simulation runs at a higher rate than what is required by the GUI
     GUI(
-        int _N,
         int init_w,
         int init_h,
-        std::function<void()> on_failure,
         bool enable_vsync = false,
         double target_fps = 60.);
     ~GUI();
@@ -76,7 +74,7 @@ public:
     /// @brief The scroll speed as the fraction of `radius_scroll_factor` that is added or taken away per line scrolled
     float _scroll_speed{0.05f};
     ///  @brief Current number of particles
-    int N;
+    uint N{1};
 
 private:
     /// @brief whethr or not the buffer is currently mapped for access by CUDA

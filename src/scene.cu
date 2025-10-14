@@ -6,18 +6,20 @@ Scene::Scene(uint N_desired, float3 min, float3 max, float3 bound_min, float3 bo
     this->bound_min = bound_min;
     this->bound_max = bound_max;
 
+    if (!((bound_max - bound_min) >= 0.) || !((max - min) >= 0.))
+        throw std::invalid_argument("Invalid bounds, minimum is greater than maximum");
+
     // from volume and desired particle count estimate the desired spacing h
     const float3 dxyz{max - min};
     float h{cbrtf((dxyz.x * dxyz.y * dxyz.z) / (float)N_desired)};
+    assert(h >= 0.);
+
     const int3 nxyz{dxyz / h};
     // compute actual particle count and save it
     N = {(uint)abs(nxyz.x) * (uint)abs(nxyz.y) * (uint)abs(nxyz.z)};
 
-    if (N == 0 || dxyz.x < 0. || dxyz.y < 0. || dxyz.z < 0.)
-    {
-        std::cout << "ERROR: Initialization of box failed, zero particles or negative spatial extent" << std::endl;
-        exit(1);
-    }
+    if (N == 0)
+        throw std::domain_error("Initialization of box failed, zero particles placed");
 
     p.resize_uninit(N);
 

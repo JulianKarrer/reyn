@@ -251,10 +251,9 @@ void GUI::glfw_process_input()
 
 // CONSTRUCTOR
 
-GUI::GUI(int _N, int init_w, int init_h, std::function<void()> on_failure, bool enable_vsync, double target_fps) : N(_N)
+GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
 {
     // save parameters
-    this->N = _N;
     this->_window_width = init_w;
     this->_window_height = init_h;
     this->_window_height = init_h;
@@ -274,10 +273,8 @@ GUI::GUI(int _N, int init_w, int init_h, std::function<void()> on_failure, bool 
 
     if (!window)
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
-        on_failure();
-        return;
+        throw std::runtime_error("Failed to create GLFW window");
     }
     // set current context
     glfwMakeContextCurrent(window);
@@ -324,11 +321,7 @@ GUI::GUI(int _N, int init_w, int init_h, std::function<void()> on_failure, bool 
 
     // set up glad
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        on_failure();
-        return;
-    }
+        throw std::runtime_error("Failed to initialize GLAD");
 
     // set clear colour and initial viewport
     glViewport(0, 0, init_w, init_h);
@@ -397,10 +390,7 @@ float3 *GUI::resize_mapped_buffer(uint N_new)
     // require that the positions buffer be currently mapped for usage by CUDA,
     // such that a CUDA-valid pointer can be returned after remapping
     if (!cuda_mapped)
-    {
-        std::cout << "ERROR: resize_mapped_buffer called on unmapped buffer." << std::endl;
-        exit(1);
-    }
+        throw std::runtime_error("resize_mapped_buffer called on an unmapped buffer");
 
     // unmap the buffer
     unmap_buffer();

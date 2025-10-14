@@ -1,6 +1,8 @@
 #ifndef VECTOR_CUH_
 #define VECTOR_CUH_
 
+// CONSTRUCTOR SHORTHANDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 /// A shorthand constructor for `float3`, alias for `make_float3`
 inline __host__ __device__ float3 v3(const float &x, const float &y, const float &z)
 {
@@ -10,6 +12,8 @@ inline __host__ __device__ float3 v3(const float &x)
 {
     return make_float3(x, x, x);
 };
+
+// BINARY ARITHMATIC OPERATORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 inline __host__ __device__ float3 operator-(const float3 &a, const float3 &b)
 {
@@ -25,6 +29,36 @@ inline __host__ __device__ float3 operator+(const float3 &a, const float3 &b)
 inline __host__ __device__ int3 operator/(const float3 &a, const float &b)
 {
     return make_int3((int)floorf(a.x / b), (int)floorf(a.y / b), (int)floorf(a.z / b));
+};
+
+// BINARY PREDICATES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/// @brief the conjunction (AND) of element-wise application of <=
+/// @return a boolean indicating if a <= b in EVERY component or not
+inline __host__ __device__ bool operator<=(const float3 &a, const float3 &b)
+{
+    return (a.x <= b.x) && (a.y <= b.y) && (a.z <= b.z);
+};
+
+/// @brief the conjunction (AND) of element-wise application of <=
+/// @return a boolean indicating if a <= b in EVERY component or not
+inline __host__ __device__ bool operator<=(const float3 &a, const float &b)
+{
+    return (a.x <= b) && (a.y <= b) && (a.z <= b);
+};
+
+/// @brief the conjunction (AND) of element-wise application of >=
+/// @return a boolean indicating if a >= b in EVERY component or not
+inline __host__ __device__ bool operator>=(const float3 &a, const float3 &b)
+{
+    return (a.x >= b.x) && (a.y >= b.y) && (a.z >= b.z);
+};
+
+/// @brief the conjunction (AND) of element-wise application of >=
+/// @return a boolean indicating if a >= b in EVERY component or not
+inline __host__ __device__ bool operator>=(const float3 &a, const float &b)
+{
+    return (a.x >= b) && (a.y >= b) && (a.z >= b);
 };
 
 #endif // VECTOR_CUH_

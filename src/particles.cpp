@@ -7,8 +7,7 @@ void Particles::set_x(float3 *x)
 {
     if (!gui)
     {
-        std::cout << "Attempted to call set_x on Particles instance that is not managed by a GUI. Changing where the pointer to positions x points to does not make sense if the pointer is not managed by a mapping a OpenGL VBO but instead created by cudaMalloc in the Particles constructor." << std::endl;
-        exit(1);
+        throw std::runtime_error("Attempted to call set_x on Particles instance that is not managed by a GUI. Changing where the pointer to positions x points to does not make sense if the pointer is not managed by a mapping a OpenGL VBO but instead created by cudaMalloc in the Particles constructor.");
     }
     else
     {
