@@ -1,9 +1,9 @@
-
 #ifndef PARTICLES_H_
 #define PARTICLES_H_
-#include "gui.h"
+
+class GUI;
+
 #include "common.h"
-#include <cuda_gl_interop.h>
 #include <iostream>
 
 /// @brief An object holding the minimum amount of information required to describe the state of the particle system at any point in time, i.e.
@@ -27,13 +27,19 @@ public:
     const float rho_0;
 
     Particles(const int N, float h, float rho_0);
-    Particles(GUI &gui, const int N, float _h, float _rho_0);
+    Particles(GUI *_gui, float _h, float _rho_0);
     ~Particles();
 
+    /// @brief Set the pointer to the position buffer. Used by GUI to ensure externally managed position buffers that are shared with OpenGL VBOs and mapped for use by CUDA are consistent.
+    /// @param x new pointer to positions
     void set_x(float3 *x);
 
-private:
-    bool x_managed_by_gui{false};
+    /// Resize all buffers. This leaves the new memory uninitialized!
+    /// Internally uses `cudaFree`, then `cudaMalloc` but handles externally managed position buffers from the GUI
+    void resize_uninit(uint N);
+
+    /// @brief Pointer to the GUI instance managing the position buffer, if any, and `nullptr` otherwise
+    GUI *const gui{nullptr};
 };
 
 #endif // PARTICLES_H_

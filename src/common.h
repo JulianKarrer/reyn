@@ -2,6 +2,13 @@
 #define COMMON_H_
 
 #include <cstdio>
+#include <cuda_runtime.h>
+#include <cstdlib>
+
+#define BLOCK_SIZE 256
+#define BLOCKS(N) \
+    {             \
+        (N + BLOCK_SIZE - 1) / BLOCK_SIZE}
 
 /// CUDA error checking macro
 /// https://stackoverflow.com/questions/14038589/

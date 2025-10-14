@@ -12,7 +12,8 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 set(CMAKE_BUILD_TYPE_RELEASE "Release" CACHE STRING "Release build type")
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --use_fast_math -Xcompiler -O3")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -march=native -flto")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -march=native")
+# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -march=native -flto")
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto")
 
 # use the scccache compiler wrapper for caching to speed up compilation
@@ -26,9 +27,9 @@ else ()
 endif ()
 
 # set C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CUDA_STANDARD 14)
+set(CMAKE_CUDA_STANDARD 20)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 # set CUDA compute capability, 89 for 4060Ti
@@ -97,15 +98,16 @@ set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(REYN_SOURCES
     ${SRC_DIR}/main.cpp
     ${SRC_DIR}/gui.cpp
-    ${SRC_DIR}/kernel.cu
     ${SRC_DIR}/particles.cpp
-)
+    ${SRC_DIR}/scene.cu
+    )
 set(REYN_HEADERS
     ${SRC_DIR}/common.h
     ${SRC_DIR}/gui.h
-    ${SRC_DIR}/kernel.cuh
     ${SRC_DIR}/particles.h
-)
+    ${SRC_DIR}/scene.cuh
+    ${SRC_DIR}/vector_helper.cuh
+    )
 add_executable(${PROJECT_NAME}
     ${REYN_SOURCES}
     ${REYN_HEADERS}

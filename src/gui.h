@@ -1,4 +1,3 @@
-
 #ifndef GUI_H_
 #define GUI_H_
 
@@ -40,21 +39,29 @@ public:
     /// @param enable_vsync whether or not the GUI framerate should be limited by the V-synced refresh rate
     /// @param target_fps the target maximum frame rate of the GUI, which is used for throttling in case the simulation runs at a higher rate than what is required by the GUI
     GUI(
-        const int _N,
+        int _N,
         int init_w,
         int init_h,
         std::function<void()> on_failure,
         bool enable_vsync = false,
-        double target_fps = 165.);
+        double target_fps = 60.);
     ~GUI();
 
     /// @brief Given a callback function to update the simulation state, run the simulation.
     /// The simulation is run at the highest possible rate, while the GUI is throttled to a reasonable number of frames per second, as defined in the constructor.
-    /// @param simulation a function that accepts a position buffer and number of particles and may update the contents of the buffer
-    void run(std::function<void(Particles &, int)> simulation, Particles &state);
+    /// @param step a function that accepts a `Particles` state and `int` particle count, updating it for the current simulation step
+    /// @param init a function that accepts a `Particles` state and `int` particle count, initializing the state for the simulation
+    void run(std::function<void(Particles &, int)> step, std::function<void(Particles &, int)> init, Particles &state);
 
     /// @brief Map the VBO for use by CUDA and obtain a pointer to the buffer for particle positions
-    float3 *get_buffer();
+    float3 *map_buffer();
+    /// @brief Unmap vertex buffer from CUDA for use by OpenGL
+    void unmap_buffer();
+
+    /// @brief Resize the particle positions buffer. Must be called while mapped for use by CUDA.
+    /// @param N desired number of particles
+    /// @returns pointer to the resized and mapped buffer.
+    float3 *resize_mapped_buffer(uint N);
 
     /// @brief Update the projection matrix representing the current camera frustum, which depends on the fov, aspect ratio, near and far planes.
     ///
@@ -68,10 +75,12 @@ public:
     float _radius_scroll_factor{1.f};
     /// @brief The scroll speed as the fraction of `radius_scroll_factor` that is added or taken away per line scrolled
     float _scroll_speed{0.05f};
+    ///  @brief Current number of particles
+    int N;
 
 private:
-    /// current number of particles
-    const int N;
+    /// @brief whethr or not the buffer is currently mapped for access by CUDA
+    bool cuda_mapped{false};
 
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
@@ -126,12 +135,20 @@ private:
     GLuint compile_shader();
     /// @brief Process user input events provided by GLFW, in particular cursor events that enable clicking and dragging to use camera orbital controls.
     void glfw_process_input();
+
+    /// @brief Create the VBO and VAO for positions and register the buffer with CUDA
+    /// @param N The number of `float3` to fit in the positions buffer
+    void create_and_register_buffer(uint N);
+
+    /// @brief Delete the VBO and VAO for positions and unregister the buffer from CUDA.
+    void destroy_and_deregister_buffer();
+
     ///  Update and manage the ImGui contents
     void imgui_draw();
 
     // main functions for running the gui
     /// @brief Update the GUI, rendering the current particles to screen.
-    void update();
+    void update(float h);
 };
 
 #endif // GUI_H_

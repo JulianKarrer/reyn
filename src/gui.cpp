@@ -251,9 +251,10 @@ void GUI::glfw_process_input()
 
 // CONSTRUCTOR
 
-GUI::GUI(const int _N, int init_w, int init_h, std::function<void()> on_failure, bool enable_vsync, double target_fps) : N(_N)
+GUI::GUI(int _N, int init_w, int init_h, std::function<void()> on_failure, bool enable_vsync, double target_fps) : N(_N)
 {
     // save parameters
+    this->N = _N;
     this->_window_width = init_w;
     this->_window_height = init_h;
     this->_window_height = init_h;
@@ -340,6 +341,11 @@ GUI::GUI(const int _N, int init_w, int init_h, std::function<void()> on_failure,
     // create shader program
     shader_program = compile_shader();
 
+    create_and_register_buffer(N);
+}
+
+void GUI::create_and_register_buffer(uint N)
+{
     // create VBO
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -358,9 +364,19 @@ GUI::GUI(const int _N, int init_w, int init_h, std::function<void()> on_failure,
     glBindVertexArray(0);
 }
 
-float3 *GUI::get_buffer()
+void GUI::destroy_and_deregister_buffer()
+{
+    // de-registerVBO from use by CUDA
+    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_vbo_resource));
+    // delete VBO and VAO buffers
+    glDeleteBuffers(1, &vbo);
+    glDeleteVertexArrays(1, &vao);
+}
+
+float3 *GUI::map_buffer()
 {
     // map the buffer for CUDA access
+    cuda_mapped = true;
     CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_vbo_resource, 0));
 
     float3 *vertices = nullptr;
@@ -370,7 +386,39 @@ float3 *GUI::get_buffer()
     return vertices;
 }
 
-void GUI::run(std::function<void(Particles &, int)> simulation, Particles &state)
+void GUI::unmap_buffer()
+{
+    cuda_mapped = false;
+    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_vbo_resource, 0));
+}
+
+float3 *GUI::resize_mapped_buffer(uint N_new)
+{
+    // require that the positions buffer be currently mapped for usage by CUDA,
+    // such that a CUDA-valid pointer can be returned after remapping
+    if (!cuda_mapped)
+    {
+        std::cout << "ERROR: resize_mapped_buffer called on unmapped buffer." << std::endl;
+        exit(1);
+    }
+
+    // unmap the buffer
+    unmap_buffer();
+
+    // clean up CUDA binding of vbo
+    destroy_and_deregister_buffer();
+
+    // set the new number of particles
+    this->N = N_new;
+
+    // create the buffer with the correct, new size
+    create_and_register_buffer(N_new);
+
+    // map the buffer for use by CUDA and return the resulting pointer
+    return map_buffer();
+}
+
+void GUI::run(std::function<void(Particles &, int)> step, std::function<void(Particles &, int)> init, Particles &state)
 {
     // start a timer in another thread that periodically sets an atomic bool to true to signal the main thread to update and render the GUI at the target FPS
     std::thread timer([this]()
@@ -385,34 +433,41 @@ void GUI::run(std::function<void(Particles &, int)> simulation, Particles &state
     auto prev{std::chrono::steady_clock::now()};
 
     // main loop:
+    static bool first_run{true};
     while (!exit_requested)
     {
-        float3 *x{get_buffer()};
+        float3 *x{map_buffer()};
         state.set_x(x);
+
+        if (first_run)
+        {
+            // run initialization function on the first run
+            init(state, N);
+            first_run = false;
+        }
+
         while (!should_render.load())
         {
             // inner simulation loop is here, use the callback
-            simulation(state, N);
+            step(state, N);
             // update simulation fps, slowly interpolating towards the new value
             const auto now{std::chrono::steady_clock::now()};
             sim_fps = 0.9999 * sim_fps + 0.0001 * (1000ms / (now - prev));
             prev = now;
         }
-        update();
+        unmap_buffer();
+        update(state.h);
         should_render.store(false);
     }
     timer.join();
 }
 
-void GUI::update()
+void GUI::update(float h)
 {
     // process inputs
     glfw_process_input();
     // clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // unmap vertex buffer from CUDA for use by OpenGL
-    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_vbo_resource, 0));
 
     // OpenGL rendering commands
     glUseProgram(shader_program);
@@ -437,7 +492,7 @@ void GUI::update()
     );
     glUniform1f(
         glGetUniformLocation(shader_program, "radius"), // location
-        (float)0.1                                      // value
+        h / 2.f                                         // value
     );
     glUniform3fv(
         glGetUniformLocation(shader_program, "light_dir"), // location
@@ -510,11 +565,8 @@ void GUI::imgui_draw()
 
 GUI::~GUI()
 {
-    // clean up CUDA binding of vbo
-    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_vbo_resource));
-    // clean up OpenGL
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
+    destroy_and_deregister_buffer();
+    // clearn up OpenGL
     glDeleteProgram(shader_program);
     // clean up GLFW
     glfwTerminate();
