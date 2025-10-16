@@ -76,13 +76,17 @@ public:
     ///  @brief Current number of particles
     uint N{1};
 
+    // explicitly forbid a copy constructor for safety, since only one GUI instance may ever exist
+    GUI(const GUI &) = delete;
+    GUI &operator=(const GUI &) = delete;
+
 private:
     /// @brief whethr or not the buffer is currently mapped for access by CUDA
     bool cuda_mapped{false};
 
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
-    bool exit_requested{false};
+    std::atomic<bool> exit_requested{ATOMIC_VAR_INIT(false)};
     /// @brief Target maximum FPS in case throttling is required
     double target_fps{60.};
     /// @brief Measuered frames per second of the simulation

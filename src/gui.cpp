@@ -414,7 +414,7 @@ void GUI::run(std::function<void(Particles &, int)> step, std::function<void(Par
     std::thread timer([this]()
                       { 
         const auto wait_time {1s / target_fps};
-        while (!exit_requested){
+        while (!exit_requested.load()){
             should_render.store(true); 
             std::this_thread::sleep_for(wait_time);
         } });
@@ -424,7 +424,7 @@ void GUI::run(std::function<void(Particles &, int)> step, std::function<void(Par
 
     // main loop:
     static bool first_run{true};
-    while (!exit_requested)
+    while (!exit_requested.load())
     {
         float3 *x{map_buffer()};
         state.set_x(x);
@@ -496,7 +496,8 @@ void GUI::update(float h)
 
     // poll for window events
     glfwPollEvents();
-    exit_requested |= glfwWindowShouldClose(window);
+    if (glfwWindowShouldClose(window))
+        exit_requested.store(true);
 
     // update ImGUI
     imgui_draw();
@@ -529,7 +530,7 @@ void GUI::imgui_draw()
     ImGui::Text("GUI Frame time %.3fms (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
     ImGui::Text("SIM Frame time %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
     if (ImGui::Button("Exit"))
-        exit_requested = true;
+        exit_requested.store(true);
     ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f);
 
     float light_dir[3]{light_direction.x, light_direction.y, light_direction.z};

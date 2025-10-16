@@ -29,6 +29,6 @@ public:
 };
 
 /// @brief Kernel used by one of the Scene constructors to initialize a set of dynamic particles in a box using CUDA directly to set each position.
-__global__ void init_box_kernel(float3 min, Particles p, int3 nxyz, uint N, float h, float rho_0);
+__global__ void init_box_kernel(float3 min, float3 *x, float3 *v, float *m, int3 nxyz, uint N, float h, float rho_0);
 
 #endif // SCENE_H_

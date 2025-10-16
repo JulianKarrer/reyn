@@ -45,8 +45,8 @@ void Particles::resize_uninit(uint N)
     };
     // in either case, resize mass and velocity arrays
     CUDA_CHECK(cudaFree(v));
-    CUDA_CHECK(cudaFree(m));
     CUDA_CHECK(cudaMalloc((void **)&v, sizeof(float3) * N));
+    CUDA_CHECK(cudaFree(m));
     CUDA_CHECK(cudaMalloc((void **)&m, sizeof(float) * N));
 }
 

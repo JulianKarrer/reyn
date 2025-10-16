@@ -14,7 +14,7 @@ Scene::Scene(uint N_desired, float3 min, float3 max, float3 bound_min, float3 bo
     float h{cbrtf((dxyz.x * dxyz.y * dxyz.z) / (float)N_desired)};
     assert(h >= 0.);
 
-    const int3 nxyz{dxyz / h};
+    const int3 nxyz{floor_div(dxyz, h)};
     // compute actual particle count and save it
     N = {(uint)abs(nxyz.x) * (uint)abs(nxyz.y) * (uint)abs(nxyz.z)};
 
@@ -24,14 +24,14 @@ Scene::Scene(uint N_desired, float3 min, float3 max, float3 bound_min, float3 bo
     p.resize_uninit(N);
 
     // place particles using cuda
-    init_box_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(min, p, nxyz, N, h, rho_0);
+    init_box_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(min, p.x, p.v, p.m, nxyz, N, h, rho_0);
     CUDA_CHECK(cudaGetLastError());
 
     // block and wait for operation to complete
     CUDA_CHECK(cudaDeviceSynchronize());
 }
 
-__global__ void init_box_kernel(float3 min, Particles p, int3 nxyz, uint N, float h, float rho_0)
+__global__ void init_box_kernel(float3 min, float3 *x, float3 *v, float *m, int3 nxyz, uint N, float h, float rho_0)
 {
     // calculate 3d index from 1d index of invocation and nx, ny limits
     auto nx{nxyz.x};
@@ -46,9 +46,9 @@ __global__ void init_box_kernel(float3 min, Particles p, int3 nxyz, uint N, floa
     ix -= iy * nx;
 
     // then initialize positions with spacing h
-    p.x[i] = min + v3(ix * h, iy * h, iz * h);
+    x[i] = min + v3(ix * h, iy * h, iz * h);
     // initial velocities are zero
-    p.v[i] = v3(0.f);
+    v[i] = v3(0.f);
     // assume ideal rest mass for now
-    p.m[i] = rho_0 * h * h * h;
+    m[i] = rho_0 * h * h * h;
 }

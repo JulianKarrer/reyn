@@ -24,17 +24,15 @@ int main()
         Particles state(&gui, 0.1, 1.);
         gui.run(&step, &init, state);
     }
-    catch (const std::exception &e)
+    catch (std::exception const &e)
     {
         // print any errors thrown to stderr and terminate with error
         std::cerr << e.what() << std::endl;
-        return 1;
     }
     catch (...)
     {
         // catch-all: detect non-standard exceptions and terminate with error
         std::cerr << "An unspecified exception has occured. Terminating." << std::endl;
-        return 1;
     }
 
     return 0;

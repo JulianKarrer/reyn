@@ -100,6 +100,7 @@ set(REYN_SOURCES
     ${SRC_DIR}/gui.cpp
     ${SRC_DIR}/particles.cpp
     ${SRC_DIR}/scene.cu
+    ${SRC_DIR}/kernels.cu
     )
 set(REYN_HEADERS
     ${SRC_DIR}/common.h
@@ -107,6 +108,7 @@ set(REYN_HEADERS
     ${SRC_DIR}/particles.h
     ${SRC_DIR}/scene.cuh
     ${SRC_DIR}/vector_helper.cuh
+    ${SRC_DIR}/kernels.cuh
     )
 add_executable(${PROJECT_NAME}
     ${REYN_SOURCES}

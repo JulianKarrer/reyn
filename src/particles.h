@@ -40,6 +40,10 @@ public:
 
     /// @brief Pointer to the GUI instance managing the position buffer, if any, and `nullptr` otherwise
     GUI *const gui{nullptr};
+
+    // Explicitly forbid a copy constructor, since destructor must only be called once to ensure cudaFree does not free twice
+    Particles(const Particles &) = delete;
+    Particles &operator=(const Particles &) = delete;
 };
 
 #endif // PARTICLES_H_

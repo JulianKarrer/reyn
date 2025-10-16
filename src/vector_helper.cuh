@@ -25,10 +25,58 @@ inline __host__ __device__ float3 operator+(const float3 &a, const float3 &b)
     return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
 };
 
-/// @brief Divide a 3-vector by a float to obtain an integer 3-vector by rounding down with `floorf` and casting to integers in each component.
-inline __host__ __device__ int3 operator/(const float3 &a, const float &b)
+/// divide a 3-vector by a float to obtain an integer 3-vector by rounding down with `floorf` and casting to integers in each component.
+inline __host__ __device__ int3 floor_div(const float3 &a, const float &b)
 {
     return make_int3((int)floorf(a.x / b), (int)floorf(a.y / b), (int)floorf(a.z / b));
+};
+
+/// @brief compute the dot product of two vectors
+inline __host__ __device__ float dot(const float3 &a, const float3 &b)
+{
+    return fmaf(a.x, b.x, fmaf(a.y, b.y, fmul(a.z, b.z)));
+};
+
+// division with scalar
+inline __host__ __device__ float3 operator/(const float3 &a, const float &b)
+{
+    return make_float3(a.x / b, a.y / b, a.z / b);
+};
+
+// multiplication with scalar (commutative)
+inline __host__ __device__ float3 operator*(const float3 &a, const float &b)
+{
+    return make_float3(a.x * b, a.y * b, a.z * b);
+};
+inline __host__ __device__ float3 operator*(const float &a, const float3 &b)
+{
+    return make_float3(b.x * a, b.y * a, b.z * a);
+};
+
+// UNARY ARITHMATIC OPERATORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/// @brief NOTE: this function might behave differently in `__device__` and `__host__` code due to alternate implementations depending on intrinsics availablility!
+///
+/// saturate a float, i.e. clamp it to a [0.f ; 1.f] range (inclusive)
+inline __host__ __device__ float sat(const float &a)
+{
+#ifdef __CUDA_ARCH__
+    return __saturatef(a);
+#else
+    return fmin(fmax(a, 0.f), 1.f);
+#endif
+};
+
+/// @brief NOTE: this function might behave differently in `__device__` and `__host__` code due to alternate implementations depending on intrinsics availablility!
+///
+/// take the 3D euclidean norm of a vector
+inline __host__ __device__ float norm(const float3 &a)
+{
+#ifdef __CUDA_ARCH__
+    return norm3df(a.x, a.y, a.z);
+#else
+    return fsqrt(dot(a, a));
+#endif
 };
 
 // BINARY PREDICATES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
