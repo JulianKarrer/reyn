@@ -92,6 +92,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glm)
 
+# fetch doctest
+FetchContent_Declare(
+    doctest
+    GIT_REPOSITORY https://github.com/doctest/doctest.git
+    GIT_TAG v2.4.12
+)
+FetchContent_MakeAvailable(doctest)
 
 # define executable
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -114,6 +121,9 @@ add_executable(${PROJECT_NAME}
     ${REYN_SOURCES}
     ${REYN_HEADERS}
 )
+
+# disable doctest in normal compilation target
+target_compile_definitions(${PROJECT_NAME} PRIVATE DOCTEST_CONFIG_DISABLE)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${SRC_DIR}
@@ -140,4 +150,41 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glad
     glm::glm
     OpenGL::GL
+    doctest::doctest
 )
+
+# TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+file(GLOB_RECURSE USER_TEST_SOURCES "${CMAKE_SOURCE_DIR}/test/*.cpp" "${CMAKE_SOURCE_DIR}/test/*.cu")
+
+set(REYN_SOURCES_NO_MAIN ${REYN_SOURCES})
+list(REMOVE_ITEM REYN_SOURCES_NO_MAIN "${SRC_DIR}/main.cpp")
+add_executable(tests
+    test/runner.cpp
+    ${REYN_SOURCES_NO_MAIN}
+    ${REYN_HEADERS}
+    ${USER_TEST_SOURCES}
+)
+
+set_target_properties(tests PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RUNTIME_LIBRARY Shared
+)
+
+target_include_directories(tests PRIVATE
+    ${SRC_DIR}
+    ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
+)
+
+target_link_libraries(tests PRIVATE
+    doctest::doctest
+    CUDA::cudart
+    ${X11_LIBRARIES}
+    glfw
+    imgui_glfw
+    glad
+    glm::glm
+    OpenGL::GL
+)
+
+enable_testing()
+add_test(NAME unit_tests COMMAND tests)

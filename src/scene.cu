@@ -34,12 +34,12 @@ Scene::Scene(uint N_desired, float3 min, float3 max, float3 bound_min, float3 bo
 __global__ void init_box_kernel(float3 min, float3 *x, float3 *v, float *m, int3 nxyz, uint N, float h, float rho_0)
 {
     // calculate 3d index from 1d index of invocation and nx, ny limits
+    auto i{blockIdx.x * blockDim.x + threadIdx.x};
+    if (i >= N)
+        return;
     auto nx{nxyz.x};
     auto ny{nxyz.y};
-    auto ix{blockIdx.x * blockDim.x + threadIdx.x};
-    auto i{ix};
-    if (ix >= N)
-        return;
+    auto ix{i};
     auto iz{ix / (nx * ny)};
     ix -= iz * nx * ny;
     auto iy{ix / nx};

@@ -1,7 +1,8 @@
 cores := `nproc`
 
 # default recipe: build and run
-default: build run
+default: build run-tests run
+test: build run-tests
 
 setup:
     mkdir -p build
@@ -12,6 +13,9 @@ build:
 
 run:
     ./build/reyn
+
+run-tests:
+    ./build/tests
 
 clean:
     rm -rf build

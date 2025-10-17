@@ -1,6 +1,8 @@
 #ifndef VECTOR_CUH_
 #define VECTOR_CUH_
 
+#include <cuda_runtime.h>
+
 // CONSTRUCTOR SHORTHANDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// A shorthand constructor for `float3`, alias for `make_float3`
@@ -25,6 +27,14 @@ inline __host__ __device__ float3 operator+(const float3 &a, const float3 &b)
     return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
 };
 
+inline __host__ __device__ float3 &operator+=(float3 &a, const float3 &b)
+{
+    a.x += b.x;
+    a.y += b.y;
+    a.z += b.z;
+    return a;
+}
+
 /// divide a 3-vector by a float to obtain an integer 3-vector by rounding down with `floorf` and casting to integers in each component.
 inline __host__ __device__ int3 floor_div(const float3 &a, const float &b)
 {
@@ -34,7 +44,7 @@ inline __host__ __device__ int3 floor_div(const float3 &a, const float &b)
 /// @brief compute the dot product of two vectors
 inline __host__ __device__ float dot(const float3 &a, const float3 &b)
 {
-    return fmaf(a.x, b.x, fmaf(a.y, b.y, fmul(a.z, b.z)));
+    return fmaf(a.x, b.x, fmaf(a.y, b.y, (a.z * b.z)));
 };
 
 // division with scalar

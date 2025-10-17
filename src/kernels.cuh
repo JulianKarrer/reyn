@@ -2,6 +2,7 @@
 #define KERNELS_CUH_
 
 #include "vector_helper.cuh"
+#include <cmath>
 
 /// @brief Base class of kernel f unctions for static polymorphism using CRTP design.
 /// Any kernel function should
@@ -31,7 +32,10 @@ public:
     __host__ __device__ __forceinline__ float operator()(float3 dx) const
     {
         const float len{norm(dx)};
-        const float q{len * _h_bar_inv};
+        // sat helps with potential NaNs due to overflow when q is huge
+        // which arguably should not happen but is covered for robustness.
+        // sat conveniently clamps to q=1, which implies a kernel value of zero, as intended.
+        const float q{sat(len * _h_bar_inv)};
         return _W_scale * static_cast<const Derived *>(this)->w(q);
     }
 
@@ -41,35 +45,58 @@ public:
         const float len_2{dot(dx, dx)};
         // take a fast square root
         const float len{sqrtf(len_2)};
-        // compute inverse square root using intrinsics
-        // may return +/- infty
-        // https://docs.nvidia.com/cuda/cuda-math-api/cuda_math_api/group__CUDA__MATH__INTRINSIC__SINGLE.html#group__cuda__math__intrinsic__single_1ga71ee45580cbeeea206297f0112aff42c
-        const float one_over_len{rsqrtf(len_2)};
+        const float one_over_len{1.f / len};
         // then use isfinite to check for infinities and NaNs, in which case the distance was zero
         // this incurrs one conditional
-        const float safe_one_over_len{isfinite(one_over_len) ? one_over_len : 0.f};
         const float q{len * _h_bar_inv};
+        const float scale{_dW_scale * static_cast<const Derived *>(this)->dw(q) * one_over_len};
         // account for division by zero in normalization of zero-length vector:
         // -> in this case the result should be the zero vector
-        return _dW_scale * static_cast<const Derived *>(this)->dw(q) * (dx * safe_one_over_len);
+        const float safe_scale{std::isfinite(scale) ? scale : 0.f};
+        return safe_scale * dx;
     }
-
-    // prevent copying
-    // Kernel(const Kernel &) = delete;
-    // Kernel &operator=(const Kernel &) = delete;
 };
 
-/// @brief Cubic Spline Kernel function [Monaghan, taken from Stefan Band]
-class C3 : public Kernel<C3>
+/// Create a concept that allows templating kernel launches on some implementation of the `Kernel` class, while abstracting the specific type of kernel function used, at no runtime cost.
+template <typename T>
+concept IsKernel = std::is_base_of_v<Kernel<T>, T>;
+
+// Kernel function implementations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/// @brief Wendland C2 kernel function [Wendland 95, taken from Stefan Band]
+class C2 : public Kernel<C2>
 {
 public:
-    __host__ __device__ __forceinline__
-    C3(float h_bar) : Kernel(h_bar, 16.f * M_1_PI) {};
-    __host__ __device__ __forceinline__ float w(float q) const;
-    __host__ __device__ __forceinline__ float dw(float q) const;
+    __host__ __device__ __forceinline__ C2(float h_bar);
+    __host__ __device__ __forceinline__ static float w(float q);
+    __host__ __device__ __forceinline__ static float dw(float q);
+};
 
-    __host__ __device__ __forceinline__ float operator()(float3 dx) const;
-    __host__ __device__ __forceinline__ float3 nabla(float3 dx) const;
+/// @brief Cubic Spline B-Spline kernel function [Monaghan 92, taken from Stefan Band]
+class B3 : public Kernel<B3>
+{
+public:
+    __host__ __device__ __forceinline__ B3(float h_bar);
+    __host__ __device__ __forceinline__ static float w(float q);
+    __host__ __device__ __forceinline__ static float dw(float q);
+};
+
+/// @brief Wendland C6 kernel function [Wendland 95, taken from Stefan Band]
+class W6 : public Kernel<W6>
+{
+public:
+    __host__ __device__ __forceinline__ W6(float h_bar);
+    __host__ __device__ __forceinline__ static float w(float q);
+    __host__ __device__ __forceinline__ static float dw(float q);
+};
+
+/// @brief Double Cosine Kernel function [Yang, Peng, Liu 2013]
+class COS : public Kernel<COS>
+{
+public:
+    __host__ __device__ __forceinline__ COS(float h_bar);
+    __host__ __device__ __forceinline__ static float w(float q);
+    __host__ __device__ __forceinline__ static float dw(float q);
 };
 
 #endif // KERNELS_CUH_

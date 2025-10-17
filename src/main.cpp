@@ -1,6 +1,7 @@
 #include "gui.h"
 #include "particles.h"
 #include "scene.cuh"
+#include "kernels.cuh"
 
 void step(Particles &state, int N)
 {
