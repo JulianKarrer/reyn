@@ -35,6 +35,14 @@ inline __host__ __device__ float3 &operator+=(float3 &a, const float3 &b)
     return a;
 }
 
+inline __host__ __device__ float3 &operator-=(float3 &a, const float3 &b)
+{
+    a.x -= b.x;
+    a.y -= b.y;
+    a.z -= b.z;
+    return a;
+}
+
 /// divide a 3-vector by a float to obtain an integer 3-vector by rounding down with `floorf` and casting to integers in each component.
 inline __host__ __device__ int3 floor_div(const float3 &a, const float &b)
 {
@@ -91,32 +99,32 @@ inline __host__ __device__ float norm(const float3 &a)
 
 // BINARY PREDICATES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/// @brief the conjunction (AND) of element-wise application of <=
+/// @brief the disjunction (OR) of element-wise application of <=
 /// @return a boolean indicating if a <= b in EVERY component or not
 inline __host__ __device__ bool operator<=(const float3 &a, const float3 &b)
 {
-    return (a.x <= b.x) && (a.y <= b.y) && (a.z <= b.z);
+    return (a.x <= b.x) || (a.y <= b.y) || (a.z <= b.z);
 };
 
-/// @brief the conjunction (AND) of element-wise application of <=
+/// @brief the disjunction (OR) of element-wise application of <=
 /// @return a boolean indicating if a <= b in EVERY component or not
 inline __host__ __device__ bool operator<=(const float3 &a, const float &b)
 {
-    return (a.x <= b) && (a.y <= b) && (a.z <= b);
+    return (a.x <= b) || (a.y <= b) || (a.z <= b);
 };
 
-/// @brief the conjunction (AND) of element-wise application of >=
+/// @brief the disjunction (OR) of element-wise application of >=
 /// @return a boolean indicating if a >= b in EVERY component or not
 inline __host__ __device__ bool operator>=(const float3 &a, const float3 &b)
 {
-    return (a.x >= b.x) && (a.y >= b.y) && (a.z >= b.z);
+    return (a.x >= b.x) || (a.y >= b.y) || (a.z >= b.z);
 };
 
-/// @brief the conjunction (AND) of element-wise application of >=
+/// @brief the disjunction (OR) of element-wise application of >=
 /// @return a boolean indicating if a >= b in EVERY component or not
 inline __host__ __device__ bool operator>=(const float3 &a, const float &b)
 {
-    return (a.x >= b) && (a.y >= b) && (a.z >= b);
+    return (a.x >= b) || (a.y >= b) || (a.z >= b);
 };
 
 #endif // VECTOR_CUH_

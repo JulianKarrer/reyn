@@ -15,6 +15,8 @@ public:
     float3 bound_min;
     /// @brief Point marking the highest extend of the bounding box of the scene along each coordinate axis
     float3 bound_max;
+    /// @brief particle spacing h
+    float h;
     /// @brief Number of dynamic particles in the scene
     uint N;
 
@@ -22,13 +24,15 @@ public:
     /// @param N_desired desired number of dynamic particles
     /// @param min lower bound of the box of dynamic particles along each axis
     /// @param max upper bound of the box of dynamic particles along each axis
-    /// @param min lower bound of the scene bounds along each axis
-    /// @param max upper bound of the scene bounds along each axis
+    /// @param bound_min lower bound of the scene bounds along each axis
+    /// @param bound_max upper bound of the scene bounds along each axis
     /// @param rho_0 rest density
-    Scene(uint N_desired, float3 min, float3 max, float3 bound_min, float3 bound_max, float rho_0, Particles &state);
-};
+    /// @param state current state of the particles
+    Scene(const uint N_desired, const float3 min, const float3 max, const float3 bound_min, const float3 bound_max, const float rho_0, Particles &state);
 
-/// @brief Kernel used by one of the Scene constructors to initialize a set of dynamic particles in a box using CUDA directly to set each position.
-__global__ void init_box_kernel(float3 min, float3 *x, float3 *v, float *m, int3 nxyz, uint N, float h, float rho_0);
+    /// @brief Strictly enforce the simulation bounds set at scene creation, clamping all particle positions in the argument state to scenes bounding volume and reflecting any offending velocities while also damping them (factor 1e-6) to nearly zero.
+    /// @param state 
+    void hard_enforce_bounds(Particles &state) const;
+};
 
 #endif // SCENE_H_

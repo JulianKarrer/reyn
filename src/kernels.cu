@@ -3,93 +3,6 @@
 #include <random>
 #include "common.h"
 
-// Wendland C2 kernel
-
-__host__ __device__ __forceinline__
-C2::C2(float h_bar) : Kernel(h_bar, 21.f / 2.f * M_1_PI) {};
-
-__host__ __device__ __forceinline__ float C2::w(float q)
-{
-    const float t1{fmax(0.f, 1.f - q)};
-    const float t2{4.f * q + 1.f};
-    const float t1_2{t1 * t1};
-    return t1_2 * t1_2 * t2;
-}
-
-__host__ __device__ __forceinline__ float C2::dw(float q)
-{
-    const float t1{fmax(0.f, 1.f - q)};
-    const float t2{-20.f * q};
-    return t1 * t1 * t1 * t2;
-}
-
-// Cubic Spline kernel
-
-__host__ __device__ __forceinline__
-B3::B3(float h_bar) : Kernel(h_bar, 16.f * M_1_PI) {};
-__host__ __device__ __forceinline__ float B3::w(float q)
-{
-    const float t1{fmax(0.f, 1.f - q)};
-    const float t2{sat(0.5f - q)};
-    return t1 * t1 * t1 - 4.f * t2 * t2 * t2;
-}
-
-__host__ __device__ __forceinline__ float B3::dw(float q)
-{
-    const float t1{fmax(0.f, 1.f - q)};
-    const float t2{sat(0.5f - q)};
-    return -3.f * t1 * t1 + 12.f * t2 * t2;
-}
-
-// Wendland C6 kernel
-
-__host__ __device__ __forceinline__
-W6::W6(float h_bar) : Kernel(h_bar, 1365.f / 64.f * M_1_PI) {};
-
-__host__ __device__ __forceinline__ float W6::w(float q)
-{
-    const float t1{fmax(0.f, 1.f - q)};
-    const float t1_2{t1 * t1};
-    const float t1_4{t1_2 * t1_2};
-    const float t1_8{t1_4 * t1_4};
-    const float q_2{q * q};
-    const float t2{32.f * q_2 * q + 25.f * q_2 + 8.f * q + 1.f};
-    return t1_8 * t2;
-}
-
-__host__ __device__ __forceinline__ float W6::dw(float q)
-{
-    const float t1{fmax(0.f, 1.f - q)};
-    const float t1_2{t1 * t1};
-    const float t1_4{t1_2 * t1_2};
-    const float t1_7{t1_4 * t1_2 * t1};
-
-    const float t2{(16.f * q * q + 7.f * q + 1.f) * (-22.f * q)};
-    return t1_7 * t2;
-}
-
-// Double cosine kernel
-
-__host__ __device__ __forceinline__
-COS::COS(float h_bar) : Kernel(h_bar, M_PI / (4.f * M_PI * M_PI - 30.f)) {};
-
-__host__ __device__ __forceinline__ float COS::w(float q)
-{
-    constexpr float PI{static_cast<float>(M_PI)};
-    const float pi_s{PI * fmin(1.f, q)};
-    return 4.f * cosf(pi_s) + cosf(2.f * pi_s) + 3.f;
-}
-
-__host__ __device__ __forceinline__ float COS::dw(float q)
-{
-    constexpr float PI{static_cast<float>(M_PI)};
-    const float pi_s{PI * fmin(1.f, q)};
-    constexpr float two_pi{2.f * M_PI};
-    return -2.f * two_pi * sinf(pi_s) - sinf(2.f * pi_s) * two_pi;
-}
-
-// TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 template <IsKernel K>
 __global__ void _test_kernels(float3 *x, float *ws, float3 *dws, uint N, const K W)
 {
@@ -100,7 +13,7 @@ __global__ void _test_kernels(float3 *x, float *ws, float3 *dws, uint N, const K
     dws[i] = W.nabla(x[i]);
 }
 
-// ADD NEW KERNELS TO THE TEMPLATE:
+// ADD NEW KERNELS TO THE TEMPLATE :
 
 TEST_CASE_TEMPLATE("Kernel function properties", K, B3, C2, W6, COS)
 {

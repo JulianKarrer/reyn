@@ -23,7 +23,7 @@ public:
     float3 *x{nullptr};
     float3 *v{nullptr};
     float *m{nullptr};
-    const float h;
+    float h;
     const float rho_0;
 
     Particles(const int N, float h, float rho_0);

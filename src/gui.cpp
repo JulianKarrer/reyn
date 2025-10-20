@@ -442,7 +442,7 @@ void GUI::run(std::function<void(Particles &, int)> step, std::function<void(Par
             step(state, N);
             // update simulation fps, slowly interpolating towards the new value
             const auto now{std::chrono::steady_clock::now()};
-            sim_fps = 0.9999 * sim_fps + 0.0001 * (1000ms / (now - prev));
+            sim_fps = 0.99 * sim_fps + 0.01 * (1000ms / (now - prev));
             prev = now;
         }
         unmap_buffer();

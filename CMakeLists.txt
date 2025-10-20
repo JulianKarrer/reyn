@@ -92,6 +92,10 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glm)
 
+# get thrust
+find_package(Thrust REQUIRED)
+thrust_create_target(Thrust)
+
 # fetch doctest
 FetchContent_Declare(
     doctest
@@ -108,6 +112,7 @@ set(REYN_SOURCES
     ${SRC_DIR}/particles.cpp
     ${SRC_DIR}/scene.cu
     ${SRC_DIR}/kernels.cu
+    ${SRC_DIR}/solvers/SESPH.cu
     )
 set(REYN_HEADERS
     ${SRC_DIR}/common.h
@@ -116,6 +121,7 @@ set(REYN_HEADERS
     ${SRC_DIR}/scene.cuh
     ${SRC_DIR}/vector_helper.cuh
     ${SRC_DIR}/kernels.cuh
+    ${SRC_DIR}/solvers/SESPH.cuh
     )
 add_executable(${PROJECT_NAME}
     ${REYN_SOURCES}
@@ -142,7 +148,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 find_package(CUDAToolkit REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart)
 
-# link libraries (GLFW, OpenGL)
+# link libraries (GLFW, OpenGL, ...)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PUBLIC 
     glfw
@@ -151,6 +157,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glm::glm
     OpenGL::GL
     doctest::doctest
+    Thrust
 )
 
 # TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -188,3 +195,13 @@ target_link_libraries(tests PRIVATE
 
 enable_testing()
 add_test(NAME unit_tests COMMAND tests)
+
+
+# MISC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# supress GLM volatile warning
+foreach(tgt ${PROJECT_NAME} tests)
+    if(TARGET ${tgt})
+        target_compile_options(${tgt} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppress=3012>)
+        target_compile_options(${tgt} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wno-volatile> )
+    endif()
+endforeach()
