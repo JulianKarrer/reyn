@@ -9,11 +9,8 @@ void step(Particles &state, int N)
     const float dt{0.001};
     static double time{0.};
     static const B3 W(0.1);
-    static const Scene scene(10000, v3(-.5), v3(.5), v3(-.5, -1., -.5), v3(.5, 1., .5), 1000., state);
-    static SESPH<B3> solver(W, scene.N, 0.001f, scene.h);
-
+    static SESPH<B3> solver(W, N, 0.001f, state.h);
     solver.compute_accelerations(state, dt);
-    scene.hard_enforce_bounds(state);
 
     time += dt;
 }
@@ -28,7 +25,15 @@ int main()
     {
         GUI gui(1280, 720, true);
         Particles state(&gui, 0.1, 1.);
-        gui.run(&step, &init, state);
+
+
+        float3 *x{gui.map_buffer()};
+        state.set_x(x);
+        const Scene scene(10000, v3(-.5), v3(.5), v3(-.5, -1., -.5), v3(.5, 1., .5), 1000., state);
+        gui.unmap_buffer();
+
+
+        gui.run(&step, &init, state, scene);
     }
     catch (std::exception const &e)
     {

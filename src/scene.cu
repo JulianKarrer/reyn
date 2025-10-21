@@ -50,7 +50,7 @@ Scene::Scene(const uint N_desired, const float3 min, const float3 max, const flo
     state.resize_uninit(N);
 
     // place particles using cuda
-    init_box_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(min, state.x, state.v, state.m, nxyz, N, h, rho_0);
+    init_box_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(min, state.x.ptr(), state.v.ptr(), state.m.ptr(), nxyz, N, h, rho_0);
     CUDA_CHECK(cudaGetLastError());
 
     // block and wait for operation to complete
@@ -98,7 +98,7 @@ __global__ void _hard_enforce_bounds(const float3 bound_min, const float3 bound_
     }
 }
 void Scene::hard_enforce_bounds(Particles &state) const{
-    _hard_enforce_bounds<<<BLOCKS(N), BLOCK_SIZE>>>(bound_min, bound_max, N, state.x, state.v);
+    _hard_enforce_bounds<<<BLOCKS(N), BLOCK_SIZE>>>(bound_min, bound_max, N, state.x.ptr(), state.v.ptr());
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
 };

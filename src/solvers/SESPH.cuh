@@ -5,6 +5,7 @@
 #include "common.h"
 #include "kernels.cuh"
 #include "particles.h"
+#include "buffer.cuh"
 
 template <IsKernel K>
 class SESPH 
@@ -20,7 +21,7 @@ public:
     /// @brief kinematic viscosity, with units of [L^2/T]
     float nu;
     /// @brief scalar buffer
-    float* rho;
+    DeviceBuffer<float> rho;
     /// @brief Stiffness coefficient for the state equation
     float k{2000.};
     /// @brief Gravitational acceleration
@@ -28,12 +29,9 @@ public:
     /// @brief rest density
     float rho_0{1000.};
 
-    SESPH(K _W, uint _N, float _nu, const float _h) : W(_W), N(_N), nu(_nu), h(_h) {
-        CUDA_CHECK(cudaMalloc((void **)&rho, sizeof(float) * _N));
-    };
-    ~SESPH(){
-        cudaFree(rho);
-    };
+    SESPH(K _W, uint _N, float _nu, const float _h) : W(_W), N(_N), nu(_nu), h(_h), rho(_N) 
+    {};
+    ~SESPH(){};
 
     void compute_accelerations(Particles& state, float dt);
 

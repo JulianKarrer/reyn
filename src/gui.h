@@ -22,6 +22,7 @@ using namespace std::literals;
 
 // forwards declaration to avoid circular depenedency
 class Particles;
+class Scene;
 
 /// @brief Object managing a graphical user interface.
 /// Uses GLFW for cross-platform windowing and sets up
@@ -49,7 +50,7 @@ public:
     /// The simulation is run at the highest possible rate, while the GUI is throttled to a reasonable number of frames per second, as defined in the constructor.
     /// @param step a function that accepts a `Particles` state and `int` particle count, updating it for the current simulation step
     /// @param init a function that accepts a `Particles` state and `int` particle count, initializing the state for the simulation
-    void run(std::function<void(Particles &, int)> step, std::function<void(Particles &, int)> init, Particles &state);
+    void run(std::function<void(Particles &, int)> step, std::function<void(Particles &, int)> init, Particles &state, const Scene &scene);
 
     /// @brief Map the VBO for use by CUDA and obtain a pointer to the buffer for particle positions
     float3 *map_buffer();

@@ -107,15 +107,16 @@ FetchContent_MakeAvailable(doctest)
 # define executable
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(REYN_SOURCES
-    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/main.cu
     ${SRC_DIR}/gui.cpp
-    ${SRC_DIR}/particles.cpp
+    ${SRC_DIR}/particles.cu
     ${SRC_DIR}/scene.cu
     ${SRC_DIR}/kernels.cu
     ${SRC_DIR}/solvers/SESPH.cu
     )
 set(REYN_HEADERS
     ${SRC_DIR}/common.h
+    ${SRC_DIR}/buffer.cuh
     ${SRC_DIR}/gui.h
     ${SRC_DIR}/particles.h
     ${SRC_DIR}/scene.cuh
@@ -164,7 +165,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 file(GLOB_RECURSE USER_TEST_SOURCES "${CMAKE_SOURCE_DIR}/test/*.cpp" "${CMAKE_SOURCE_DIR}/test/*.cu")
 
 set(REYN_SOURCES_NO_MAIN ${REYN_SOURCES})
-list(REMOVE_ITEM REYN_SOURCES_NO_MAIN "${SRC_DIR}/main.cpp")
+list(REMOVE_ITEM REYN_SOURCES_NO_MAIN "${SRC_DIR}/main.cu")
 add_executable(tests
     test/runner.cpp
     ${REYN_SOURCES_NO_MAIN}

@@ -1,5 +1,7 @@
 #include "gui.h"
 #include "particles.h"
+#include "scene.cuh"
+
 
 // constants
 const char *FONT_PATH{"res/JBM.ttf"};
@@ -408,7 +410,7 @@ float3 *GUI::resize_mapped_buffer(uint N_new)
     return map_buffer();
 }
 
-void GUI::run(std::function<void(Particles &, int)> step, std::function<void(Particles &, int)> init, Particles &state)
+void GUI::run(std::function<void(Particles &, int)> step, std::function<void(Particles &, int)> init, Particles &state, const Scene &scene)
 {
     // start a timer in another thread that periodically sets an atomic bool to true to signal the main thread to update and render the GUI at the target FPS
     std::thread timer([this]()
@@ -440,9 +442,11 @@ void GUI::run(std::function<void(Particles &, int)> step, std::function<void(Par
         {
             // inner simulation loop is here, use the callback
             step(state, N);
+            // hard enforce boundaries
+            scene.hard_enforce_bounds(state);
             // update simulation fps, slowly interpolating towards the new value
             const auto now{std::chrono::steady_clock::now()};
-            sim_fps = 0.99 * sim_fps + 0.01 * (1000ms / (now - prev));
+            sim_fps = 1000ms / (now - prev);
             prev = now;
         }
         unmap_buffer();

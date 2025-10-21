@@ -62,14 +62,14 @@ __global__ void _compute_accelerations_and_integrate(float3 *x, float3 *v,  floa
 template <IsKernel K>
 void SESPH<K>::compute_accelerations(Particles& state, float dt){
     // first, compute densities
-    _compute_densities<K><<<BLOCKS(N), BLOCK_SIZE>>>(state.x, state.m, rho, N, W);
+    _compute_densities<K><<<BLOCKS(N), BLOCK_SIZE>>>(state.x.ptr(), state.m.ptr(), rho.ptr(), N, W);
     CUDA_CHECK(cudaGetLastError());
     // then synchronize
     CUDA_CHECK(cudaDeviceSynchronize());
     // and lastly, compute accelerations using these density values
     // note that pressure need not be pre-computed and stored since the kernel is memory-bound, rather compute them on the fly from density at neighbour j
     // also note that viscosity and gravity can be computed on the fly in the inner loop since they require only known velocities and the constant g, so that ∇W_{ij} need only be evaluated once and can be reused for pressure- and non-pressure accelerations
-    _compute_accelerations_and_integrate<K><<<BLOCKS(N), BLOCK_SIZE>>>(state.x, state.v, state.m, rho, N, W, k, rho_0, dt, nu, h);
+    _compute_accelerations_and_integrate<K><<<BLOCKS(N), BLOCK_SIZE>>>(state.x.ptr(), state.v.ptr(), state.m.ptr(), rho.ptr(), N, W, k, rho_0, dt, nu, h);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
 };

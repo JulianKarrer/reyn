@@ -3,6 +3,7 @@ cores := `nproc`
 # default recipe: build and run
 default: build run-tests run
 test: build run-tests
+clean-build: clean setup build run-tests run
 
 setup:
     mkdir -p build
