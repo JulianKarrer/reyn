@@ -1,4 +1,4 @@
-#include "particles.h"
+#include "particles.cuh"
 #include "gui.h"
 #include "common.h"
 #include <cuda_gl_interop.h>

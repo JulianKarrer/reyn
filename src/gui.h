@@ -66,6 +66,8 @@ public:
     ///
     /// Updates the private internal `proj` variable and should be called initially, as well as when window width or height may have changed.
     void _update_proj();
+    /// @brief Recompute and update the `view` matrix, required once initially and every time the camera might have changed.
+    void update_view();
     /// @brief Current width of the GUI window
     int _window_width;
     /// @brief Current height of the GUI window
@@ -94,12 +96,58 @@ private:
     double sim_fps{0.};
     /// @brief A atomic boolean set by a timer thread, indicating whether enough time has elapsed for the GUI (main) thread to render an update to screen. Otherwise, more simulation steps will be performed before the next GUI update is rendered.
     std::atomic<bool> should_render{false};
-    /// @brief whether the user is currently pressing the cursor with left click
-    bool dragging{false};
-    /// @brief x-position in normalized coordinates [0;1]^2 of where the current mouse dragging operation started
-    float drag_start_x{0.};
-    /// @brief y-position in normalized coordinates [0;1]^2 of where the current mouse dragging operation started
-    float drag_start_y{0.};
+
+    /// @brief a private struct to represent the state of clicking a holding a mouse button to drag
+    struct DragState{
+        /// @brief whether the user is currently holding the respective mouse button
+        bool dragging{false};
+        /// @brief x-position in normalized coordinates [0;1]^2 of where the current dragging operation started
+        float start_x{0.};
+        /// @brief y-position in normalized coordinates [0;1]^2 of where the current dragging operation of the left mouse button started
+        float start_y{0.};
+
+        /// @brief Update the state of dragging a pressed mouse button using current inputs
+        /// @param pressed whether the respective mouse button is pressed
+        /// @param x the current normalized x-position of the cursor
+        /// @param dx reference to a variable storing the offset in `out_x` due to dragging
+        /// @param x_scale the scale of change in `out_x` per window width of dragging
+        /// @param out_x the output variable that is updated when changes in `dx` due to dragging are commited
+        /// @param y  the current normalized y-position of the cursor
+        /// @param dy reference to a variable storing the offset in `out_y` due to dragging
+        /// @param y_scale the scale of change in `out_y` per window height of dragging
+        /// @param out_y the output variable that is updated when changes in `dy`  due to draggingare commited
+        /// @param camera_needs_update set to true if the camera must be updated to reflect a change in `dx`, `dy`, `out_x` or `out_y` 
+        void update(bool pressed, float x, float &dx, float x_scale, float& out_x, float y, float &dy, float y_scale, float& out_y, bool &camera_needs_update){
+            if (!dragging && pressed)
+            {
+                // start dragging
+                start_x = x; start_y = y; dragging = true;
+            }
+            else if (dragging && pressed)
+            {
+                // update dragging
+                camera_needs_update = true;
+                dx = x_scale * (start_x - x);
+                dy = y_scale * (start_y - y);
+            }
+            else if (dragging && !pressed)
+            {
+                // stop dragging
+                camera_needs_update = true;
+                start_x = 0.; start_y = 0.; dragging = false;
+                out_x += dx;
+                out_y += dy;
+                dx = 0.;
+                dy = 0;
+            };
+        };
+    };
+    /// @brief The state of dragging the left mouse button, as described in `DragState`
+    DragState left_drag{false, 0., 0.};
+    /// @brief The state of dragging the right mouse button, as described in `DragState`
+    DragState right_drag{false, 0., 0.};
+
+
     /// @brief The initial or base radius of the camera around the `camera_target` position in spherical cooridnates, before scrolling
     float radius_init{10.f};
 
@@ -114,17 +162,30 @@ private:
     GLuint shader_program, vao, vbo;
     float fov{45.0};
     glm::mat4 proj;
-    /// @brief Get a view matrix, representing the orientation of the camera in world space, depending on camera positions and where the camera is pointed
+    /// @brief The view matrix, representing the orientation of the camera in world space, depending on camera positions and where the camera is pointed
     /// @return view matrix for use in vertex shader as a uniform
-    glm::mat4 get_view();
+    glm::mat4 view;
     /// @brief The φ-angle of the camera in spherical coordinates
     float phi{-M_PI / 2.0f};
+    /// @brief Current offset to the φ-angleof the camera in spherical coordinates due to dragging
     float d_phi{0.f};
     /// @brief The θ-angle of the camera in spherical coordinates
     float theta{M_PI / 2.0f};
+    /// @brief Current offset to the θ-angle of the camera in spherical coordinates due to dragging
     float d_theta{0.f};
     /// @brief The position that the camera is looking directly at
     glm::vec3 camera_target{glm::vec3(0.f)};
+    /// @brief An offset to the position of the camera
+    glm::vec3 camera_offset{glm::vec3(0.f)};
+
+    /// @brief Current rightwards contribution to the camera offset due to dragging
+    float d_right{0.};
+    /// @brief Current upwards contribution to the camera offset due to dragging
+    float d_up{0.};
+
+    float offset_right{0.};
+    float offset_up{0.};
+
 
     // shading:
     /// @brief The direction of the light source for shading

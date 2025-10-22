@@ -1,5 +1,5 @@
 #include "gui.h"
-#include "particles.h"
+#include "particles.cuh"
 #include "scene.cuh"
 
 
@@ -158,7 +158,7 @@ float wrap_around(float val, float lower, float upper)
     return val;
 }
 
-glm::mat4 GUI::get_view()
+void GUI::update_view()
 {
     // https://learnopengl.com/Getting-started/Camera
     // compute camera position and view direction from spherical coordinates,
@@ -166,18 +166,28 @@ glm::mat4 GUI::get_view()
     const float theta_cur{wrap_around(theta + d_theta, 0, M_PI)};
     const float phi_cur{wrap_around(phi + d_phi, 0, 2 * M_PI)};
     const float radius{radius_init * _radius_scroll_factor};
-    const glm::vec3 camera_position{glm::vec3(
-        radius * sinf(theta_cur) * cosf(phi_cur),
-        radius * cosf(theta_cur),
-        radius * sinf(theta_cur) * sinf(phi_cur))};
+    const glm::vec3 camera_position{
+        glm::vec3(
+            radius * sinf(theta_cur) * cosf(phi_cur),
+            radius * cosf(theta_cur),
+            radius * sinf(theta_cur) * sinf(phi_cur)
+        ) 
+    };
     const glm::vec3 camera_dir_rev{camera_position - camera_target};
     // standard up direction is positive y
     const glm::vec3 world_up{glm::vec3(0.f, 1.f, 0.f)};
     // compute the up and right unit vectors with respect to the cameras view
     const glm::vec3 right = glm::cross(world_up, camera_dir_rev);
-    const glm::vec3 up{glm::cross(camera_dir_rev, right)};
-    // return the view matrix using the `glm::lookAt` function
-    return glm::lookAt(camera_position, camera_target, glm::normalize(up));
+    const glm::vec3 up{glm::normalize(glm::cross(camera_dir_rev, right))};
+    // add result of current right click drag to camera offset
+    if (!(offset_right == 0.f && offset_up == 0.f)){
+        camera_offset +=  offset_right * glm::normalize(right) + offset_up * world_up;
+        offset_right = 0.f;
+        offset_up = 0.f;
+    };
+    const glm::vec3 offset {camera_offset + d_right * glm::normalize(right) + d_up * world_up};
+    // update the view matrix using the `glm::lookAt` function
+    view =  glm::lookAt(camera_position + offset, camera_target + offset, up);
 };
 
 // CALLBACKS
@@ -201,6 +211,8 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     if (gui)
     {
         gui->_radius_scroll_factor = std::clamp(gui->_radius_scroll_factor * (1.0f - (float)yoffset * gui->_scroll_speed), 0.01f, 100.f);
+        // update the camera
+        gui->update_view();
     }
 }
 
@@ -221,31 +233,20 @@ void GUI::glfw_process_input()
         xpos = std::clamp(xpos / _window_width, 0., 1.);
         ypos = std::clamp(ypos / _window_height, 0., 1.);
 
-        // query cursor state
-        const int state{glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT)};
-        const bool pressed{state == GLFW_PRESS};
-        if (dragging == false && pressed)
-        {
-            // start dragging
-            dragging = true;
-            drag_start_x = xpos;
-            drag_start_y = ypos;
-        }
-        else if (dragging == true && pressed)
-        {
-            // update dragging
-            d_phi = -2.f * M_PI * (drag_start_x - xpos);
-            d_theta = M_PI * (drag_start_y - ypos);
-        }
-        else if (dragging == true && !pressed)
-        {
-            // stop dragging
-            dragging = false;
-            phi += d_phi;
-            d_phi = 0.;
-            theta += d_theta;
-            d_theta = 0;
-        }
+        // query cursor state and update camera
+        bool camera_needs_update{false};
+
+        // adjust viewing angle if dragging left mouse button
+        const bool left_pressed{glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS};
+        left_drag.update(left_pressed, xpos, d_phi, -2.f * M_PI, phi, ypos, d_theta, M_PI, theta, camera_needs_update);
+        
+        // adjust camera and target position if dragging right mouse button
+        const bool right_pressed{glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS};
+        right_drag.update(right_pressed, xpos, d_right, 1., offset_right, ypos, d_up, 1., offset_up, camera_needs_update);
+
+        // if the camera was changed in any way, recompute the view matrix and update `view`
+        if (camera_needs_update)
+            update_view();
     }
 };
 
@@ -336,6 +337,10 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
     // create shader program
     shader_program = compile_shader();
 
+    // trigger the initial computation of the view matrix representing the camera
+    // this is recomputed on-demand in the `glfw_process_input` function whenever the camera is adjusted through user input
+    update_view();
+
     create_and_register_buffer(N);
 }
 
@@ -361,7 +366,7 @@ void GUI::create_and_register_buffer(uint N)
 
 void GUI::destroy_and_deregister_buffer()
 {
-    // de-registerVBO from use by CUDA
+    // de-register VBO from use by CUDA
     CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_vbo_resource));
     // delete VBO and VAO buffers
     glDeleteBuffers(1, &vbo);
@@ -471,7 +476,7 @@ void GUI::update(float h)
         glGetUniformLocation(shader_program, "view"), // location
         1,                                            // count
         GL_FALSE,                                     // transpose
-        glm::value_ptr(get_view())                    // value
+        glm::value_ptr(view)                    // value
     );
     glUniformMatrix4fv(
         glGetUniformLocation(shader_program, "proj"), // location

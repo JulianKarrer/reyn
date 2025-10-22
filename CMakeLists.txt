@@ -118,7 +118,7 @@ set(REYN_HEADERS
     ${SRC_DIR}/common.h
     ${SRC_DIR}/buffer.cuh
     ${SRC_DIR}/gui.h
-    ${SRC_DIR}/particles.h
+    ${SRC_DIR}/particles.cuh
     ${SRC_DIR}/scene.cuh
     ${SRC_DIR}/vector_helper.cuh
     ${SRC_DIR}/kernels.cuh

@@ -1,5 +1,5 @@
 #include "gui.h"
-#include "particles.h"
+#include "particles.cuh"
 #include "scene.cuh"
 #include "kernels.cuh"
 #include "solvers/SESPH.cuh"
@@ -26,9 +26,7 @@ int main()
         GUI gui(1280, 720, true);
         Particles state(&gui, 0.1, 1.);
 
-
-        float3 *x{gui.map_buffer()};
-        state.set_x(x);
+        state.set_x(gui.map_buffer());
         const Scene scene(10000, v3(-.5), v3(.5), v3(-.5, -1., -.5), v3(.5, 1., .5), 1000., state);
         gui.unmap_buffer();
 

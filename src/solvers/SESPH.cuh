@@ -4,7 +4,7 @@
 // #include <thrust/device_vector.h>
 #include "common.h"
 #include "kernels.cuh"
-#include "particles.h"
+#include "particles.cuh"
 #include "buffer.cuh"
 
 template <IsKernel K>

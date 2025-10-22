@@ -1,4 +1,4 @@
-#include "particles.h"
+#include "particles.cuh"
 #include "gui.h"
 
 /// @brief When using a GUI to manage positions through sharing a buffer with the OpenGL VBO used for visualization and mapping and unmapping the buffer for use with CUDA, this method must be called by the GUI in every time step to ensure the correct positions buffer is used. Apart from the internals of the GUI, this function should not be used, hence it outputs an error message and causes a crash if not used on a `Particles` instance initialized using a `GUI` instance.
