@@ -2,14 +2,13 @@
 #include "particles.cuh"
 #include "scene.cuh"
 
-
 // constants
-const char *FONT_PATH{"res/JBM.ttf"};
+const char* FONT_PATH { "res/JBM.ttf" };
 
 // shaders
 
 /// Vertex shader for creating billboard spheres from glPoints
-const char *VERTEX_SHADER = R"GLSL(
+const char* VERTEX_SHADER = R"GLSL(
     #version 330 core
     layout (location = 0) in vec3 aPos;
     uniform mat4 view; // view matrix
@@ -41,7 +40,7 @@ const char *VERTEX_SHADER = R"GLSL(
 /// Fragment shader inspired by Simon Green's 2010 GDC presentation
 /// for creating billboard spheres from glPoints
 /// https://developer.download.nvidia.com/presentations/2010/gdc/Direct3D_Effects.pdf
-const char *FRAGMENT_SHADER = R"GLSL(
+const char* FRAGMENT_SHADER = R"GLSL(
     #version 330 core
 
     uniform float radius; // particle radius in world space
@@ -91,42 +90,43 @@ const char *FRAGMENT_SHADER = R"GLSL(
 
 // OpenGL helper functions
 
-/// OpenGL error checking macro that generalizes using a getIv command for a specified flag
-/// such as `GL_COMPILE_STATUS` or `GL_LINK_STATUS`, checking for success of the operation
-/// and retrieving and displaying errors if any occured.
-/// See https://learnopengl.com/Getting-started/Shaders
-#define OPENGL_CHECK(command, flag, shader, message)    \
-    {                                                   \
-        int success;                                    \
-        char log[512];                                  \
-        command(shader, flag, &success);                \
-        if (!success)                                   \
-        {                                               \
-            glGetShaderInfoLog(shader, 512, NULL, log); \
-            std::cout << message << "\n"                \
-                      << log << std::endl;              \
-        }                                               \
+/// OpenGL error checking macro that generalizes using a getIv command for a
+/// specified flag such as `GL_COMPILE_STATUS` or `GL_LINK_STATUS`, checking for
+/// success of the operation and retrieving and displaying errors if any
+/// occured. See https://learnopengl.com/Getting-started/Shaders
+#define OPENGL_CHECK(command, flag, shader, message)                           \
+    {                                                                          \
+        int success;                                                           \
+        char log[512];                                                         \
+        command(shader, flag, &success);                                       \
+        if (!success) {                                                        \
+            glGetShaderInfoLog(shader, 512, NULL, log);                        \
+            std::cout << message << "\n" << log << std::endl;                  \
+        }                                                                      \
     }
 
 GLuint GUI::compile_shader(void)
 {
     // compile the shaders, checking for errors
-    GLuint vertex_shader{glCreateShader(GL_VERTEX_SHADER)};
+    GLuint vertex_shader { glCreateShader(GL_VERTEX_SHADER) };
     glShaderSource(vertex_shader, 1, &VERTEX_SHADER, NULL);
     glCompileShader(vertex_shader);
-    OPENGL_CHECK(glGetShaderiv, GL_COMPILE_STATUS, vertex_shader, "Vertex shader compilation failed:")
+    OPENGL_CHECK(glGetShaderiv, GL_COMPILE_STATUS, vertex_shader,
+        "Vertex shader compilation failed:")
 
     GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader, 1, &FRAGMENT_SHADER, NULL);
     glCompileShader(fragment_shader);
-    OPENGL_CHECK(glGetShaderiv, GL_COMPILE_STATUS, fragment_shader, "Fragment shader compilation failed:")
+    OPENGL_CHECK(glGetShaderiv, GL_COMPILE_STATUS, fragment_shader,
+        "Fragment shader compilation failed:")
 
     // build program from vertex and fragment shaders
     GLuint program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
     glLinkProgram(program);
-    OPENGL_CHECK(glGetProgramiv, GL_LINK_STATUS, fragment_shader, "Shader program linking failed:")
+    OPENGL_CHECK(glGetProgramiv, GL_LINK_STATUS, fragment_shader,
+        "Shader program linking failed:")
 
     // delete shaders, return the program id
     glDeleteShader(vertex_shader);
@@ -136,22 +136,19 @@ GLuint GUI::compile_shader(void)
 
 void GUI::_update_proj()
 {
-    proj = glm::perspective(
-        glm::radians(fov),                            // fov
+    proj = glm::perspective(glm::radians(fov), // fov
         (float)_window_width / (float)_window_height, // aspect ratio
-        1e-3f,                                        // near plane
-        1e3f                                          // far plane
+        1e-3f, // near plane
+        1e3f // far plane
     );
 };
 
 float wrap_around(float val, float lower, float upper)
 {
-    while (val > upper)
-    {
+    while (val > upper) {
         val -= upper - lower;
     }
-    while (val < lower)
-    {
+    while (val < lower) {
         val += upper - lower;
     }
     return val;
@@ -162,40 +159,39 @@ void GUI::update_view()
     // https://learnopengl.com/Getting-started/Camera
     // compute camera position and view direction from spherical coordinates,
     // wrapping overflowing values around
-    const float theta_cur{wrap_around(theta + d_theta, 0, M_PI)};
-    const float phi_cur{wrap_around(phi + d_phi, 0, 2 * M_PI)};
-    const float radius{radius_init * _radius_scroll_factor};
-    const glm::vec3 camera_position{
-        glm::vec3(
-            radius * sinf(theta_cur) * cosf(phi_cur),
-            radius * cosf(theta_cur),
-            radius * sinf(theta_cur) * sinf(phi_cur)
-        ) 
-    };
-    const glm::vec3 camera_dir_rev{camera_position - camera_target};
+    const float theta_cur { wrap_around(theta + d_theta, 0, M_PI) };
+    const float phi_cur { wrap_around(phi + d_phi, 0, 2 * M_PI) };
+    const float radius { radius_init * _radius_scroll_factor };
+    const glm::vec3 camera_position { glm::vec3(
+        radius * sinf(theta_cur) * cosf(phi_cur), radius * cosf(theta_cur),
+        radius * sinf(theta_cur) * sinf(phi_cur)) };
+    const glm::vec3 camera_dir_rev { camera_position - camera_target };
     // standard up direction is positive y
-    const glm::vec3 world_up{glm::vec3(0.f, 1.f, 0.f)};
+    const glm::vec3 world_up { glm::vec3(0.f, 1.f, 0.f) };
     // compute the up and right unit vectors with respect to the cameras view
     const glm::vec3 right = glm::cross(world_up, camera_dir_rev);
-    const glm::vec3 up{glm::normalize(glm::cross(camera_dir_rev, right))};
+    const glm::vec3 up { glm::normalize(glm::cross(camera_dir_rev, right)) };
     // add result of current right click drag to camera offset
-    if (!(offset_right == 0.f && offset_up == 0.f)){
-        camera_offset +=  offset_right * glm::normalize(right) + offset_up * world_up;
+    if (!(offset_right == 0.f && offset_up == 0.f)) {
+        camera_offset
+            += offset_right * glm::normalize(right) + offset_up * world_up;
         offset_right = 0.f;
         offset_up = 0.f;
     };
-    const glm::vec3 offset {camera_offset + d_right * glm::normalize(right) + d_up * world_up};
+    const glm::vec3 offset { camera_offset + d_right * glm::normalize(right)
+        + d_up * world_up };
     // update the view matrix using the `glm::lookAt` function
-    view =  glm::lookAt(camera_position + offset, camera_target + offset, up);
+    view = glm::lookAt(camera_position + offset, camera_target + offset, up);
 };
 
 // CALLBACKS
-/// Callback reacting to user resize of the window, adjusting the OpenGL viewport, updating the `_window_width` and `_window_height` variables and updating the camera projection matrix.
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+/// Callback reacting to user resize of the window, adjusting the OpenGL
+/// viewport, updating the `_window_width` and `_window_height` variables and
+/// updating the camera projection matrix.
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    const auto gui = (GUI *)glfwGetWindowUserPointer(window);
-    if (gui)
-    {
+    const auto gui = (GUI*)glfwGetWindowUserPointer(window);
+    if (gui) {
         gui->_window_width = width;
         gui->_window_height = height;
         gui->_update_proj();
@@ -203,13 +199,15 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     glViewport(0, 0, width, height);
 };
 
-/// Callback reacting to user scroll, which changes the radius of the orbital controls
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+/// Callback reacting to user scroll, which changes the radius of the orbital
+/// controls
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    const auto gui = (GUI *)glfwGetWindowUserPointer(window);
-    if (gui)
-    {
-        gui->_radius_scroll_factor = std::clamp(gui->_radius_scroll_factor * (1.0f - (float)yoffset * gui->_scroll_speed), 0.01f, 100.f);
+    const auto gui = (GUI*)glfwGetWindowUserPointer(window);
+    if (gui) {
+        gui->_radius_scroll_factor = std::clamp(gui->_radius_scroll_factor
+                * (1.0f - (float)yoffset * gui->_scroll_speed),
+            0.01f, 100.f);
         // update the camera
         gui->update_view();
     }
@@ -221,11 +219,9 @@ void GUI::glfw_process_input()
     glfwGetFramebufferSize(window, &_window_width, &_window_height);
 
     // only react to cursor events if window is focused
-    if (
-        glfwGetWindowAttrib(window, GLFW_FOCUSED) &&
-        glfwGetWindowAttrib(window, GLFW_FOCUSED) &&
-        !ImGui::GetIO().WantCaptureMouse)
-    {
+    if (glfwGetWindowAttrib(window, GLFW_FOCUSED)
+        && glfwGetWindowAttrib(window, GLFW_FOCUSED)
+        && !ImGui::GetIO().WantCaptureMouse) {
         // query normalized cursor position in [0.0; 1.0] x [0.0; 1.0]
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -233,17 +229,24 @@ void GUI::glfw_process_input()
         ypos = std::clamp(ypos / _window_height, 0., 1.);
 
         // query cursor state and update camera
-        bool camera_needs_update{false};
+        bool camera_needs_update { false };
 
         // adjust viewing angle if dragging left mouse button
-        const bool left_pressed{glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS};
-        left_drag.update(left_pressed, xpos, d_phi, -2.f * M_PI, phi, ypos, d_theta, M_PI, theta, camera_needs_update);
-        
-        // adjust camera and target position if dragging right mouse button
-        const bool right_pressed{glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS};
-        right_drag.update(right_pressed, xpos, d_right, 1., offset_right, ypos, d_up, 1., offset_up, camera_needs_update);
+        const bool left_pressed {
+            glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS
+        };
+        left_drag.update(left_pressed, xpos, d_phi, -2.f * M_PI, phi, ypos,
+            d_theta, M_PI, theta, camera_needs_update);
 
-        // if the camera was changed in any way, recompute the view matrix and update `view`
+        // adjust camera and target position if dragging right mouse button
+        const bool right_pressed {
+            glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS
+        };
+        right_drag.update(right_pressed, xpos, d_right, 1., offset_right, ypos,
+            d_up, 1., offset_up, camera_needs_update);
+
+        // if the camera was changed in any way, recompute the view matrix and
+        // update `view`
         if (camera_needs_update)
             update_view();
     }
@@ -270,11 +273,12 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     // create a window
-    const float main_scale{ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor())};
-    this->window = glfwCreateWindow((int)(init_w * main_scale), (int)(init_h * main_scale), "REYN", NULL, NULL);
+    const float main_scale { ImGui_ImplGlfw_GetContentScaleForMonitor(
+        glfwGetPrimaryMonitor()) };
+    this->window = glfwCreateWindow((int)(init_w * main_scale),
+        (int)(init_h * main_scale), "REYN", NULL, NULL);
 
-    if (!window)
-    {
+    if (!window) {
         glfwTerminate();
         throw std::runtime_error("Failed to create GLFW window");
     }
@@ -284,7 +288,7 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
     glfwSwapInterval(static_cast<int>(enable_vsync));
     // save the pointer to this gui object in the window instance for access via
     // `glfwGetWindowUserPointer` in callbacks
-    glfwSetWindowUserPointer(window, (void *)(this));
+    glfwSetWindowUserPointer(window, (void*)(this));
     // set callbacks for resizeing and scrolling
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -297,19 +301,18 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
     this->io = &ImGui::GetIO();
     (void)io;
     io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // keyboard controls
-    io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // gamepad controls
-    io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;     // enable docking
-    io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;   // multi viewport
+    io->ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // gamepad controls
+    io->ConfigFlags |= ImGuiConfigFlags_DockingEnable; // enable docking
+    io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // multi viewport
     // set style
     ImGui::StyleColorsDark();
-    ImGuiStyle &style = ImGui::GetStyle();
+    ImGuiStyle& style = ImGui::GetStyle();
     // manage scaling and viewports
     style.ScaleAllSizes(main_scale);
     style.FontScaleDpi = main_scale;
     io->ConfigDpiScaleFonts = true;
     io->ConfigDpiScaleViewports = true;
-    if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
+    if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
@@ -331,13 +334,14 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
 
     // enable point rendering features
     glEnable(GL_PROGRAM_POINT_SIZE); // enable varying, programmable point sizes
-    glEnable(GL_DEPTH_TEST);         // enable depth testing
+    glEnable(GL_DEPTH_TEST); // enable depth testing
 
     // create shader program
     shader_program = compile_shader();
 
-    // trigger the initial computation of the view matrix representing the camera
-    // this is recomputed on-demand in the `glfw_process_input` function whenever the camera is adjusted through user input
+    // trigger the initial computation of the view matrix representing the
+    // camera this is recomputed on-demand in the `glfw_process_input` function
+    // whenever the camera is adjusted through user input
     update_view();
 
     create_and_register_buffer(N);
@@ -352,13 +356,14 @@ void GUI::create_and_register_buffer(uint N)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // expose VBO to CUDA
-    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(&cuda_vbo_resource, vbo, cudaGraphicsMapFlagsWriteDiscard));
+    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
+        &cuda_vbo_resource, vbo, cudaGraphicsMapFlagsWriteDiscard));
 
     // create VAO
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float3), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float3), (void*)0);
     glEnableVertexAttribArray(0);
     glBindVertexArray(0);
 }
@@ -372,15 +377,16 @@ void GUI::destroy_and_deregister_buffer()
     glDeleteVertexArrays(1, &vao);
 }
 
-float3 *GUI::map_buffer()
+float3* GUI::map_buffer()
 {
     // map the buffer for CUDA access
     cuda_mapped = true;
     CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_vbo_resource, 0));
 
-    float3 *vertices = nullptr;
+    float3* vertices = nullptr;
     size_t num_bytes;
-    CUDA_CHECK(cudaGraphicsResourceGetMappedPointer((void **)&vertices, &num_bytes, cuda_vbo_resource));
+    CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
+        (void**)&vertices, &num_bytes, cuda_vbo_resource));
 
     return vertices;
 }
@@ -391,12 +397,13 @@ void GUI::unmap_buffer()
     CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_vbo_resource, 0));
 }
 
-float3 *GUI::resize_mapped_buffer(uint N_new)
+float3* GUI::resize_mapped_buffer(uint N_new)
 {
     // require that the positions buffer be currently mapped for usage by CUDA,
     // such that a CUDA-valid pointer can be returned after remapping
     if (!cuda_mapped)
-        throw std::runtime_error("resize_mapped_buffer called on an unmapped buffer");
+        throw std::runtime_error(
+            "resize_mapped_buffer called on an unmapped buffer");
 
     // unmap the buffer
     unmap_buffer();
@@ -414,42 +421,43 @@ float3 *GUI::resize_mapped_buffer(uint N_new)
     return map_buffer();
 }
 
-void GUI::run(std::function<void(Particles &, int)> step, std::function<void(Particles &, int)> init, Particles &state, const Scene &scene)
+void GUI::run(std::function<void(Particles&, int)> step,
+    std::function<void(Particles&, int)> init, Particles& state,
+    const Scene& scene)
 {
-    // start a timer in another thread that periodically sets an atomic bool to true to signal the main thread to update and render the GUI at the target FPS
-    std::thread timer([this]()
-                      { 
-        const auto wait_time {1s / target_fps};
-        while (!exit_requested.load()){
-            should_render.store(true); 
+    // start a timer in another thread that periodically sets an atomic bool to
+    // true to signal the main thread to update and render the GUI at the target
+    // FPS
+    std::thread timer([this]() {
+        const auto wait_time { 1s / target_fps };
+        while (!exit_requested.load()) {
+            should_render.store(true);
             std::this_thread::sleep_for(wait_time);
-        } });
+        }
+    });
 
     // initialize a time stamp used for measuring the FPS of the simulation
-    auto prev{std::chrono::steady_clock::now()};
+    auto prev { std::chrono::steady_clock::now() };
 
     // main loop:
-    static bool first_run{true};
-    while (!exit_requested.load())
-    {
-        float3 *x{map_buffer()};
+    static bool first_run { true };
+    while (!exit_requested.load()) {
+        float3* x { map_buffer() };
         state.set_x(x);
 
-        if (first_run)
-        {
+        if (first_run) {
             // run initialization function on the first run
             init(state, N);
             first_run = false;
         }
 
-        while (!should_render.load())
-        {
+        while (!should_render.load()) {
             // inner simulation loop is here, use the callback
             step(state, N);
             // hard enforce boundaries
             scene.hard_enforce_bounds(state);
             // update simulation fps, slowly interpolating towards the new value
-            const auto now{std::chrono::steady_clock::now()};
+            const auto now { std::chrono::steady_clock::now() };
             sim_fps = 1000ms / (now - prev);
             prev = now;
         }
@@ -471,26 +479,22 @@ void GUI::update(float h)
     glUseProgram(shader_program);
 
     // send uniforms
-    glUniformMatrix4fv(
-        glGetUniformLocation(shader_program, "view"), // location
-        1,                                            // count
-        GL_FALSE,                                     // transpose
-        glm::value_ptr(view)                    // value
+    glUniformMatrix4fv(glGetUniformLocation(shader_program, "view"), // location
+        1, // count
+        GL_FALSE, // transpose
+        glm::value_ptr(view) // value
     );
-    glUniformMatrix4fv(
-        glGetUniformLocation(shader_program, "proj"), // location
-        1,                                            // count
-        GL_FALSE,                                     // transpose
-        glm::value_ptr(proj)                          // value
+    glUniformMatrix4fv(glGetUniformLocation(shader_program, "proj"), // location
+        1, // count
+        GL_FALSE, // transpose
+        glm::value_ptr(proj) // value
     );
-    glUniform2f(
-        glGetUniformLocation(shader_program, "viewport"), // location
-        (float)_window_width,                             // value 1
-        (float)_window_height                             // value 2
+    glUniform2f(glGetUniformLocation(shader_program, "viewport"), // location
+        (float)_window_width, // value 1
+        (float)_window_height // value 2
     );
-    glUniform1f(
-        glGetUniformLocation(shader_program, "radius"), // location
-        h / 2.f                                         // value
+    glUniform1f(glGetUniformLocation(shader_program, "radius"), // location
+        h / 2.f // value
     );
 
     glBindVertexArray(vao);
@@ -512,10 +516,12 @@ void GUI::update(float h)
 
 void GUI::imgui_draw()
 {
-    // update the FPS count in the window title using the ImGui framerate counter
-    const int max_fps_str_size{40};
+    // update the FPS count in the window title using the ImGui framerate
+    // counter
+    const int max_fps_str_size { 40 };
     char fps_str[max_fps_str_size];
-    snprintf(fps_str, max_fps_str_size, "REYN | FPS %.1f / %.1f", io->Framerate, sim_fps);
+    snprintf(fps_str, max_fps_str_size, "REYN | FPS %.1f / %.1f", io->Framerate,
+        sim_fps);
     glfwSetWindowTitle(window, fps_str);
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -524,14 +530,16 @@ void GUI::imgui_draw()
 
     // // docking setup
     // ImGuiID id;
-    // ImGui::DockSpaceOverViewport(id, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+    // ImGui::DockSpaceOverViewport(id, ImGui::GetMainViewport(),
+    // ImGuiDockNodeFlags_PassthruCentralNode);
 
     // use custom font
     ImGui::PushFont(font);
 
     // start of contents ~~~~~
     ImGui::Begin("SETTINGS");
-    ImGui::Text("GUI Frame time %.3fms (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
+    ImGui::Text("GUI Frame time %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
+        io->Framerate);
     ImGui::Text("SIM Frame time %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
     if (ImGui::Button("Exit"))
         exit_requested.store(true);
@@ -543,9 +551,8 @@ void GUI::imgui_draw()
     ImGui::End();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        GLFWwindow *backup_current_context = glfwGetCurrentContext();
+    if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        GLFWwindow* backup_current_context = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
         glfwMakeContextCurrent(backup_current_context);

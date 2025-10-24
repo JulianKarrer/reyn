@@ -1,9 +1,9 @@
 cores := `nproc`
 
 # default recipe: build and run
-default: build run-tests run
-test: build run-tests
-clean-build: clean setup build run-tests run
+default: format build run-tests run
+test: format build run-tests
+clean-build: clean setup format build run-tests run
 
 setup:
     mkdir -p build
@@ -20,3 +20,6 @@ run-tests:
 
 clean:
     rm -rf build
+
+format:
+    find src -type f \( -name '*.cpp' -o -name '*.h' -o -name '*.cu' -o -name '*.cuh' \) -exec clang-format -i -style=file -- {} +
