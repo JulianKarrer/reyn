@@ -49,6 +49,12 @@ inline __host__ __device__ int3 floor_div(const float3 &a, const float &b)
     return make_int3((int)floorf(a.x / b), (int)floorf(a.y / b), (int)floorf(a.z / b));
 };
 
+/// divide a 3-vector by a float to obtain an integer 3-vector by rounding up with `ceilf` and casting to integers in each component.
+inline __host__ __device__ int3 ceil_div(const float3 &a, const float &b)
+{
+    return make_int3((int)ceilf(a.x / b), (int)ceilf(a.y / b), (int)ceilf(a.z / b));
+};
+
 /// @brief compute the dot product of two vectors
 inline __host__ __device__ float dot(const float3 &a, const float3 &b)
 {

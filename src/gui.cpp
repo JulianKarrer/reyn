@@ -44,7 +44,6 @@ const char *VERTEX_SHADER = R"GLSL(
 const char *FRAGMENT_SHADER = R"GLSL(
     #version 330 core
 
-    uniform vec3 light_dir; // direction of the light source in world space
     uniform float radius; // particle radius in world space
     uniform mat4 view; // view matrix
     uniform mat4 proj; // projection matrix
@@ -493,10 +492,6 @@ void GUI::update(float h)
         glGetUniformLocation(shader_program, "radius"), // location
         h / 2.f                                         // value
     );
-    glUniform3fv(
-        glGetUniformLocation(shader_program, "light_dir"), // location
-        1,                                                 // count
-        glm::value_ptr(light_direction));
 
     glBindVertexArray(vao);
 
@@ -541,12 +536,6 @@ void GUI::imgui_draw()
     if (ImGui::Button("Exit"))
         exit_requested.store(true);
     ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f);
-
-    float light_dir[3]{light_direction.x, light_direction.y, light_direction.z};
-    ImGui::SliderFloat3("Light Direction", light_dir, -1., 1.);
-    light_direction.x = light_dir[0];
-    light_direction.y = light_dir[1];
-    light_direction.z = light_dir[2];
 
     // end of contents ~~~~~~~
 

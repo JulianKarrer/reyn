@@ -7,8 +7,7 @@ template <IsKernel K>
 __global__ void _test_kernels(float3 *x, float *ws, float3 *dws, uint N, const K W)
 {
     auto i{blockIdx.x * blockDim.x + threadIdx.x};
-    if (i >= N)
-        return;
+    if (i >= N) return;
     ws[i] = W(x[i]);
     dws[i] = W.nabla(x[i]);
 }

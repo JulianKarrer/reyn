@@ -8,7 +8,7 @@ void step(Particles &state, int N)
 {
     const float dt{0.001};
     static double time{0.};
-    static const B3 W(0.1);
+    static const B3 W(2.f * state.h);
     static SESPH<B3> solver(W, N, 0.001f, state.h);
     solver.compute_accelerations(state, dt);
 
@@ -29,7 +29,6 @@ int main()
         state.set_x(gui.map_buffer());
         const Scene scene(10000, v3(-.5), v3(.5), v3(-.5, -1., -.5), v3(.5, 1., .5), 1000., state);
         gui.unmap_buffer();
-
 
         gui.run(&step, &init, state, scene);
     }

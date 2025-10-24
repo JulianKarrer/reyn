@@ -186,11 +186,6 @@ private:
     float offset_right{0.};
     float offset_up{0.};
 
-
-    // shading:
-    /// @brief The direction of the light source for shading
-    glm::vec3 light_direction{glm::vec3(1.f)};
-
     // CUDA resources
     cudaGraphicsResource *cuda_vbo_resource = nullptr;
 

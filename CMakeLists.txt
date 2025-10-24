@@ -113,6 +113,7 @@ set(REYN_SOURCES
     ${SRC_DIR}/scene.cu
     ${SRC_DIR}/kernels.cu
     ${SRC_DIR}/solvers/SESPH.cu
+    ${SRC_DIR}/datastructure/uniformgrid.cu
     )
 set(REYN_HEADERS
     ${SRC_DIR}/common.h
@@ -123,6 +124,7 @@ set(REYN_HEADERS
     ${SRC_DIR}/vector_helper.cuh
     ${SRC_DIR}/kernels.cuh
     ${SRC_DIR}/solvers/SESPH.cuh
+    ${SRC_DIR}/datastructure/uniformgrid.cuh
     )
 add_executable(${PROJECT_NAME}
     ${REYN_SOURCES}
@@ -148,6 +150,12 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 # ensure cuda runtime is there
 find_package(CUDAToolkit REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart)
+
+# pass flags to cuda
+# e.g. extended lambda for __device__ lambdas when mapping over neighbouring particles
+target_compile_options(reyn PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+    --extended-lambda
+>)
 
 # link libraries (GLFW, OpenGL, ...)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
@@ -178,6 +186,10 @@ set_target_properties(tests PROPERTIES
     CUDA_RUNTIME_LIBRARY Shared
 )
 
+target_compile_options(tests PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+    --extended-lambda
+>)
+
 target_include_directories(tests PRIVATE
     ${SRC_DIR}
     ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
@@ -196,7 +208,6 @@ target_link_libraries(tests PRIVATE
 
 enable_testing()
 add_test(NAME unit_tests COMMAND tests)
-
 
 # MISC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # supress GLM volatile warning

@@ -6,8 +6,7 @@ __global__ void init_box_kernel(float3 min, float3 *x, float3 *v, float *m, int3
 {
     // calculate 3d index from 1d index of invocation and nx, ny limits
     auto i{blockIdx.x * blockDim.x + threadIdx.x};
-    if (i >= N)
-        return;
+    if (i >= N) return;
     auto nx{nxyz.x};
     auto ny{nxyz.y};
     auto ix{i};
@@ -61,8 +60,7 @@ __global__ void _hard_enforce_bounds(const float3 bound_min, const float3 bound_
 {
     // calculate index and ensure safety at bounds
     auto i{blockIdx.x * blockDim.x + threadIdx.x};
-    if (i >= N)
-        return;
+    if (i >= N) return;
     // if the point is within the bounding volume, exit early.
     const float3 x_i{x[i]};
     if (   bound_min.x <= x_i.x && x_i.x <= bound_max.x
