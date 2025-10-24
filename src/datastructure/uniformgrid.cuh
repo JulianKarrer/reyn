@@ -147,6 +147,42 @@ struct DeviceUniformGrid {
         // finally, return the accumulator
         return acc;
     };
+
+    // From here on, provide various overloads of the same function. Comments
+    // are stripped, since the functionality is identical
+
+    // overload for providing an initial value to the accumulator
+    template <typename MapOp>
+    __device__ inline auto ff_nbrs(const float3* __restrict__ x, const uint i,
+        MapOp map,
+        std::invoke_result_t<MapOp, const uint, const uint, const float3,
+            const float>
+            initial_value) const
+    {
+        auto acc { initial_value };
+        const float3 x_i { x[i] };
+        const int3 cid3 { _index3(x_i, bound_min, cell_size) };
+        for (int iz { -1 }; iz <= 1; ++iz) {
+            for (int iy { -1 }; iy <= 1; ++iy) {
+                const int cid_y { cid3.y + iy };
+                const int cid_z { cid3.z + iz };
+                const int cid_x { cid3.x - 1 };
+                const int cid { _linearize(cid_x, cid_y, cid_z, nx, nxny) };
+                const uint start_id { prefix[cid] };
+                const uint end_id { prefix[cid + 3] };
+                for (uint j { start_id }; j < end_id; ++j) {
+                    const uint s_j { sorted[j] };
+                    const float3 x_j { x[s_j] };
+                    const float3 x_ij { x_i - x_j };
+                    const float x_ij_l2 { dot(x_ij, x_ij) };
+                    if (x_ij_l2 <= r_c_2) {
+                        acc += map(i, s_j, x_ij, x_ij_l2);
+                    }
+                }
+            }
+        }
+        return acc;
+    };
 };
 
 /// @brief A uniform grid implemented using a counting sort of particles within

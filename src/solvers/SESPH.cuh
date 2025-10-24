@@ -1,11 +1,11 @@
 #ifndef SOLVERS_SESPH_CUH_
 #define SOLVERS_SESPH_CUH_
 
-// #include <thrust/device_vector.h>
 #include "common.h"
 #include "kernels.cuh"
 #include "particles.cuh"
 #include "buffer.cuh"
+#include "datastructure/uniformgrid.cuh"
 
 template <IsKernel K> class SESPH {
 private:
@@ -35,7 +35,8 @@ public:
         , rho(_N) {};
     ~SESPH() {};
 
-    void compute_accelerations(Particles& state, float dt);
+    void compute_accelerations(
+        Particles& state, const DeviceUniformGrid grid, float dt);
 
     SESPH(const SESPH&) = delete;
     SESPH& operator=(const SESPH&) = delete;

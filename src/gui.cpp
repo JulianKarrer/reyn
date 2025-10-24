@@ -1,6 +1,7 @@
 #include "gui.h"
 #include "particles.cuh"
 #include "scene.cuh"
+#include "datastructure/uniformgrid.cuh"
 
 // constants
 const char* FONT_PATH { "res/JBM.ttf" };
@@ -421,9 +422,10 @@ float3* GUI::resize_mapped_buffer(uint N_new)
     return map_buffer();
 }
 
-void GUI::run(std::function<void(Particles&, int)> step,
-    std::function<void(Particles&, int)> init, Particles& state,
-    const Scene& scene)
+void GUI::run(
+    std::function<void(Particles&, const DeviceUniformGrid, int)> step,
+    std::function<void(Particles&, const DeviceUniformGrid, int)> init,
+    Particles& state, const Scene& scene, UniformGrid& uniform_grid)
 {
     // start a timer in another thread that periodically sets an atomic bool to
     // true to signal the main thread to update and render the GUI at the target
@@ -447,13 +449,18 @@ void GUI::run(std::function<void(Particles&, int)> step,
 
         if (first_run) {
             // run initialization function on the first run
-            init(state, N);
+            const DeviceUniformGrid grid { uniform_grid.update_and_get_pod(
+                state.x) };
+            init(state, grid, N);
             first_run = false;
         }
 
         while (!should_render.load()) {
+            // rebuild the acceleration datastructure
+            const DeviceUniformGrid grid { uniform_grid.update_and_get_pod(
+                state.x) };
             // inner simulation loop is here, use the callback
-            step(state, N);
+            step(state, grid, N);
             // hard enforce boundaries
             scene.hard_enforce_bounds(state);
             // update simulation fps, slowly interpolating towards the new value
@@ -520,8 +527,8 @@ void GUI::imgui_draw()
     // counter
     const int max_fps_str_size { 40 };
     char fps_str[max_fps_str_size];
-    snprintf(fps_str, max_fps_str_size, "REYN | FPS %.1f / %.1f", io->Framerate,
-        sim_fps);
+    snprintf(fps_str, max_fps_str_size, "REYN | FPS %5.1f / %5.1f",
+        io->Framerate, sim_fps);
     glfwSetWindowTitle(window, fps_str);
 
     ImGui_ImplOpenGL3_NewFrame();
@@ -543,7 +550,8 @@ void GUI::imgui_draw()
     ImGui::Text("SIM Frame time %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
     if (ImGui::Button("Exit"))
         exit_requested.store(true);
-    ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f);
+    if (ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f))
+        update_view();
 
     // end of contents ~~~~~~~
 

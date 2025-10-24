@@ -97,7 +97,6 @@ DeviceUniformGrid UniformGrid::update_and_get_pod(const DeviceBuffer<float3>& x)
     _count_particles_per_cell<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
         counts.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min, _cell_size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     // copy counts -> prefix
     // this means one copy of counts can be atomically decremented to sort,
@@ -119,7 +118,6 @@ DeviceUniformGrid UniformGrid::update_and_get_pod(const DeviceBuffer<float3>& x)
         counts.ptr(), prefix.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min,
         _cell_size);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     // pack all relevant pointers and information for queries into a POD struct
     // and return it
@@ -218,12 +216,10 @@ TEST_CASE("Test Uniform Grid")
         d_res_count_bf.ptr(), d_res_len2_bf.ptr(), d_res_vec_bf.ptr(), grid,
         r_c_2);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     _test_kernel_uniform_grid<<<BLOCKS(N), BLOCK_SIZE>>>(
         N, x.ptr(), d_res_count.ptr(), d_res_len2.ptr(), d_res_vec.ptr(), grid);
     CUDA_CHECK(cudaGetLastError());
-    CUDA_CHECK(cudaDeviceSynchronize());
 
     // copy back to host
     thrust::host_vector<uint> h_res_count(

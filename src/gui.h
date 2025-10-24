@@ -23,6 +23,8 @@ using namespace std::literals;
 // forwards declaration to avoid circular depenedency
 class Particles;
 class Scene;
+class UniformGrid;
+struct DeviceUniformGrid;
 
 /// @brief Object managing a graphical user interface.
 /// Uses GLFW for cross-platform windowing and sets up
@@ -56,9 +58,9 @@ public:
     /// particle count, updating it for the current simulation step
     /// @param init a function that accepts a `Particles` state and `int`
     /// particle count, initializing the state for the simulation
-    void run(std::function<void(Particles&, int)> step,
-        std::function<void(Particles&, int)> init, Particles& state,
-        const Scene& scene);
+    void run(std::function<void(Particles&, const DeviceUniformGrid, int)> step,
+        std::function<void(Particles&, const DeviceUniformGrid, int)> init,
+        Particles& state, const Scene& scene, UniformGrid& uniform_grid);
 
     /// @brief Map the VBO for use by CUDA and obtain a pointer to the buffer
     /// for particle positions
