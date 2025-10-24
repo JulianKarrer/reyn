@@ -17,6 +17,8 @@
 - [x] Add efficient visualization and GUI based on OpenGL interop, including ImGUI elements and single-batch billboard sphere rendering
 - [x] Implement safer abstraction over device arrays (no manual `cudaMalloc` and `cudaFree`) that is interoperable `thrust` and OpenGL
 - [x] Implement acceleration datastructure, e.g. [Hoetzlein, 2014] using efficient prefix scan
+- [ ] Reorder state according to space-filling curve to improve memory coherency
+- [ ] Parameterize uniform grid with cell size different from search radius and benchmark for optimal grid size
 - [ ] Add benchmarking for performance optimization
 - [ ] Add settings management with de-/serialization and expose solver and scene options to GUI
 - [ ] Add scene management, sampling and de-/serialization

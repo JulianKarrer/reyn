@@ -7,7 +7,7 @@
 #include <format> // for std::format
 #include <stdexcept> // for std::runtime_error
 
-#define BLOCK_SIZE 256
+#define BLOCK_SIZE 128
 #define BLOCKS(N)                                                              \
     {                                                                          \
         (N + BLOCK_SIZE - 1) / BLOCK_SIZE                                      \

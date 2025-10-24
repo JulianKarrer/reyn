@@ -6,6 +6,7 @@
 
 #include "datastructure/uniformgrid.cuh"
 #include "doctest/doctest.h"
+#include <nanobench.h>
 
 /// @brief Called first during uniform grid construction: atomically count the
 /// number of particles in each grid cell
@@ -132,28 +133,83 @@ DeviceUniformGrid UniformGrid::update_and_get_pod(const DeviceBuffer<float3>& x)
     };
 }
 
+// DeviceUniformGrid UniformGrid::update_reorder_and_get_pod(Particles& state)
+// {
+//     // get the number of particles
+//     const uint N { (uint)state.x.size() };
+
+//     // resize the buffer of sorted indices to fit the number of particles, if
+//     // required initialization does not matter since everything is
+//     overwritten if (sorted.size() != N)
+//         sorted.resize(N);
+
+//     // - compute the cell index of each particle
+//     // - linearize it to obtain a pointer into the flat `counts` array
+//     // - and atomically increment the particle count in the `counts`
+//     _count_particles_per_cell<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
+//         counts.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min, _cell_size);
+//     CUDA_CHECK(cudaGetLastError());
+
+//     // copy counts -> prefix
+//     // this means one copy of counts can be atomically decremented to sort,
+//     // while another provides offsets by storing the number of particles with
+//     a
+//     // lower linear index (i.e. the result of the exclusive prefix sum or
+//     // prescan)
+//     thrust::copy(
+//         counts.get().begin(), counts.get().end(), prefix.get().begin());
+
+//     // then, take a prefix sum of the device vector
+//     thrust::exclusive_scan(
+//         prefix.get().begin(), prefix.get().end(), prefix.get().begin());
+
+//     // finally, perform a counting sort:
+//     // the prefix sum is an offset to particles in the same cell, atomicSub
+//     on
+//     // counts then distributes unique offsets on top of that for each
+//     particle
+//     // in the same cell
+//     _counting_sort<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(), sorted.ptr(),
+//         counts.ptr(), prefix.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min,
+//         _cell_size);
+//     CUDA_CHECK(cudaGetLastError());
+
+//     // pack all relevant pointers and information for queries into a POD
+//     struct
+//     // and return it
+//     return DeviceUniformGrid {
+//         .bound_min = _bound_min,
+//         .cell_size = _cell_size,
+//         .r_c_2 = _cell_size * _cell_size,
+//         .nx = nxyz.x,
+//         .nxny = nxyz.x * nxyz.y,
+//         .prefix = prefix.ptr(),
+//         .sorted = sorted.ptr(),
+//     };
+// }
+
 // TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 __global__ void _test_kernel_uniform_grid(const uint N,
     const float3* __restrict__ x, uint* __restrict__ count_out,
     float* __restrict__ len2_out, float3* __restrict__ vec_out,
-    const DeviceUniformGrid grid)
+    const DeviceUniformGrid grid, const float r_c_2)
 {
     auto i { blockIdx.x * blockDim.x + threadIdx.x };
     if (i >= N)
         return;
 
     count_out[i] = grid.ff_nbrs(
-        x, i, [] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
-            return i == j ? 0u : 1u;
+        x, i, [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+            return (x_ij_l2 <= r_c_2) ? (i == j ? 0u : 1u) : 0u;
         });
     len2_out[i] = grid.ff_nbrs(
-        x, i, [] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
-            return dot(x_ij, x_ij);
+        x, i, [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+            return (x_ij_l2 <= r_c_2) ? dot(x_ij, x_ij) : 0.f;
         });
     vec_out[i] = grid.ff_nbrs(
-        x, i, [] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
-            return x_ij;
+        x, i, [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+            return (x_ij_l2 <= r_c_2) ? x_ij : v3(0.);
         });
 }
 
@@ -180,7 +236,7 @@ __global__ void _test_kernel_uniform_grid_brute_force(const uint N,
 
 TEST_CASE("Test Uniform Grid")
 {
-    const uint N { 100000 };
+    const uint N { 50000 };
     const float box_size { 1.f };
     const float cell_size { 0.1f };
     const float r_c_2 { cell_size * cell_size };
@@ -217,8 +273,8 @@ TEST_CASE("Test Uniform Grid")
         r_c_2);
     CUDA_CHECK(cudaGetLastError());
 
-    _test_kernel_uniform_grid<<<BLOCKS(N), BLOCK_SIZE>>>(
-        N, x.ptr(), d_res_count.ptr(), d_res_len2.ptr(), d_res_vec.ptr(), grid);
+    _test_kernel_uniform_grid<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
+        d_res_count.ptr(), d_res_len2.ptr(), d_res_vec.ptr(), grid, r_c_2);
     CUDA_CHECK(cudaGetLastError());
 
     // copy back to host
@@ -258,4 +314,18 @@ TEST_CASE("Test Uniform Grid")
             CHECK(h_res_vec[i].z == doctest::Approx(h_res_vec_bf[i].z));
         }
     }
+
+    // run benchmarks
+    ankerl::nanobench::Bench().run("Uniform Grid Construction", [&]() {
+        const DeviceUniformGrid grid { uni_grid.update_and_get_pod(x) };
+        CUDA_CHECK(cudaDeviceSynchronize());
+    });
+
+    ankerl::nanobench::Bench().minEpochIterations(5).run(
+        "Uniform Grid Query", [&]() {
+            _test_kernel_uniform_grid<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
+                d_res_count.ptr(), d_res_len2.ptr(), d_res_vec.ptr(), grid,
+                r_c_2);
+            CUDA_CHECK(cudaDeviceSynchronize());
+        });
 }

@@ -3,6 +3,7 @@
 
 #include "buffer.cuh"
 #include "vector_helper.cuh"
+#include "particles.cuh"
 
 /// @brief Compute the 3-dimensional index of a position `pos` within a grid of
 /// specified lower bound of AABB and cell size
@@ -72,15 +73,17 @@ struct DeviceUniformGrid {
     const uint* sorted;
 
     template <typename MapOp>
-    __device__ inline auto ff_nbrs(
-        const float3* __restrict__ x, const uint i, MapOp map) const
+    using AccType = std::invoke_result_t<MapOp, const uint, const uint,
+        const float3, const float>;
+
+    template <typename MapOp>
+    __device__ inline auto ff_nbrs(const float3* __restrict__ x, const uint i,
+        MapOp map,
+        // the default initial value of the accumulator is the default
+        // zero-initialized value of the type that is being accumulated
+        AccType<MapOp> initial_value = AccType<MapOp> {}) const
     {
-        // declare the accumulator, where zero-initialization should default to
-        // the neutral element of the reduction (+= in this case, i.e. 0.f or
-        // v3(0.f) for float and float3)
-        using AccType = std::invoke_result_t<MapOp, const uint, const uint,
-            const float3, const float>;
-        AccType acc {};
+        AccType<MapOp> acc { initial_value };
         // compute the cell id of the queried position
         const float3 x_i { x[i] };
         const int3 cid3 { _index3(x_i, bound_min, cell_size) };
@@ -95,7 +98,8 @@ struct DeviceUniformGrid {
 
                 // check if the index provided is in the viable range
                 // otherwise, at the edge of the datastructure, skip
-                // non-existant cells if (cid_y < 0 || cid_z < 0 || cid_y >=
+                // non-existant cells
+                // if (cid_y < 0 || cid_z < 0 || cid_y >=
                 // nxyz.y || cid_z >= nxyz.z)
                 //     continue;
 
@@ -145,42 +149,6 @@ struct DeviceUniformGrid {
             }
         }
         // finally, return the accumulator
-        return acc;
-    };
-
-    // From here on, provide various overloads of the same function. Comments
-    // are stripped, since the functionality is identical
-
-    // overload for providing an initial value to the accumulator
-    template <typename MapOp>
-    __device__ inline auto ff_nbrs(const float3* __restrict__ x, const uint i,
-        MapOp map,
-        std::invoke_result_t<MapOp, const uint, const uint, const float3,
-            const float>
-            initial_value) const
-    {
-        auto acc { initial_value };
-        const float3 x_i { x[i] };
-        const int3 cid3 { _index3(x_i, bound_min, cell_size) };
-        for (int iz { -1 }; iz <= 1; ++iz) {
-            for (int iy { -1 }; iy <= 1; ++iy) {
-                const int cid_y { cid3.y + iy };
-                const int cid_z { cid3.z + iz };
-                const int cid_x { cid3.x - 1 };
-                const int cid { _linearize(cid_x, cid_y, cid_z, nx, nxny) };
-                const uint start_id { prefix[cid] };
-                const uint end_id { prefix[cid + 3] };
-                for (uint j { start_id }; j < end_id; ++j) {
-                    const uint s_j { sorted[j] };
-                    const float3 x_j { x[s_j] };
-                    const float3 x_ij { x_i - x_j };
-                    const float x_ij_l2 { dot(x_ij, x_ij) };
-                    if (x_ij_l2 <= r_c_2) {
-                        acc += map(i, s_j, x_ij, x_ij_l2);
-                    }
-                }
-            }
-        }
         return acc;
     };
 };
@@ -250,6 +218,8 @@ public:
     /// @return a POD usable in a `__device__` context to providee functors that
     /// map and reduce over neighbouring particles around some query position
     DeviceUniformGrid update_and_get_pod(const DeviceBuffer<float3>& x);
+
+    // DeviceUniformGrid update_reorder_and_get_pod(Particles& state);
 
     // no copying
     UniformGrid(const UniformGrid&) = delete;

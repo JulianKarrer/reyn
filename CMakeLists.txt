@@ -104,6 +104,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(doctest)
 
+# fetch nanobench
+
+FetchContent_Declare(
+    nanobench
+    GIT_REPOSITORY https://github.com/martinus/nanobench.git
+    GIT_TAG v4.1.0
+    GIT_SHALLOW TRUE)
+FetchContent_MakeAvailable(nanobench)
+
 # define executable
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(REYN_SOURCES
@@ -166,6 +175,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glm::glm
     OpenGL::GL
     doctest::doctest
+    nanobench
     Thrust
 )
 
@@ -197,6 +207,7 @@ target_include_directories(tests PRIVATE
 
 target_link_libraries(tests PRIVATE
     doctest::doctest
+    nanobench
     CUDA::cudart
     ${X11_LIBRARIES}
     glfw
