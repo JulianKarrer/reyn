@@ -7,7 +7,7 @@
 #include "buffer.cuh"
 #include "datastructure/uniformgrid.cuh"
 
-template <IsKernel K> class SESPH {
+template <IsKernel K, Resort R> class SESPH {
 private:
 public:
     /// @brief Kernel function
@@ -21,11 +21,11 @@ public:
     /// @brief scalar buffer
     DeviceBuffer<float> rho;
     /// @brief Stiffness coefficient for the state equation
-    float k { 2000. };
+    float k { 50. };
     /// @brief Gravitational acceleration
     float3 g { v3(0.f, -9.81f, 0.f) };
     /// @brief rest density
-    float rho_0 { 1000. };
+    float rho_0 { 1. };
 
     SESPH(K _W, uint _N, float _nu, const float _h)
         : W(_W)
@@ -36,7 +36,7 @@ public:
     ~SESPH() {};
 
     void compute_accelerations(
-        Particles& state, const DeviceUniformGrid grid, float dt);
+        Particles& state, const UniformGrid<R> grid, float dt);
 
     SESPH(const SESPH&) = delete;
     SESPH& operator=(const SESPH&) = delete;

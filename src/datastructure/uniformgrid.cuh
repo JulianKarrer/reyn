@@ -62,15 +62,47 @@ __device__ inline uint _index_linear(const float3 pos, const float3 bound_min,
     return _linearize(index_xyz.x, index_xyz.y, index_xyz.z, nx, nxny);
 }
 
-struct DeviceUniformGrid {
+/// @brief type alias for bool indicating whether a uniform grid was constructed
+/// for use with a resorted particle state, requiring no further indirection, or
+/// if a `sorted` buffer must be stored to keep track of the indices of
+/// particles sorted along a XYZ curve
+enum class Resort : bool { no = false, yes = true };
+
+/// @brief Struct parameterized over whether the particles were resorted or not,
+/// which correspondingly contains a pointer to the `sorted` buffer or not
+/// @tparam if `Resort::yes` then the struct is empty, otherwise it contains
+/// `const uint* sorted`
+template <Resort> struct MaybeSorted;
+template <> struct MaybeSorted<Resort::no> {
+    /// @brief pointer to CUDA buffer particle indices sorted by the
+    /// space-filling curve underlying the uniform grid
+    const uint* sorted;
+};
+template <> struct MaybeSorted<Resort::yes> { };
+
+template <Resort R> struct UniformGrid : MaybeSorted<R> {
     /// @brief lower bound
     const float3 bound_min;
+    /// @brief cell size of the uniform grid
     const float cell_size;
+    /// @brief squared search radius for neighbourhood pruning
     const float r_c_2;
+    /// @brief number of grid cells along x-direction
     const int nx;
+    /// @brief number of grid cells in a xy-plane
     const int nxny;
+    /// @brief pointer to CUDA buffer of prefix sums, indexing into the sorted
+    /// array of particle indices
     const uint* prefix;
-    const uint* sorted;
+
+    __device__ inline uint sorted_lookup(const uint index) const
+    {
+        if constexpr (R == Resort::yes) {
+            return index;
+        } else {
+            return this->sorted[index];
+        }
+    }
 
     template <typename MapOp>
     using AccType = std::invoke_result_t<MapOp, const uint, const uint,
@@ -130,7 +162,7 @@ struct DeviceUniformGrid {
                 // iterate from start_id inclusive to end_id exclusive
                 for (uint j { start_id }; j < end_id; ++j) {
                     // skip any sample that is not within the search radius
-                    const uint s_j { sorted[j] };
+                    const uint s_j { sorted_lookup(j) };
                     const float3 x_j { x[s_j] };
                     const float3 x_ij { x_i - x_j };
                     const float x_ij_l2 { dot(x_ij, x_ij) };
@@ -167,7 +199,7 @@ struct DeviceUniformGrid {
 /// ATTENTION: Since explicit bound checks are disabled in queries for
 /// efficiency, querying points outside of the specified bounds is NOT SAFE! and
 /// will cause memory errors.
-class UniformGrid {
+class UniformGridBuilder {
 private:
     // here order matters due to the initializer list relying on earlier values
     // to compute later ones:
@@ -190,7 +222,7 @@ private:
     DeviceBuffer<uint> prefix;
     /// @brief  Buffer of size (#grid cells) for the number of particles in each
     /// grid cell, to be atomically incremented and decremented during
-    /// construction of the `DeviceUniformGrid`
+    /// construction of the `UniformGrid`
     DeviceBuffer<uint> counts;
 
     // buffer with as many entries as there are particles
@@ -198,6 +230,8 @@ private:
     /// sorted by the space filling curve linearizing the 3-dimensional
     /// coordinate of each cell a particle may reside in
     DeviceBuffer<uint> sorted;
+
+    void _construct(const DeviceBuffer<float3>& x);
 
 public:
     /// @brief Construct a uniform grid to efficiently query the neighbourhood
@@ -207,23 +241,23 @@ public:
     /// @param bound_min the lower bound of the AABB containing query points
     /// @param bound_max the upper bound of the AABB containing query points
     /// @param cell_size the cell size of the uniform grid
-    UniformGrid(
+    UniformGridBuilder(
         const float3 bound_min, const float3 bound_max, const float cell_size);
 
     /// @brief Construct the uniform grid for the given buffer of query points,
     /// returning a POD structure that may be used on the device for querying
     /// neighbouring particles at positions within the AABB defined at
-    /// construction of this `UniformGrid`.
+    /// construction of this `UniformGridBuilder`.
     /// @param x the buffer of positions to query
     /// @return a POD usable in a `__device__` context to providee functors that
     /// map and reduce over neighbouring particles around some query position
-    DeviceUniformGrid update_and_get_pod(const DeviceBuffer<float3>& x);
+    UniformGrid<Resort::no> construct(const DeviceBuffer<float3>& x);
 
-    // DeviceUniformGrid update_reorder_and_get_pod(Particles& state);
+    UniformGrid<Resort::yes> construct_and_reorder(Particles& state);
 
     // no copying
-    UniformGrid(const UniformGrid&) = delete;
-    UniformGrid& operator=(const UniformGrid&) = delete;
+    UniformGridBuilder(const UniformGridBuilder&) = delete;
+    UniformGridBuilder& operator=(const UniformGridBuilder&) = delete;
 };
 
 #endif // DATASTRUCTURE_UNIFORMGRID_CUH_

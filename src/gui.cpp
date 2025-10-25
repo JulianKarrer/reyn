@@ -422,10 +422,9 @@ float3* GUI::resize_mapped_buffer(uint N_new)
     return map_buffer();
 }
 
-void GUI::run(
-    std::function<void(Particles&, const DeviceUniformGrid, int)> step,
-    std::function<void(Particles&, const DeviceUniformGrid, int)> init,
-    Particles& state, const Scene& scene, UniformGrid& uniform_grid)
+void GUI::run(std::function<void(Particles&, int, const Scene)> step,
+    std::function<void(Particles&, int, const Scene)> init, Particles& state,
+    const Scene scene)
 {
     // start a timer in another thread that periodically sets an atomic bool to
     // true to signal the main thread to update and render the GUI at the target
@@ -449,18 +448,14 @@ void GUI::run(
 
         if (first_run) {
             // run initialization function on the first run
-            const DeviceUniformGrid grid { uniform_grid.update_and_get_pod(
-                state.x) };
-            init(state, grid, N);
+            init(state, N, scene);
             first_run = false;
         }
 
         while (!should_render.load()) {
             // rebuild the acceleration datastructure
-            const DeviceUniformGrid grid { uniform_grid.update_and_get_pod(
-                state.x) };
             // inner simulation loop is here, use the callback
-            step(state, grid, N);
+            step(state, N, scene);
             // hard enforce boundaries
             scene.hard_enforce_bounds(state);
             // update simulation fps, slowly interpolating towards the new value
@@ -469,7 +464,7 @@ void GUI::run(
             prev = now;
         }
         unmap_buffer();
-        update(state.h);
+        update(scene.h);
         should_render.store(false);
     }
     timer.join();

@@ -27,11 +27,13 @@ public:
     DeviceBuffer<float3> x;
     DeviceBuffer<float3> v;
     DeviceBuffer<float> m;
-    float h;
     float rho_0;
 
-    Particles(const int N, float h, float rho_0);
-    Particles(GUI* _gui, float _h, float _rho_0);
+    DeviceBuffer<float3> tmp3;
+    DeviceBuffer<float> tmp;
+
+    Particles(const int N, float rho_0);
+    Particles(GUI* _gui, float _rho_0);
 
     /// @brief Set the pointer to the position buffer. Used by GUI to ensure
     /// externally managed position buffers that are shared with OpenGL VBOs and
@@ -46,6 +48,8 @@ public:
     /// @brief Pointer to the GUI instance managing the position buffer, if any,
     /// and `nullptr` otherwise
     GUI* const gui { nullptr };
+
+    void gather(const DeviceBuffer<uint>& sorted);
 
     // Explicitly forbid a copy constructor, since destructor must only be
     // called once to ensure cudaFree does not free twice

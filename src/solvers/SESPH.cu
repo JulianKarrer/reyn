@@ -1,9 +1,11 @@
 #include "SESPH.cuh"
+#include "doctest/doctest.h"
+#include <nanobench.h>
 
-template <IsKernel K>
+template <IsKernel K, Resort R>
 __global__ void _compute_densities(const float3* __restrict__ x,
     const float* __restrict__ m, float* rho, const uint N, const K W,
-    const DeviceUniformGrid grid)
+    const UniformGrid<R> grid)
 {
     // compute index and ensure safety at bounds
     const auto i { blockIdx.x * blockDim.x + threadIdx.x };
@@ -18,11 +20,11 @@ __global__ void _compute_densities(const float3* __restrict__ x,
         });
 }
 
-template <IsKernel K>
+template <IsKernel K, Resort R>
 __global__ void _compute_accelerations_and_integrate(float3* __restrict__ x,
     float3* __restrict__ v, const float* __restrict__ m, const float* rho,
     const uint N, const K W, const float k, const float rho_0, const float dt,
-    const float nu, const float h, const DeviceUniformGrid grid)
+    const float nu, const float h, const UniformGrid<R> grid)
 {
     // compute index and ensure safety at bounds
     const auto i { blockIdx.x * blockDim.x + threadIdx.x };
@@ -63,9 +65,9 @@ __global__ void _compute_accelerations_and_integrate(float3* __restrict__ x,
     x[i] += dt * v_i_new;
 }
 
-template <IsKernel K>
-void SESPH<K>::compute_accelerations(
-    Particles& state, const DeviceUniformGrid grid, float dt)
+template <IsKernel K, Resort R>
+void SESPH<K, R>::compute_accelerations(
+    Particles& state, const UniformGrid<R> grid, float dt)
 {
     // first, compute densities
     _compute_densities<K><<<BLOCKS(N), BLOCK_SIZE>>>(
@@ -85,6 +87,10 @@ void SESPH<K>::compute_accelerations(
 };
 
 // explicit instantiation in every relevant translation unit
-#define X(K) template class SESPH<K>;
+
+#define X(K) template class SESPH<K, Resort::no>;
+FOREACH_KERNEL(X)
+#undef X
+#define X(K) template class SESPH<K, Resort::yes>;
 FOREACH_KERNEL(X)
 #undef X

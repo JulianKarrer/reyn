@@ -185,7 +185,7 @@ file(GLOB_RECURSE USER_TEST_SOURCES "${CMAKE_SOURCE_DIR}/test/*.cpp" "${CMAKE_SO
 set(REYN_SOURCES_NO_MAIN ${REYN_SOURCES})
 list(REMOVE_ITEM REYN_SOURCES_NO_MAIN "${SRC_DIR}/main.cu")
 add_executable(tests
-    test/runner.cpp
+    test/runner.cu
     ${REYN_SOURCES_NO_MAIN}
     ${REYN_HEADERS}
     ${USER_TEST_SOURCES}

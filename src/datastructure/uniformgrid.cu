@@ -51,7 +51,8 @@ __global__ void _counting_sort(const uint N, const float3* __restrict__ x,
     sorted[offset_to_cell + offset_in_cell] = i;
 }
 
-UniformGrid::UniformGrid(const float3 bound_min, const float3 bound_max,
+UniformGridBuilder::UniformGridBuilder(const float3 bound_min,
+    const float3 bound_max,
     const float cell_size)
     : // save the cell size of the uniform grid
     _cell_size(cell_size)
@@ -82,7 +83,7 @@ UniformGrid::UniformGrid(const float3 bound_min, const float3 bound_max,
                                  "construction of uniform grid.");
 };
 
-DeviceUniformGrid UniformGrid::update_and_get_pod(const DeviceBuffer<float3>& x)
+void UniformGridBuilder::_construct(const DeviceBuffer<float3>& x)
 {
     // get the number of particles
     const uint N { (uint)x.size() };
@@ -119,81 +120,48 @@ DeviceUniformGrid UniformGrid::update_and_get_pod(const DeviceBuffer<float3>& x)
         counts.ptr(), prefix.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min,
         _cell_size);
     CUDA_CHECK(cudaGetLastError());
+}
 
+UniformGrid<Resort::no> UniformGridBuilder::construct(
+    const DeviceBuffer<float3>& x)
+{
+    // reconstruct the datastructure from current position data
+    _construct(x);
     // pack all relevant pointers and information for queries into a POD struct
     // and return it
-    return DeviceUniformGrid {
+    return UniformGrid<Resort::no> { { .sorted = sorted.ptr() }, _bound_min,
+        _cell_size, _cell_size * _cell_size, nxyz.x, nxyz.x * nxyz.y,
+        prefix.ptr() };
+}
+
+UniformGrid<Resort::yes> UniformGridBuilder::construct_and_reorder(
+    Particles& state)
+{
+    // reconstruct the datastructure from current position data
+    _construct(state.x);
+    // then reorder the particle state such that the sorted array becomes the
+    // sequence 0...N-1, i.e. redirection through sorted becomes superfluous and
+    // a more efficient uniform grid can be returned
+    state.gather(sorted);
+
+    // pack all relevant pointers and information for queries into a POD
+    // struct and return it
+    return UniformGrid<Resort::yes> {
         .bound_min = _bound_min,
         .cell_size = _cell_size,
         .r_c_2 = _cell_size * _cell_size,
         .nx = nxyz.x,
         .nxny = nxyz.x * nxyz.y,
         .prefix = prefix.ptr(),
-        .sorted = sorted.ptr(),
     };
 }
-
-// DeviceUniformGrid UniformGrid::update_reorder_and_get_pod(Particles& state)
-// {
-//     // get the number of particles
-//     const uint N { (uint)state.x.size() };
-
-//     // resize the buffer of sorted indices to fit the number of particles, if
-//     // required initialization does not matter since everything is
-//     overwritten if (sorted.size() != N)
-//         sorted.resize(N);
-
-//     // - compute the cell index of each particle
-//     // - linearize it to obtain a pointer into the flat `counts` array
-//     // - and atomically increment the particle count in the `counts`
-//     _count_particles_per_cell<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
-//         counts.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min, _cell_size);
-//     CUDA_CHECK(cudaGetLastError());
-
-//     // copy counts -> prefix
-//     // this means one copy of counts can be atomically decremented to sort,
-//     // while another provides offsets by storing the number of particles with
-//     a
-//     // lower linear index (i.e. the result of the exclusive prefix sum or
-//     // prescan)
-//     thrust::copy(
-//         counts.get().begin(), counts.get().end(), prefix.get().begin());
-
-//     // then, take a prefix sum of the device vector
-//     thrust::exclusive_scan(
-//         prefix.get().begin(), prefix.get().end(), prefix.get().begin());
-
-//     // finally, perform a counting sort:
-//     // the prefix sum is an offset to particles in the same cell, atomicSub
-//     on
-//     // counts then distributes unique offsets on top of that for each
-//     particle
-//     // in the same cell
-//     _counting_sort<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(), sorted.ptr(),
-//         counts.ptr(), prefix.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min,
-//         _cell_size);
-//     CUDA_CHECK(cudaGetLastError());
-
-//     // pack all relevant pointers and information for queries into a POD
-//     struct
-//     // and return it
-//     return DeviceUniformGrid {
-//         .bound_min = _bound_min,
-//         .cell_size = _cell_size,
-//         .r_c_2 = _cell_size * _cell_size,
-//         .nx = nxyz.x,
-//         .nxny = nxyz.x * nxyz.y,
-//         .prefix = prefix.ptr(),
-//         .sorted = sorted.ptr(),
-//     };
-// }
 
 // TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 __global__ void _test_kernel_uniform_grid(const uint N,
     const float3* __restrict__ x, uint* __restrict__ count_out,
     float* __restrict__ len2_out, float3* __restrict__ vec_out,
-    const DeviceUniformGrid grid, const float r_c_2)
+    const UniformGrid<Resort::no> grid, const float r_c_2)
 {
     auto i { blockIdx.x * blockDim.x + threadIdx.x };
     if (i >= N)
@@ -216,7 +184,7 @@ __global__ void _test_kernel_uniform_grid(const uint N,
 __global__ void _test_kernel_uniform_grid_brute_force(const uint N,
     const float3* __restrict__ x, uint* __restrict__ count_out,
     float* __restrict__ len2_out, float3* __restrict__ vec_out,
-    const DeviceUniformGrid grid, const float r_c_2)
+    const UniformGrid<Resort::no> grid, const float r_c_2)
 {
     auto i { blockIdx.x * blockDim.x + threadIdx.x };
     if (i >= N)
@@ -255,9 +223,10 @@ TEST_CASE("Test Uniform Grid")
     thrust::copy(x_host.begin(), x_host.end(), x.get().begin());
 
     // create the uniform grid
-    UniformGrid uni_grid { UniformGrid(v3(0.), v3(box_size), cell_size) };
+    UniformGridBuilder uni_grid { UniformGridBuilder(
+        v3(0.), v3(box_size), cell_size) };
     // build the device-side usable POD
-    const DeviceUniformGrid grid { uni_grid.update_and_get_pod(x) };
+    const UniformGrid grid { uni_grid.construct(x) };
 
     // allocate buffers for the results
     DeviceBuffer<uint> d_res_count(N, 0);
@@ -317,7 +286,7 @@ TEST_CASE("Test Uniform Grid")
 
     // run benchmarks
     ankerl::nanobench::Bench().run("Uniform Grid Construction", [&]() {
-        const DeviceUniformGrid grid { uni_grid.update_and_get_pod(x) };
+        const UniformGrid grid { uni_grid.construct(x) };
         CUDA_CHECK(cudaDeviceSynchronize());
     });
 

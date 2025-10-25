@@ -41,7 +41,6 @@ Scene::Scene(const uint N_desired, const float3 min, const float3 max,
     const float3 dxyz { max - min };
     float h { cbrtf((dxyz.x * dxyz.y * dxyz.z) / (float)N_desired) };
     assert(h >= 0.);
-    state.h = h;
     this->h = h;
 
     const int3 nxyz { floor_div(dxyz, h) };
