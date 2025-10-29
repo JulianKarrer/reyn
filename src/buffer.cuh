@@ -2,7 +2,7 @@
 #define BUFFER_H_
 
 #include <thrust/device_vector.h>
-#include "gui.h"
+#include "gui.cuh"
 
 template <typename T> struct ExternallyManagedBuffer {
     bool active { false };

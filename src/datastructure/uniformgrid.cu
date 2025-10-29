@@ -1,6 +1,8 @@
 #include <thrust/host_vector.h>
 #include <thrust/random.h>
 #include <thrust/scan.h>
+#include <thrust/shuffle.h>
+#include <thrust/random.h>
 
 #include <random>
 
@@ -204,18 +206,21 @@ __global__ void _test_kernel_uniform_grid_brute_force(const uint N,
 
 TEST_CASE("Test Uniform Grid")
 {
-    const uint N { 50000 };
-    const float box_size { 1.f };
-    const float cell_size { 0.1f };
+    const uint side_length { 60 };
+    const uint N { side_length * side_length * side_length };
+    const float h { 1.2 };
+    const float box_size { h * (float)side_length };
+    const float cell_size { 2. * h };
     const float r_c_2 { cell_size * cell_size };
 
     /// create a seeded pseudorandom vector of float3 uniformly randomly
     /// distributed in [0; box_size]^3 on the host side
     thrust::host_vector<float3> x_host(N);
     std::mt19937 rng(161420);
-    std::uniform_real_distribution<float> uniform_dist(0.f, box_size);
+    std::uniform_real_distribution<float> uniform_dist(0.f, 1.f);
     for (uint i { 0 }; i < N; ++i) {
-        x_host[i] = v3(uniform_dist(rng), uniform_dist(rng), uniform_dist(rng));
+        x_host[i] = v3(box_size * uniform_dist(rng),
+            box_size * uniform_dist(rng), box_size * uniform_dist(rng));
     }
 
     // copy the random host-side buffer to the device
@@ -285,6 +290,24 @@ TEST_CASE("Test Uniform Grid")
     }
 
     // run benchmarks
+    // use half-jittered uniform grid for more realistic setting for SPH
+    uint i_grid { 0 };
+    for (uint x { 0 }; x < side_length; ++x)
+        for (uint y { 0 }; y < side_length; ++y)
+            for (uint z { 0 }; z < side_length; ++z) {
+                x_host[i_grid] = v3(
+                    (float)x * cell_size + 0.5 * cell_size * uniform_dist(rng),
+                    (float)y * cell_size + 0.5 * cell_size * uniform_dist(rng),
+                    (float)z * cell_size + 0.5 * cell_size * uniform_dist(rng));
+                ++i_grid;
+            }
+
+    thrust::copy(x_host.begin(), x_host.end(), x.get().begin());
+
+    // shuffle it to simulate non-coherent accesses
+    thrust::default_random_engine g;
+    thrust::shuffle(x.get().begin(), x.get().end(), g);
+
     ankerl::nanobench::Bench().run("Uniform Grid Construction", [&]() {
         const UniformGrid grid { uni_grid.construct(x) };
         CUDA_CHECK(cudaDeviceSynchronize());

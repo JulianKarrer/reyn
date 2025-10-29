@@ -3,3 +3,7 @@ build
 imgui.ini
 !.clang-format
 .*
+*.mp4
+*.mkv
+*.temp
+*.log

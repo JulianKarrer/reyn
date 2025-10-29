@@ -1,13 +1,14 @@
-#include "gui.h"
+#include "gui.cuh"
 #include "particles.cuh"
 #include "scene.cuh"
 #include "kernels.cuh"
 #include "solvers/SESPH.cuh"
 #include "datastructure/uniformgrid.cuh"
+#include "vector_helper.cuh"
 
 void step(Particles& state, const int N, const Scene scene)
 {
-    const float dt { 0.0005 };
+    const float dt { 0.0008 };
     static double time { 0. };
     static const B3 W(2.f * scene.h);
     static UniformGridBuilder uniform_grid(
@@ -15,8 +16,7 @@ void step(Particles& state, const int N, const Scene scene)
     static SESPH<B3, Resort::yes> solver(W, N, 0.005f, scene.h);
 
     // update the acceleration datastructure
-    const UniformGrid<Resort::yes> grid { uniform_grid.construct_and_reorder(
-        state) };
+    const auto grid { uniform_grid.construct_and_reorder(state) };
     // then invoke the fluid solver
     solver.compute_accelerations(state, grid, dt);
 
@@ -32,7 +32,7 @@ int main()
         Particles state(&gui, 1.);
 
         state.set_x(gui.map_buffer());
-        const Scene scene(500000, v3(-1.), v3(0.), v3(-1), v3(1.), 1., state);
+        const Scene scene(1000000, v3(-1.), v3(0.), v3(-1), v3(1.), 1., state);
         gui.unmap_buffer();
 
         gui.run(&step, &init, state, scene);

@@ -117,7 +117,7 @@ FetchContent_MakeAvailable(nanobench)
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(REYN_SOURCES
     ${SRC_DIR}/main.cu
-    ${SRC_DIR}/gui.cpp
+    ${SRC_DIR}/gui.cu
     ${SRC_DIR}/particles.cu
     ${SRC_DIR}/scene.cu
     ${SRC_DIR}/kernels.cu
@@ -127,7 +127,7 @@ set(REYN_SOURCES
 set(REYN_HEADERS
     ${SRC_DIR}/common.h
     ${SRC_DIR}/buffer.cuh
-    ${SRC_DIR}/gui.h
+    ${SRC_DIR}/gui.cuh
     ${SRC_DIR}/particles.cuh
     ${SRC_DIR}/scene.cuh
     ${SRC_DIR}/vector_helper.cuh

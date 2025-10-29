@@ -62,10 +62,11 @@ public:
         std::function<void(Particles&, const int, const Scene)> init,
         Particles& state, const Scene scene);
 
-    /// @brief Map the VBO for use by CUDA and obtain a pointer to the buffer
-    /// for particle positions
+    /// @brief Map the position VBO for use by CUDA and obtain a pointer to the
+    /// buffer of particle positions
     float3* map_buffer();
-    /// @brief Unmap vertex buffer from CUDA for use by OpenGL
+    /// @brief Unmap the position vertex buffer from CUDA and enable its use by
+    /// OpenGL for rendering
     void unmap_buffer();
 
     /// @brief Resize the particle positions buffer. Must be called while mapped
@@ -102,8 +103,16 @@ public:
     GUI& operator=(const GUI&) = delete;
 
 private:
-    /// @brief whethr or not the buffer is currently mapped for access by CUDA
-    bool cuda_mapped { false };
+    /// @brief whether or not the position buffer is currently mapped for access
+    /// by CUDA
+    bool pos_cuda_mapped { false };
+
+    /// @brief whether or not the colour buffer is currently mapped for access
+    /// by CUDA
+    bool col_cuda_mapped { false };
+    /// @brief whether the gui should request to fill the colour buffer and use
+    /// it to colour each particle
+    bool use_per_particle_colour { true };
 
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
@@ -186,7 +195,7 @@ private:
 
     /// @brief The initial or base radius of the camera around the
     /// `camera_target` position in spherical cooridnates, before scrolling
-    float radius_init { 10.f };
+    float radius_init { 5.f };
 
     // GLFW resources
     GLFWwindow* window;
@@ -196,7 +205,7 @@ private:
     ImFont* font;
 
     // OpenGL resources
-    GLuint shader_program, vao, vbo;
+    GLuint shader_program, vao, pos_vbo, col_vbo;
     float fov { 45.0 };
     glm::mat4 proj;
     /// @brief The view matrix, representing the orientation of the camera in
@@ -228,8 +237,23 @@ private:
     float offset_right { 0. };
     float offset_up { 0. };
 
+    // colour mapping and per-particle colouring
+
+    /// @brief Map the colour VBO for use by CUDA and obtain a pointer to the
+    /// buffer of one scalar per particle for use in the fragment shader
+    float* map_colour_buffer();
+    /// @brief Unmap the colour buffer from CUDA and enable its use by OpenGL
+    /// for rendering
+    void unmap_colour_buffer();
+    /// @brief The scalar used for colour mapping is scaled by the inverse of
+    /// this value, to be adjusted intuitively to the maximum value of whatever
+    /// quantity should be visualized.
+    float colour_scale { 10. };
+    int colour_map_selector { 0 };
+
     // CUDA resources
-    cudaGraphicsResource* cuda_vbo_resource = nullptr;
+    cudaGraphicsResource* cuda_pos_vbo_resource = nullptr;
+    cudaGraphicsResource* cuda_col_vbo_resource = nullptr;
 
     // internal functions for setup and events
     /// Compile the fragment and vertex shaders required for visalization by

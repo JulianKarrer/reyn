@@ -1,5 +1,5 @@
 #include "particles.cuh"
-#include "gui.h"
+#include "gui.cuh"
 #include "common.h"
 #include <cuda_gl_interop.h>
 #include "vector_helper.cuh"

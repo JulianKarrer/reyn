@@ -1,5 +1,5 @@
 #include "particles.cuh"
-#include "gui.h"
+#include "gui.cuh"
 #include <thrust/gather.h>
 
 /// @brief When using a GUI to manage positions through sharing a buffer with
