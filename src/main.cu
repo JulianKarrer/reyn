@@ -6,36 +6,39 @@
 #include "datastructure/uniformgrid.cuh"
 #include "vector_helper.cuh"
 
-void step(Particles& state, const int N, const Scene scene)
-{
-    const float dt { 0.0008 };
-    static double time { 0. };
-    static const B3 W(2.f * scene.h);
-    static UniformGridBuilder uniform_grid(
-        scene.bound_min, scene.bound_max, 2. * scene.h);
-    static SESPH<B3, Resort::yes> solver(W, N, 0.005f, scene.h);
-
-    // update the acceleration datastructure
-    const auto grid { uniform_grid.construct_and_reorder(state) };
-    // then invoke the fluid solver
-    solver.compute_accelerations(state, grid, dt);
-
-    time += dt;
-}
-
-void init(Particles& state, const int N, const Scene scene) { }
-
 int main()
 {
     try {
+        // Setup in required order
+        // GUI -> Particles -> Scene -> everything else
         GUI gui(1280, 720, false);
         Particles state(&gui, 1.);
 
-        state.set_x(gui.map_buffer());
+        const float dt { 0.0008 };
         const Scene scene(1000000, v3(-1.), v3(0.), v3(-1), v3(1.), 1., state);
-        gui.unmap_buffer();
+        const B3 W(2.f * scene.h);
+        const uint N { scene.N };
 
-        gui.run(&step, &init, state, scene);
+        double time { 0. };
+        UniformGridBuilder uniform_grid(
+            scene.bound_min, scene.bound_max, 2. * scene.h);
+        SESPH<B3, Resort::yes> solver(W, N, 0.005f, scene.h);
+
+        // MAIN LOOP
+        while (gui.update_or_exit(state, scene)) {
+            // update the acceleration datastructure
+            const auto grid { uniform_grid.construct_and_reorder(state) };
+
+            // then invoke the fluid solver
+            solver.step(state, grid, dt);
+
+            // enforce boundary conditions by clamping since the grid relies on
+            // scene bounds being strict for memory safety
+            scene.hard_enforce_bounds(state);
+
+            time += dt;
+        }
+
     } catch (std::exception const& e) {
         // print any errors thrown to stderr and terminate with error
         std::cerr << e.what() << std::endl;

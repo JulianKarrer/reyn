@@ -66,8 +66,7 @@ __global__ void _compute_accelerations_and_integrate(float3* __restrict__ x,
 }
 
 template <IsKernel K, Resort R>
-void SESPH<K, R>::compute_accelerations(
-    Particles& state, const UniformGrid<R> grid, float dt)
+void SESPH<K, R>::step(Particles& state, const UniformGrid<R> grid, float dt)
 {
     // first, compute densities
     _compute_densities<K><<<BLOCKS(N), BLOCK_SIZE>>>(

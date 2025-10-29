@@ -35,8 +35,7 @@ public:
         , rho(_N) {};
     ~SESPH() {};
 
-    void compute_accelerations(
-        Particles& state, const UniformGrid<R> grid, float dt);
+    void step(Particles& state, const UniformGrid<R> grid, float dt);
 
     SESPH(const SESPH&) = delete;
     SESPH& operator=(const SESPH&) = delete;

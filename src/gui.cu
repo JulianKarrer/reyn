@@ -1,7 +1,6 @@
 #include "gui.cuh"
 #include "particles.cuh"
 #include "scene.cuh"
-#include "datastructure/uniformgrid.cuh"
 
 // constants
 const char* FONT_PATH { "res/JBM.ttf" };
@@ -472,7 +471,19 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
     // whenever the camera is adjusted through user input
     update_view();
 
+    // create a buffer and register it for use with CUDA
     create_and_register_buffer(N);
+
+    // start a timer in another thread that periodically sets an atomic bool to
+    // true to signal the main thread to update and render the GUI at the target
+    // FPS
+    timer = std::thread([this]() {
+        const auto wait_time { 1s / this->target_fps };
+        while (!exit_requested.load()) {
+            should_render.store(true);
+            std::this_thread::sleep_for(wait_time);
+        }
+    });
 }
 
 void GUI::create_and_register_buffer(uint N)
@@ -508,7 +519,7 @@ void GUI::create_and_register_buffer(uint N)
     glBindVertexArray(0);
 }
 
-void GUI::destroy_and_deregister_buffer()
+void GUI::destroy_and_deregister_buffers()
 {
     // de-register VBO from use by CUDA
     CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_pos_vbo_resource));
@@ -571,7 +582,7 @@ float3* GUI::resize_mapped_buffer(uint N_new)
     unmap_buffer();
 
     // clean up CUDA binding of vbo
-    destroy_and_deregister_buffer();
+    destroy_and_deregister_buffers();
 
     // set the new number of particles
     this->N = N_new;
@@ -583,64 +594,62 @@ float3* GUI::resize_mapped_buffer(uint N_new)
     return map_buffer();
 }
 
-void GUI::run(std::function<void(Particles&, int, const Scene)> step,
-    std::function<void(Particles&, int, const Scene)> init, Particles& state,
-    const Scene scene)
+void GUI::initialize_buffer(Particles& state)
 {
-    // start a timer in another thread that periodically sets an atomic bool to
-    // true to signal the main thread to update and render the GUI at the target
-    // FPS
-    std::thread timer([this]() {
-        const auto wait_time { 1s / target_fps };
-        while (!exit_requested.load()) {
-            should_render.store(true);
-            std::this_thread::sleep_for(wait_time);
-        }
-    });
+    // map the buffer and let the state of the particle reflect the location of
+    // the mapped position buffer
+    state.set_x(map_buffer());
+};
 
-    // initialize a time stamp used for measuring the FPS of the simulation
-    auto prev { std::chrono::steady_clock::now() };
+bool GUI::update_or_exit(Particles& state, const Scene scene)
+{
+    // declare a static variable for measuring how much time has passed since
+    // the last re-render
+    static auto prev { std::chrono::steady_clock::now() };
 
-    // main loop:
-    static bool first_run { true };
-    while (!exit_requested.load()) {
-        float3* x { map_buffer() };
-        state.set_x(x);
+    // if an  exit was requested by the GUI, pass that information on to the
+    // caller and return immediately
+    if (exit_requested.load())
+        return false;
+    // if the `timer` thread has not deemed it time to re-render yet, also
+    // return early but with return value indicating no exit from the
+    // application
+    if (!should_render.load())
+        return true;
 
-        // run initialization function on the first run
-        if (first_run) {
-            init(state, N, scene);
-            first_run = false;
-        }
+    // otherwise, render:
 
-        // conduct as many simulation steps as possible before an update to the
-        // GUI is requested by the timer thread
-        while (!should_render.load()) {
-            // rebuild the acceleration datastructure
-            // inner simulation loop is here, use the callback
-            step(state, N, scene);
-            // hard enforce boundaries
-            scene.hard_enforce_bounds(state);
-            // update simulation fps, slowly interpolating towards the new value
-            const auto now { std::chrono::steady_clock::now() };
-            sim_fps = 1000ms / (now - prev);
-            prev = now;
-        }
-
-        // conditionally call back to request filling the colour buffer
-        if (use_per_particle_colour) {
-            float* col_buf = map_colour_buffer();
-            thrust::transform(state.v.get().begin(), state.v.get().end(),
-                col_buf, [] __device__(float3 const v) { return norm(v); });
-            unmap_colour_buffer();
-        }
-
-        // unmap position buffer for use by OpenGL and update the GUI
-        unmap_buffer();
-        update(scene.h);
-        should_render.store(false);
+    // first, fill the colour buffer
+    if (use_per_particle_colour) {
+        float* col_buf = map_colour_buffer();
+        thrust::transform(state.v.get().begin(), state.v.get().end(), col_buf,
+            [] __device__(float3 const v) { return norm(v); });
+        unmap_colour_buffer();
     }
-    timer.join();
+
+    // then unmap the particle position buffer from CUDA so that OpenGL can use
+    // it as a VBO for drawing spheres
+    unmap_buffer();
+
+    // update the fps counter of the GUI
+    const auto now { std::chrono::steady_clock::now() };
+    sim_fps = 1000ms / (now - prev);
+    prev = now;
+
+    // now the main update to the GUI can happen, drawing to the screen,
+    // processing inputs and handling interaction with UI elements
+    update(scene.h);
+
+    // before returning, remap the positions buffer and reflect that change in
+    // the particle state in case the pointer has changed
+    state.set_x(map_buffer());
+
+    // finally, reset the flag for needing to render until the timer sets it
+    // again to throttle rendering to the `target_fps`
+    should_render.store(false);
+
+    // the program should not be exited right now, return true
+    return true;
 }
 
 void GUI::update(float h)
@@ -724,9 +733,9 @@ void GUI::imgui_draw()
 
     // start of contents ~~~~~
     ImGui::Begin("SETTINGS");
-    ImGui::Text("GUI Frame time %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
+    ImGui::Text("GUI interval %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
         io->Framerate);
-    ImGui::Text("SIM Frame time %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
+    ImGui::Text("SIM interval %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
     if (ImGui::Button("Exit"))
         exit_requested.store(true);
     if (ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f))
@@ -752,7 +761,11 @@ void GUI::imgui_draw()
 
 GUI::~GUI()
 {
-    destroy_and_deregister_buffer();
+    // join the timer thread to prevent leaks
+    timer.join();
+    // unmap, unregister VBOs from CUDA and delete them
+    unmap_buffer();
+    destroy_and_deregister_buffers();
     // clearn up OpenGL
     glDeleteProgram(shader_program);
     // clean up GLFW

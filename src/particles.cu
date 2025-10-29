@@ -30,7 +30,12 @@ Particles::Particles(GUI* _gui, float _rho_0)
     , m(_gui->N)
     , x(_gui)
     , tmp3(1)
-    , tmp(1) {};
+    , tmp(1)
+{
+    // now that a state exists, tell the GUI to call `set_x` with the
+    // appropriate pointer to a CUDA mapped position VBO
+    _gui->initialize_buffer(*this);
+};
 
 Particles::Particles(const int N, float _rho_0)
     : rho_0(_rho_0)

@@ -10,13 +10,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <cuda_gl_interop.h>
-#include <iostream>
-#include <vector>
-#include <functional>
 #include "common.h"
 #include <chrono>
 using namespace std::literals;
-#include <algorithm>
 #include <thread>
 #include <atomic>
 
@@ -52,15 +48,28 @@ public:
         double target_fps = 60.);
     ~GUI();
 
-    /// @brief Given a callback function to update the simulation state, run the
-    /// simulation. The simulation is run at the highest possible rate, while
-    /// the GUI is throttled to a reasonable number of frames per second, as
-    /// defined in the constructor.
-    /// @param step callback at every step of the simulation
-    /// @param init callback once at the start of the simulation
-    void run(std::function<void(Particles&, const int, const Scene)> step,
-        std::function<void(Particles&, const int, const Scene)> init,
-        Particles& state, const Scene scene);
+    /// @brief Method called by the `Particles` class on construction with a
+    /// reference to itself if constructed using a GUI instance to make sure
+    /// that the positions buffer managed by the GUI to enable zero-copy
+    /// visualization of particle positions is mapped for use by CUDA and ready
+    /// to go
+    /// @param state `Particles` instance wrapping the VBO of particle positions
+    /// allocated by the GUI
+    void initialize_buffer(Particles& state);
+
+    /// @brief Update the GUI, rendering particles to screen, handling inputs
+    /// and updating the UI if enough time has passed since the last update,
+    /// otherwise exits early.
+    ///
+    /// Can be used as a `while` condition of the main loop since the return
+    /// value signals whether the closing of the application has been requested
+    /// through the GUI
+    /// @param state current `Particles` state to display
+    /// @param scene current `Scene` being rendered, read for getting the
+    /// particle spacing/radius etc.
+    /// @return `false` if exit of the application is requested by the user
+    /// through the GUI, `true` otherwise
+    bool update_or_exit(Particles& state, const Scene scene);
 
     /// @brief Map the position VBO for use by CUDA and obtain a pointer to the
     /// buffer of particle positions
@@ -126,6 +135,7 @@ private:
     /// screen. Otherwise, more simulation steps will be performed before the
     /// next GUI update is rendered.
     std::atomic<bool> should_render { false };
+    std::thread timer;
 
     /// @brief a private struct to represent the state of clicking a holding a
     /// mouse button to drag
@@ -270,7 +280,7 @@ private:
 
     /// @brief Delete the VBO and VAO for positions and unregister the buffer
     /// from CUDA.
-    void destroy_and_deregister_buffer();
+    void destroy_and_deregister_buffers();
 
     ///  Update and manage the ImGui contents
     void imgui_draw();

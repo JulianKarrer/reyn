@@ -253,6 +253,18 @@ public:
     /// map and reduce over neighbouring particles around some query position
     UniformGrid<Resort::no> construct(const DeviceBuffer<float3>& x);
 
+    /// @brief Construct the uniform grid for the given buffer of query points,
+    /// returning a POD structure that may be used on the device for querying
+    /// neighbouring particles at positions within the AABB defined at
+    /// construction of this `UniformGridBuilder`.
+    ///
+    /// In contrast to the `construct` method, this calls on the `Particles` to
+    /// reorder according to the sorting used by the grid to improve memory
+    /// coherency.
+    /// @param state the `Particles` state containing the positions to query and
+    /// the buffers to reorder
+    /// @return a POD usable in a `__device__` context to providee functors that
+    /// map and reduce over neighbouring particles around some query position
     UniformGrid<Resort::yes> construct_and_reorder(Particles& state);
 
     // no copying

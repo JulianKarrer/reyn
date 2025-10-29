@@ -6,10 +6,10 @@
 </p>
 
 ## FEATURES
-- Zero-Copy GUI thanks to CUDA <-> OpenGL buffer sharing, with a framerate upwards-uncoupled from the simulation
-- Interchangable kernel functions (Wendland C2, C6, Cubic B-Spline, Double Cosine, ...) with CRTP static polymorphism for maximum runtime performance and minimum implementation effort
-- GPU-friendly spatial acceleration datastructure for fixed radius neighbourhood queries with work-efficient construction and constant query time
-- Automatic testing of kernel functions and spatial acceleration datastructures using `doctest`
+- Zero-Copy GUI thanks to CUDA <-> OpenGL buffer sharing, throttled to not impact simulation performance
+- Interchangable kernel functions (Wendland C2, C6, Cubic B-Spline, Double Cosine, ...) with CRTP static polymorphism for maximum runtime performance and ergonomics of adding new functions
+- GPU-friendly spatial acceleration datastructure for fixed radius neighbourhood queries with work-efficient construction and constant query time, optionally reordering particles for memory coherency
+- Automatic testing of kernel functions and spatial acceleration datastructures using `doctest` and benchmarking using `nanobench`
 
 
 ## TODO
@@ -19,6 +19,7 @@
 - [x] Implement acceleration datastructure, e.g. [Hoetzlein, 2014] using efficient prefix scan
 - [x] Add benchmarking for performance optimization
 - [x] Reorder state according to space-filling curve to improve memory coherency
+- [x] Colour particles according to some attribute like velocity
 - [ ] Parameterize uniform grid with cell size different from search radius and benchmark for optimal grid size
 - [ ] Add settings management with de-/serialization and expose solver and scene options to GUI
 - [ ] Add scene management, sampling and de-/serialization
