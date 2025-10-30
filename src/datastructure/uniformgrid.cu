@@ -208,7 +208,7 @@ TEST_CASE("Test Uniform Grid")
 {
     const uint side_length { 60 };
     const uint N { side_length * side_length * side_length };
-    const float h { 1.2 };
+    const float h { 1.1 };
     const float box_size { h * (float)side_length };
     const float cell_size { 2. * h };
     const float r_c_2 { cell_size * cell_size };
@@ -216,12 +216,18 @@ TEST_CASE("Test Uniform Grid")
     /// create a seeded pseudorandom vector of float3 uniformly randomly
     /// distributed in [0; box_size]^3 on the host side
     thrust::host_vector<float3> x_host(N);
-    std::mt19937 rng(161420);
+    std::mt19937 rng(161);
     std::uniform_real_distribution<float> uniform_dist(0.f, 1.f);
-    for (uint i { 0 }; i < N; ++i) {
-        x_host[i] = v3(box_size * uniform_dist(rng),
-            box_size * uniform_dist(rng), box_size * uniform_dist(rng));
-    }
+
+    uint i { 0 };
+    for (uint x { 0 }; x < side_length; ++x)
+        for (uint y { 0 }; y < side_length; ++y)
+            for (uint z { 0 }; z < side_length; ++z) {
+                auto half_jitter { v3(h * uniform_dist(rng),
+                    h * uniform_dist(rng), h * uniform_dist(rng)) };
+                x_host[i] = half_jitter + v3((float)x, (float)y, (float)z);
+                i += 1;
+            }
 
     // copy the random host-side buffer to the device
     DeviceBuffer<float3> x(N);
@@ -229,7 +235,7 @@ TEST_CASE("Test Uniform Grid")
 
     // create the uniform grid
     UniformGridBuilder uni_grid { UniformGridBuilder(
-        v3(0.), v3(box_size), cell_size) };
+        v3(0.f), v3(box_size), cell_size) };
     // build the device-side usable POD
     const UniformGrid grid { uni_grid.construct(x) };
 
@@ -271,8 +277,8 @@ TEST_CASE("Test Uniform Grid")
         for (uint i { 0 }; i < N; ++i) {
             // CAPTURE(x.get()[i]);
             CAPTURE(i);
-            // make sure there were no out of bounds positions due to potential
-            // error in test setup
+            // make sure there were no out of bounds positions due to
+            // potential error in test setup
             CHECK(x_host[i].x >= 0.);
             CHECK(x_host[i].x <= box_size);
             CHECK(x_host[i].y >= 0.);
@@ -306,18 +312,21 @@ TEST_CASE("Test Uniform Grid")
 
     // shuffle it to simulate non-coherent accesses
     thrust::default_random_engine g;
+
     thrust::shuffle(x.get().begin(), x.get().end(), g);
 
-    ankerl::nanobench::Bench().run("Uniform Grid Construction", [&]() {
-        const UniformGrid grid { uni_grid.construct(x) };
-        CUDA_CHECK(cudaDeviceSynchronize());
-    });
+    ankerl::nanobench::Bench().run(
+        "Uniform Grid Construction (No Reordering)", [&]() {
+            const UniformGrid grid { uni_grid.construct(x) };
+            CUDA_CHECK(cudaDeviceSynchronize());
+        });
 
+    const UniformGrid unordered_grid { uni_grid.construct(x) };
     ankerl::nanobench::Bench().minEpochIterations(5).run(
-        "Uniform Grid Query", [&]() {
+        "Uniform Grid Query (No Reordering)", [&]() {
             _test_kernel_uniform_grid<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
-                d_res_count.ptr(), d_res_len2.ptr(), d_res_vec.ptr(), grid,
-                r_c_2);
+                d_res_count.ptr(), d_res_len2.ptr(), d_res_vec.ptr(),
+                unordered_grid, r_c_2);
             CUDA_CHECK(cudaDeviceSynchronize());
         });
 }

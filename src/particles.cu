@@ -43,7 +43,7 @@ Particles::Particles(const int N, float _rho_0)
     , m(N)
     , x(N)
     , tmp3(1)
-    , tmp(1) {};
+    , tmp(1) { };
 
 void Particles::resize_uninit(uint N)
 {
