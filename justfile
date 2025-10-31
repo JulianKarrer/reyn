@@ -34,6 +34,7 @@ docs:
     mkdir -p {{DOCS_DIR}}
     rm -rf docs
     mkdir -p docs
+    touch docs/.nojekyll
     rm -rf {{DOCS_DIR}}/api
     rm -rf {{DOCS_DIR}}/_build
     rm -rf {{DOCS_DIR}}/_templates
