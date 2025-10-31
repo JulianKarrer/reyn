@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Struct GUI::DragState" href="structGUI_1_1DragState.html"><link rel="prev" title="C++ Documentation" href="library_root.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Template Function _compute_densities - REYN documentation</title>
+        <title>Struct DeviceBuffer::ExternallyManagedBuffer - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -194,9 +194,9 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="structExternallyManagedBuffer.html">Template Struct ExternallyManagedBuffer</a></li>
+  <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
@@ -299,7 +299,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_SESPH_8cu_1aba566f7a9d8682d7817098b1eb61ee6d.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/structDeviceBuffer_1_1ExternallyManagedBuffer.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -317,17 +317,39 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="template-function-compute-densities">
-<span id="exhale-function-sesph-8cu-1aba566f7a9d8682d7817098b1eb61ee6d"></span><h1>Template Function _compute_densities<a class="headerlink" href="#template-function-compute-densities" title="Link to this heading">¶</a></h1>
+          <section id="struct-devicebuffer-externallymanagedbuffer">
+<span id="exhale-struct-structdevicebuffer-1-1externallymanagedbuffer"></span><h1>Struct DeviceBuffer::ExternallyManagedBuffer<a class="headerlink" href="#struct-devicebuffer-externallymanagedbuffer" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_solvers_SESPH.cu.html#file-src-solvers-sesph-cu"><span class="std std-ref">File SESPH.cu</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_buffer.cuh.html#file-src-buffer-cuh"><span class="std std-ref">File buffer.cuh</span></a></p></li>
 </ul>
-<section id="function-documentation">
-<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_8IsKernel_6ResortE18_compute_densitiesvPK6float3PKfPfK4uintK1KK11UniformGridI1RE">
-<span id="_CPPv3I_8IsKernel_6ResortE18_compute_densitiesPK6float3PKfPfK4uintK1KK11UniformGridI1RE"></span><span id="_CPPv2I_8IsKernel_6ResortE18_compute_densitiesPK6float3PKfPfK4uintK1KK11UniformGridI1RE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">IsKernel</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">K</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="enum_uniformgrid_8cuh_1aeb06162af7ad362186923f98ceffd77a.html#_CPPv46Resort" title="Resort"><span class="n"><span class="pre">Resort</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="SESPH_8cu_1aba566f7a9d8682d7817098b1eb61ee6d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_compute_densities</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rho</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_8IsKernel_6ResortE18_compute_densitiesvPK6float3PKfPfK4uintK1KK11UniformGridI1RE" title="_compute_densities::K"><span class="n"><span class="pre">K</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">W</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structUniformGrid.html#_CPPv4I_6ResortE11UniformGrid" title="UniformGrid"><span class="n"><span class="pre">UniformGrid</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_8IsKernel_6ResortE18_compute_densitiesvPK6float3PKfPfK4uintK1KK11UniformGridI1RE" title="_compute_densities::R"><span class="n"><span class="pre">R</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">grid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_8IsKernel_6ResortE18_compute_densitiesvPK6float3PKfPfK4uintK1KK11UniformGridI1RE" title="Link to this definition">¶</a><br /></dt>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading">¶</a></h2>
+<p>This struct is a nested type of <a class="reference internal" href="classDeviceBuffer.html#exhale-class-classdevicebuffer"><span class="std std-ref">Template Class DeviceBuffer</span></a>.</p>
+</section>
+<section id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading">¶</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N12DeviceBuffer23ExternallyManagedBufferE">
+<span id="_CPPv3N12DeviceBuffer23ExternallyManagedBufferE"></span><span id="_CPPv2N12DeviceBuffer23ExternallyManagedBufferE"></span><span id="DeviceBuffer::ExternallyManagedBuffer"></span><span class="target" id="structDeviceBuffer_1_1ExternallyManagedBuffer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExternallyManagedBuffer</span></span></span><a class="headerlink" href="#_CPPv4N12DeviceBuffer23ExternallyManagedBufferE" title="Link to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12DeviceBuffer23ExternallyManagedBuffer6activeE">
+<span id="_CPPv3N12DeviceBuffer23ExternallyManagedBuffer6activeE"></span><span id="_CPPv2N12DeviceBuffer23ExternallyManagedBuffer6activeE"></span><span id="DeviceBuffer::ExternallyManagedBuffer::active__b"></span><span class="target" id="structDeviceBuffer_1_1ExternallyManagedBuffer_1a218bb849a0c234548fdecebe74416fb7"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">active</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N12DeviceBuffer23ExternallyManagedBuffer6activeE" title="Link to this definition">¶</a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12DeviceBuffer23ExternallyManagedBuffer3rawE">
+<span id="_CPPv3N12DeviceBuffer23ExternallyManagedBuffer3rawE"></span><span id="_CPPv2N12DeviceBuffer23ExternallyManagedBuffer3rawE"></span><span id="DeviceBuffer::ExternallyManagedBuffer::raw__TP"></span><span class="target" id="structDeviceBuffer_1_1ExternallyManagedBuffer_1a7413961fad7012d643b04923c1583644"></span><span class="n"><span class="pre">T</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">raw</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N12DeviceBuffer23ExternallyManagedBuffer3rawE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N12DeviceBuffer23ExternallyManagedBuffer4sizeE">
+<span id="_CPPv3N12DeviceBuffer23ExternallyManagedBuffer4sizeE"></span><span id="_CPPv2N12DeviceBuffer23ExternallyManagedBuffer4sizeE"></span><span id="DeviceBuffer::ExternallyManagedBuffer::size__s"></span><span class="target" id="structDeviceBuffer_1_1ExternallyManagedBuffer_1a74a7bb2257ed0f0c243ef9842d68f1dd"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N12DeviceBuffer23ExternallyManagedBuffer4sizeE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
 
 </section>
 </section>
@@ -337,8 +359,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="structGUI_1_1DragState.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Struct GUI::DragState</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="library_root.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">C++ Documentation</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -369,9 +409,15 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Template Function _compute_densities</a><ul>
-<li><a class="reference internal" href="#function-documentation">Function Documentation</a><ul>
-<li><a class="reference internal" href="#_CPPv4I_8IsKernel_6ResortE18_compute_densitiesvPK6float3PKfPfK4uintK1KK11UniformGridI1RE"><code class="docutils literal notranslate"><span class="pre">_compute_densities()</span></code></a></li>
+<li><a class="reference internal" href="#">Struct DeviceBuffer::ExternallyManagedBuffer</a><ul>
+<li><a class="reference internal" href="#nested-relationships">Nested Relationships</a></li>
+<li><a class="reference internal" href="#struct-documentation">Struct Documentation</a><ul>
+<li><a class="reference internal" href="#_CPPv4N12DeviceBuffer23ExternallyManagedBufferE"><code class="docutils literal notranslate"><span class="pre">DeviceBuffer::ExternallyManagedBuffer</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4N12DeviceBuffer23ExternallyManagedBuffer6activeE"><code class="docutils literal notranslate"><span class="pre">active</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12DeviceBuffer23ExternallyManagedBuffer3rawE"><code class="docutils literal notranslate"><span class="pre">raw</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N12DeviceBuffer23ExternallyManagedBuffer4sizeE"><code class="docutils literal notranslate"><span class="pre">size</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

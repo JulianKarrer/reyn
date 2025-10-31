@@ -7,7 +7,7 @@
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Template Function _compute_accelerations_and_integrate - REYN documentation</title>
+        <title>Function _opengl_check_link - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -196,7 +196,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="structExternallyManagedBuffer.html">Template Struct ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
@@ -299,7 +299,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_SESPH_8cu_1acf0bdab09cfda872f2123b7ce3b8cd7b.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_gui_8cu_1a53440411e4584cb892884a39acc421d5.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -317,17 +317,26 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="template-function-compute-accelerations-and-integrate">
-<span id="exhale-function-sesph-8cu-1acf0bdab09cfda872f2123b7ce3b8cd7b"></span><h1>Template Function _compute_accelerations_and_integrate<a class="headerlink" href="#template-function-compute-accelerations-and-integrate" title="Link to this heading">¶</a></h1>
+          <section id="function-opengl-check-link">
+<span id="exhale-function-gui-8cu-1a53440411e4584cb892884a39acc421d5"></span><h1>Function _opengl_check_link<a class="headerlink" href="#function-opengl-check-link" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_solvers_SESPH.cu.html#file-src-solvers-sesph-cu"><span class="std std-ref">File SESPH.cu</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_gui.cu.html#file-src-gui-cu"><span class="std std-ref">File gui.cu</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4I_8IsKernel_6ResortE36_compute_accelerations_and_integratevP6float3P6float3PKfPKfK4uintK1KKfKfKfKfKfK11UniformGridI1RE">
-<span id="_CPPv3I_8IsKernel_6ResortE36_compute_accelerations_and_integrateP6float3P6float3PKfPKfK4uintK1KKfKfKfKfKfK11UniformGridI1RE"></span><span id="_CPPv2I_8IsKernel_6ResortE36_compute_accelerations_and_integrateP6float3P6float3PKfPKfK4uintK1KKfKfKfKfKfK11UniformGridI1RE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">IsKernel</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">K</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="enum_uniformgrid_8cuh_1aeb06162af7ad362186923f98ceffd77a.html#_CPPv46Resort" title="Resort"><span class="n"><span class="pre">Resort</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="SESPH_8cu_1acf0bdab09cfda872f2123b7ce3b8cd7b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_compute_accelerations_and_integrate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">v</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rho</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_8IsKernel_6ResortE36_compute_accelerations_and_integratevP6float3P6float3PKfPKfK4uintK1KKfKfKfKfKfK11UniformGridI1RE" title="_compute_accelerations_and_integrate::K"><span class="n"><span class="pre">K</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">W</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">k</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rho_0</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dt</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nu</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structUniformGrid.html#_CPPv4I_6ResortE11UniformGrid" title="UniformGrid"><span class="n"><span class="pre">UniformGrid</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_8IsKernel_6ResortE36_compute_accelerations_and_integratevP6float3P6float3PKfPKfK4uintK1KKfKfKfKfKfK11UniformGridI1RE" title="_compute_accelerations_and_integrate::R"><span class="n"><span class="pre">R</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">grid</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_8IsKernel_6ResortE36_compute_accelerations_and_integratevP6float3P6float3PKfPKfK4uintK1KKfKfKfKfKfK11UniformGridI1RE" title="Link to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv418_opengl_check_link6GLuintPKc">
+<span id="_CPPv318_opengl_check_link6GLuintPKc"></span><span id="_CPPv218_opengl_check_link6GLuintPKc"></span><span id="_opengl_check_link__GLuint.cCP"></span><span class="target" id="gui_8cu_1a53440411e4584cb892884a39acc421d5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_opengl_check_link</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">GLuint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">program</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">message</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418_opengl_check_link6GLuintPKc" title="Link to this definition">¶</a><br /></dt>
+<dd><p>OpenGL convenience function for checking the success of program linking and retrieving and displaying errors if any occured. See <a class="reference external" href="https://learnopengl.com/Getting-started/Shaders">https://learnopengl.com/Getting-started/Shaders</a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>program</strong> – program to check </p></li>
+<li><p><strong>message</strong> – message to display on failure </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 </section>
@@ -369,9 +378,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Template Function _compute_accelerations_and_integrate</a><ul>
+<li><a class="reference internal" href="#">Function _opengl_check_link</a><ul>
 <li><a class="reference internal" href="#function-documentation">Function Documentation</a><ul>
-<li><a class="reference internal" href="#_CPPv4I_8IsKernel_6ResortE36_compute_accelerations_and_integratevP6float3P6float3PKfPKfK4uintK1KKfKfKfKfKfK11UniformGridI1RE"><code class="docutils literal notranslate"><span class="pre">_compute_accelerations_and_integrate()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv418_opengl_check_link6GLuintPKc"><code class="docutils literal notranslate"><span class="pre">_opengl_check_link()</span></code></a></li>
 </ul>
 </li>
 </ul>

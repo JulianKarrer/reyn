@@ -196,7 +196,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="structExternallyManagedBuffer.html">Template Struct ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
@@ -352,14 +352,11 @@
 <span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">target_fps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">60.</span><span class="p">);</span>
 <span class="w">    </span><span class="o">~</span><span class="n">GUI</span><span class="p">();</span>
 
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">initialize_buffer</span><span class="p">(</span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">initialize_buffers</span><span class="p">(</span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">);</span>
 
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="nf">update_or_exit</span><span class="p">(</span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Scene</span><span class="w"> </span><span class="n">scene</span><span class="p">);</span>
 
-<span class="w">    </span><span class="kt">float3</span><span class="o">*</span><span class="w"> </span><span class="nf">map_buffer</span><span class="p">();</span>
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">unmap_buffer</span><span class="p">();</span>
-
-<span class="w">    </span><span class="kt">float3</span><span class="o">*</span><span class="w"> </span><span class="nf">resize_mapped_buffer</span><span class="p">(</span><span class="n">uint</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">resize_mapped_buffers</span><span class="p">(</span><span class="n">uint</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">);</span>
 
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">_update_proj</span><span class="p">();</span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">update_view</span><span class="p">();</span>
@@ -375,6 +372,10 @@
 <span class="w">    </span><span class="n">GUI</span><span class="o">&amp;</span><span class="w"> </span><span class="n">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">GUI</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">delete</span><span class="p">;</span>
 
 <span class="n">private</span><span class="o">:</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">map_buffers</span><span class="p">(</span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">unmap_buffers</span><span class="p">();</span>
+
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">pos_cuda_mapped</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">};</span>
 
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">col_cuda_mapped</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">};</span>
@@ -382,6 +383,7 @@
 
 <span class="w">    </span><span class="c1">// internals for GUI</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">exit_requested</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">ATOMIC_VAR_INIT</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">fps_gui_sim_coupled</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">};</span>
 <span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">target_fps</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">60.</span><span class="w"> </span><span class="p">};</span>
 <span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">sim_fps</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.</span><span class="w"> </span><span class="p">};</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">should_render</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">};</span>
@@ -432,7 +434,7 @@
 <span class="w">    </span><span class="n">ImFont</span><span class="o">*</span><span class="w"> </span><span class="n">font</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// OpenGL resources</span>
-<span class="w">    </span><span class="n">GLuint</span><span class="w"> </span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="n">vao</span><span class="p">,</span><span class="w"> </span><span class="n">pos_vbo</span><span class="p">,</span><span class="w"> </span><span class="n">col_vbo</span><span class="p">;</span>
+<span class="w">    </span><span class="n">GLuint</span><span class="w"> </span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="n">vao</span><span class="p">,</span><span class="w"> </span><span class="n">x_vbo</span><span class="p">,</span><span class="w"> </span><span class="n">y_vbo</span><span class="p">,</span><span class="w"> </span><span class="n">z_vbo</span><span class="p">,</span><span class="w"> </span><span class="n">col_vbo</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">fov</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">45.0</span><span class="w"> </span><span class="p">};</span>
 <span class="w">    </span><span class="n">glm</span><span class="o">::</span><span class="n">mat4</span><span class="w"> </span><span class="n">proj</span><span class="p">;</span>
 <span class="w">    </span><span class="n">glm</span><span class="o">::</span><span class="n">mat4</span><span class="w"> </span><span class="n">view</span><span class="p">;</span>
@@ -457,14 +459,16 @@
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">colour_map_selector</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span>
 
 <span class="w">    </span><span class="c1">// CUDA resources</span>
-<span class="w">    </span><span class="n">cudaGraphicsResource</span><span class="o">*</span><span class="w"> </span><span class="n">cuda_pos_vbo_resource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaGraphicsResource</span><span class="o">*</span><span class="w"> </span><span class="n">cuda_x_vbo_resource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaGraphicsResource</span><span class="o">*</span><span class="w"> </span><span class="n">cuda_y_vbo_resource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaGraphicsResource</span><span class="o">*</span><span class="w"> </span><span class="n">cuda_z_vbo_resource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
 <span class="w">    </span><span class="n">cudaGraphicsResource</span><span class="o">*</span><span class="w"> </span><span class="n">cuda_col_vbo_resource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
 
 <span class="w">    </span><span class="c1">// internal functions for setup and events</span>
 <span class="w">    </span><span class="n">GLuint</span><span class="w"> </span><span class="nf">compile_shader</span><span class="p">();</span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">glfw_process_input</span><span class="p">();</span>
 
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">create_and_register_buffer</span><span class="p">(</span><span class="n">uint</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">create_and_register_buffers</span><span class="p">(</span><span class="n">uint</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
 
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">destroy_and_deregister_buffers</span><span class="p">();</span>
 

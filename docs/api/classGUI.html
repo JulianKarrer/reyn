@@ -196,7 +196,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="structExternallyManagedBuffer.html">Template Struct ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
@@ -363,8 +363,8 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N3GUI17initialize_bufferER9Particles">
-<span id="_CPPv3N3GUI17initialize_bufferER9Particles"></span><span id="_CPPv2N3GUI17initialize_bufferER9Particles"></span><span id="GUI::initialize_buffer__ParticlesR"></span><span class="target" id="classGUI_1ae79dd468ff03dee099e60a349ab93cc3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initialize_buffer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classParticles.html#_CPPv49Particles" title="Particles"><span class="n"><span class="pre">Particles</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI17initialize_bufferER9Particles" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI18initialize_buffersER9Particles">
+<span id="_CPPv3N3GUI18initialize_buffersER9Particles"></span><span id="_CPPv2N3GUI18initialize_buffersER9Particles"></span><span id="GUI::initialize_buffers__ParticlesR"></span><span class="target" id="classGUI_1a22ba94124ce93d2a355883430ed254ad"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initialize_buffers</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classParticles.html#_CPPv49Particles" title="Particles"><span class="n"><span class="pre">Particles</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI18initialize_buffersER9Particles" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Method called by the <code class="docutils literal notranslate"><a class="reference internal" href="classParticles.html#classParticles"><span class="std std-ref"><span class="pre">Particles</span></span></a></code> class on construction with a reference to itself if constructed using a <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a> instance to make sure that the positions buffer managed by the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a> to enable zero-copy visualization of particle positions is mapped for use by CUDA and ready to go. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -392,24 +392,15 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N3GUI10map_bufferEv">
-<span id="_CPPv3N3GUI10map_bufferEv"></span><span id="_CPPv2N3GUI10map_bufferEv"></span><span id="GUI::map_buffer"></span><span class="target" id="classGUI_1a7a16ea0c16f961fd761a494025081059"></span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">map_buffer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI10map_bufferEv" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Map the position VBO for use by CUDA and obtain a pointer to the buffer of particle positions. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N3GUI12unmap_bufferEv">
-<span id="_CPPv3N3GUI12unmap_bufferEv"></span><span id="_CPPv2N3GUI12unmap_bufferEv"></span><span id="GUI::unmap_buffer"></span><span class="target" id="classGUI_1aa6719b7bffcffa6e14631e6e1e849e69"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">unmap_buffer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI12unmap_bufferEv" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Unmap the position vertex buffer from CUDA and enable its use by OpenGL for rendering. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N3GUI20resize_mapped_bufferE4uint">
-<span id="_CPPv3N3GUI20resize_mapped_bufferE4uint"></span><span id="_CPPv2N3GUI20resize_mapped_bufferE4uint"></span><span id="GUI::resize_mapped_buffer__uint"></span><span class="target" id="classGUI_1ae3da72aa60cf72b9b04a2befb93d45f2"></span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">resize_mapped_buffer</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI20resize_mapped_bufferE4uint" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI21resize_mapped_buffersE4uintR9Particles">
+<span id="_CPPv3N3GUI21resize_mapped_buffersE4uintR9Particles"></span><span id="_CPPv2N3GUI21resize_mapped_buffersE4uintR9Particles"></span><span id="GUI::resize_mapped_buffers__uint.ParticlesR"></span><span class="target" id="classGUI_1a8746027399de59435a7b859582ad35ac"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resize_mapped_buffers</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <a class="reference internal" href="classParticles.html#_CPPv49Particles" title="Particles"><span class="n"><span class="pre">Particles</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI21resize_mapped_buffersE4uintR9Particles" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Resize the particle positions buffer. Must be called while mapped for use by CUDA. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>N</strong> – desired number of particles </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> – desired number of particles </p></li>
+<li><p><strong>state</strong> – state containing position <code class="docutils literal notranslate"><a class="reference internal" href="classDeviceBuffer.html#classDeviceBuffer"><span class="std std-ref"><span class="pre">DeviceBuffer</span></span></a></code>s to update </p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pointer to the resized and mapped buffer. </p>
@@ -543,11 +534,9 @@
 <li><a class="reference internal" href="#_CPPv43GUI"><code class="docutils literal notranslate"><span class="pre">GUI</span></code></a><ul>
 <li><a class="reference internal" href="#_CPPv4N3GUI3GUIEiibd"><code class="docutils literal notranslate"><span class="pre">GUI()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUID0Ev"><code class="docutils literal notranslate"><span class="pre">~GUI()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N3GUI17initialize_bufferER9Particles"><code class="docutils literal notranslate"><span class="pre">initialize_buffer()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI18initialize_buffersER9Particles"><code class="docutils literal notranslate"><span class="pre">initialize_buffers()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI14update_or_exitER9ParticlesK5Scene"><code class="docutils literal notranslate"><span class="pre">update_or_exit()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N3GUI10map_bufferEv"><code class="docutils literal notranslate"><span class="pre">map_buffer()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N3GUI12unmap_bufferEv"><code class="docutils literal notranslate"><span class="pre">unmap_buffer()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N3GUI20resize_mapped_bufferE4uint"><code class="docutils literal notranslate"><span class="pre">resize_mapped_buffer()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI21resize_mapped_buffersE4uintR9Particles"><code class="docutils literal notranslate"><span class="pre">resize_mapped_buffers()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI12_update_projEv"><code class="docutils literal notranslate"><span class="pre">_update_proj()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI11update_viewEv"><code class="docutils literal notranslate"><span class="pre">update_view()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI3GUIERK3GUI"><code class="docutils literal notranslate"><span class="pre">GUI()</span></code></a></li>

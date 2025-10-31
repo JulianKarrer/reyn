@@ -7,7 +7,7 @@
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Function init_box_kernel - REYN documentation</title>
+        <title>Function v3(const uint&amp;, const float *, const float *, const float *) - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -196,7 +196,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="structExternallyManagedBuffer.html">Template Struct ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
@@ -299,7 +299,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_scene_8cu_1a8647548215c15e34a5b595bf84d9e76b.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_vector__helper_8cuh_1a1e0abb2b185c58a6979bfd2231df8831.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -317,18 +317,17 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="function-init-box-kernel">
-<span id="exhale-function-scene-8cu-1a8647548215c15e34a5b595bf84d9e76b"></span><h1>Function init_box_kernel<a class="headerlink" href="#function-init-box-kernel" title="Link to this heading">¶</a></h1>
+          <section id="function-v3-const-uint-const-float-const-float-const-float">
+<span id="exhale-function-vector-helper-8cuh-1a1e0abb2b185c58a6979bfd2231df8831"></span><h1>Function v3(const uint&amp;, const float *, const float *, const float *)<a class="headerlink" href="#function-v3-const-uint-const-float-const-float-const-float" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_scene.cu.html#file-src-scene-cu"><span class="std std-ref">File scene.cu</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_vector_helper.cuh.html#file-src-vector-helper-cuh"><span class="std std-ref">File vector_helper.cuh</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv415init_box_kernel6float3P6float3P6float3Pf4int34uintff">
-<span id="_CPPv315init_box_kernel6float3P6float3P6float3Pf4int34uintff"></span><span id="_CPPv215init_box_kernel6float3P6float3P6float3Pf4int34uintff"></span><span id="init_box_kernel__float3.float3P.float3P.floatP.int3.uint.float.float"></span><span class="target" id="scene_8cu_1a8647548215c15e34a5b595bf84d9e76b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">init_box_kernel</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">min</span></span>, <span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">v</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <span class="n"><span class="pre">int3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">nxyz</span></span>, <span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rho_0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415init_box_kernel6float3P6float3P6float3Pf4int34uintff" title="Link to this definition">¶</a><br /></dt>
-<dd><p><a class="reference internal" href="classKernel.html#classKernel"><span class="std std-ref">Kernel</span></a> used by one of the Scene constructors to initialize a set of dynamic particles in a box using CUDA directly to set each position. </p>
-</dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv42v3RK4uintPKfPKfPKf">
+<span id="_CPPv32v3RK4uintPKfPKfPKf"></span><span id="_CPPv22v3RK4uintPKfPKfPKf"></span><span id="v3__uintCR.floatCP.floatCP.floatCP"></span><span class="target" id="vector__helper_8cuh_1a1e0abb2b185c58a6979bfd2231df8831"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">v3</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">i</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">y</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">z</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv42v3RK4uintPKfPKfPKf" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 </section>
 </section>
@@ -370,9 +369,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Function init_box_kernel</a><ul>
+<li><a class="reference internal" href="#">Function v3(const uint&amp;, const float *, const float *, const float *)</a><ul>
 <li><a class="reference internal" href="#function-documentation">Function Documentation</a><ul>
-<li><a class="reference internal" href="#_CPPv415init_box_kernel6float3P6float3P6float3Pf4int34uintff"><code class="docutils literal notranslate"><span class="pre">init_box_kernel()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv42v3RK4uintPKfPKfPKf"><code class="docutils literal notranslate"><span class="pre">v3()</span></code></a></li>
 </ul>
 </li>
 </ul>

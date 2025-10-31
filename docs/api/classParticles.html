@@ -196,7 +196,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="structExternallyManagedBuffer.html">Template Struct ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
@@ -349,29 +349,14 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N9Particles5set_xEP6float3">
-<span id="_CPPv3N9Particles5set_xEP6float3"></span><span id="_CPPv2N9Particles5set_xEP6float3"></span><span id="Particles::set_x__float3P"></span><span class="target" id="classParticles_1a15cecbde195685775b029d06fc2a091c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_x</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Particles5set_xEP6float3" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Set the pointer to the position buffer. Used by <a class="reference internal" href="classGUI.html#classGUI"><span class="std std-ref">GUI</span></a> to ensure externally managed position buffers that are shared with OpenGL VBOs and mapped for use by CUDA are consistent. </p>
-<p>When using a <a class="reference internal" href="classGUI.html#classGUI"><span class="std std-ref">GUI</span></a> to manage positions through sharing a buffer with the OpenGL VBO used for visualization and mapping and unmapping the buffer for use with CUDA, this method must be called by the <a class="reference internal" href="classGUI.html#classGUI"><span class="std std-ref">GUI</span></a> in every time step to ensure the correct positions buffer is used. Apart from the internals of the <a class="reference internal" href="classGUI.html#classGUI"><span class="std std-ref">GUI</span></a>, this function should not be used, hence it outputs an error message and causes a crash if not used on a <code class="docutils literal notranslate"><a class="reference internal" href="#classParticles"><span class="std std-ref"><span class="pre">Particles</span></span></a></code> instance initialized using a <code class="docutils literal notranslate"><a class="reference internal" href="classGUI.html#classGUI"><span class="std std-ref"><span class="pre">GUI</span></span></a></code> instance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – new pointer to positions</p></li>
-<li><p><strong>x</strong> – the updated pointer to the buffer of particle positions </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N9Particles13resize_uninitE4uint">
 <span id="_CPPv3N9Particles13resize_uninitE4uint"></span><span id="_CPPv2N9Particles13resize_uninitE4uint"></span><span id="Particles::resize_uninit__uint"></span><span class="target" id="classParticles_1ac47f07fe6ee1636fdd65281fc1e6a59a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resize_uninit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Particles13resize_uninitE4uint" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Resize all buffers. This leaves the positions buffer uninitialized if externally handled by the <a class="reference internal" href="classGUI.html#classGUI"><span class="std std-ref">GUI</span></a> for OpenGL interop! </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N9Particles6gatherERK12DeviceBufferI4uintE">
-<span id="_CPPv3N9Particles6gatherERK12DeviceBufferI4uintE"></span><span id="_CPPv2N9Particles6gatherERK12DeviceBufferI4uintE"></span><span id="Particles::gather__DeviceBuffer:uint:CR"></span><span class="target" id="classParticles_1a56c51a1b3e8f75d71bdbe69a5ade983a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gather</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sorted</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Particles6gatherERK12DeviceBufferI4uintE" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE">
+<span id="_CPPv3N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE"></span><span id="_CPPv2N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE"></span><span id="Particles::gather__DeviceBuffer:uint:CR.DeviceBuffer:float:R"></span><span class="target" id="classParticles_1a48923063e2d385d5213358f6cc7a27f3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gather</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sorted</span></span>, <a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tmp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE" title="Link to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -388,13 +373,33 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N9Particles1xE">
-<span id="_CPPv3N9Particles1xE"></span><span id="_CPPv2N9Particles1xE"></span><span id="Particles::x__DeviceBuffer:float3:"></span><span class="target" id="classParticles_1a1b719769a4b9f74e14e5b60f3ee10b8e"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">float3</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">x</span></span></span><a class="headerlink" href="#_CPPv4N9Particles1xE" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N9Particles2xxE">
+<span id="_CPPv3N9Particles2xxE"></span><span id="_CPPv2N9Particles2xxE"></span><span id="Particles::xx__DeviceBuffer:float:"></span><span class="target" id="classParticles_1a9737c17c4e919815e86aba08f09beb36"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">xx</span></span></span><a class="headerlink" href="#_CPPv4N9Particles2xxE" title="Link to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N9Particles1vE">
-<span id="_CPPv3N9Particles1vE"></span><span id="_CPPv2N9Particles1vE"></span><span id="Particles::v__DeviceBuffer:float3:"></span><span class="target" id="classParticles_1a3106bdc655908654300db0d166c2f307"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">float3</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">v</span></span></span><a class="headerlink" href="#_CPPv4N9Particles1vE" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N9Particles2xyE">
+<span id="_CPPv3N9Particles2xyE"></span><span id="_CPPv2N9Particles2xyE"></span><span id="Particles::xy__DeviceBuffer:float:"></span><span class="target" id="classParticles_1a39491ad5c6afdf6d32d67a9497e4d638"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">xy</span></span></span><a class="headerlink" href="#_CPPv4N9Particles2xyE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9Particles2xzE">
+<span id="_CPPv3N9Particles2xzE"></span><span id="_CPPv2N9Particles2xzE"></span><span id="Particles::xz__DeviceBuffer:float:"></span><span class="target" id="classParticles_1abb7a05871e90ff57841bec1645e9f9ed"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">xz</span></span></span><a class="headerlink" href="#_CPPv4N9Particles2xzE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9Particles2vxE">
+<span id="_CPPv3N9Particles2vxE"></span><span id="_CPPv2N9Particles2vxE"></span><span id="Particles::vx__DeviceBuffer:float:"></span><span class="target" id="classParticles_1a4a8f4453170d8f25ec062df2fb1f6d7d"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vx</span></span></span><a class="headerlink" href="#_CPPv4N9Particles2vxE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9Particles2vyE">
+<span id="_CPPv3N9Particles2vyE"></span><span id="_CPPv2N9Particles2vyE"></span><span id="Particles::vy__DeviceBuffer:float:"></span><span class="target" id="classParticles_1a8dd5d3dfa8ff16027c1c4b3f6ecccab4"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vy</span></span></span><a class="headerlink" href="#_CPPv4N9Particles2vyE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9Particles2vzE">
+<span id="_CPPv3N9Particles2vzE"></span><span id="_CPPv2N9Particles2vzE"></span><span id="Particles::vz__DeviceBuffer:float:"></span><span class="target" id="classParticles_1a19bc2e85475942e152da6910000cd786"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vz</span></span></span><a class="headerlink" href="#_CPPv4N9Particles2vzE" title="Link to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
@@ -405,16 +410,6 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N9Particles5rho_0E">
 <span id="_CPPv3N9Particles5rho_0E"></span><span id="_CPPv2N9Particles5rho_0E"></span><span id="Particles::rho_0__float"></span><span class="target" id="classParticles_1a2e5941f7309734f3056208643bce54f8"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rho_0</span></span></span><a class="headerlink" href="#_CPPv4N9Particles5rho_0E" title="Link to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N9Particles4tmp3E">
-<span id="_CPPv3N9Particles4tmp3E"></span><span id="_CPPv2N9Particles4tmp3E"></span><span id="Particles::tmp3__DeviceBuffer:float3:"></span><span class="target" id="classParticles_1a8b2c90fc13d7d7b1abea8900f2c426f4"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">float3</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tmp3</span></span></span><a class="headerlink" href="#_CPPv4N9Particles4tmp3E" title="Link to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N9Particles3tmpE">
-<span id="_CPPv3N9Particles3tmpE"></span><span id="_CPPv2N9Particles3tmpE"></span><span id="Particles::tmp__DeviceBuffer:float:"></span><span class="target" id="classParticles_1a57e6b3c7901596ba7103dabe4ad153bc"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tmp</span></span></span><a class="headerlink" href="#_CPPv4N9Particles3tmpE" title="Link to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
@@ -489,17 +484,18 @@
 <li><a class="reference internal" href="#_CPPv49Particles"><code class="docutils literal notranslate"><span class="pre">Particles</span></code></a><ul>
 <li><a class="reference internal" href="#_CPPv4N9Particles9ParticlesEKif"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles9ParticlesEP3GUIf"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N9Particles5set_xEP6float3"><code class="docutils literal notranslate"><span class="pre">set_x()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles13resize_uninitE4uint"><code class="docutils literal notranslate"><span class="pre">resize_uninit()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N9Particles6gatherERK12DeviceBufferI4uintE"><code class="docutils literal notranslate"><span class="pre">gather()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">gather()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles9ParticlesERK9Particles"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9ParticlesaSERK9Particles"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N9Particles1xE"><code class="docutils literal notranslate"><span class="pre">x</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N9Particles1vE"><code class="docutils literal notranslate"><span class="pre">v</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9Particles2xxE"><code class="docutils literal notranslate"><span class="pre">xx</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9Particles2xyE"><code class="docutils literal notranslate"><span class="pre">xy</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9Particles2xzE"><code class="docutils literal notranslate"><span class="pre">xz</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9Particles2vxE"><code class="docutils literal notranslate"><span class="pre">vx</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9Particles2vyE"><code class="docutils literal notranslate"><span class="pre">vy</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9Particles2vzE"><code class="docutils literal notranslate"><span class="pre">vz</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles1mE"><code class="docutils literal notranslate"><span class="pre">m</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles5rho_0E"><code class="docutils literal notranslate"><span class="pre">rho_0</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N9Particles4tmp3E"><code class="docutils literal notranslate"><span class="pre">tmp3</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N9Particles3tmpE"><code class="docutils literal notranslate"><span class="pre">tmp</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles3guiE"><code class="docutils literal notranslate"><span class="pre">gui</span></code></a></li>
 </ul>
 </li>

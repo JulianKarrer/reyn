@@ -2,7 +2,9 @@
 
 /// @brief Kernel used by one of the Scene constructors to initialize a set of
 /// dynamic particles in a box using CUDA directly to set each position.
-__global__ void init_box_kernel(float3 min, float3* x, float3* v, float* m,
+__global__ void init_box_kernel(float3 min, float* __restrict__ xx,
+    float* __restrict__ xy, float* __restrict__ xz, float* __restrict__ vx,
+    float* __restrict__ vy, float* __restrict__ vz, float* __restrict__ m,
     int3 nxyz, uint N, float h, float rho_0)
 {
     // calculate 3d index from 1d index of invocation and nx, ny limits
@@ -18,9 +20,9 @@ __global__ void init_box_kernel(float3 min, float3* x, float3* v, float* m,
     ix -= iy * nx;
 
     // then initialize positions with spacing h
-    x[i] = min + v3(ix * h, iy * h, iz * h);
+    store_v3(min + v3(ix * h, iy * h, iz * h), i, xx, xy, xz);
     // initial velocities are zero
-    v[i] = v3(0.f);
+    store_v3(v3(0.f), i, vx, vy, vz);
     // assume ideal rest mass for now
     m[i] = rho_0 * h * h * h;
 }
@@ -54,58 +56,62 @@ Scene::Scene(const uint N_desired, const float3 min, const float3 max,
     state.resize_uninit(N);
 
     // place particles using cuda
-    init_box_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(
-        min, state.x.ptr(), state.v.ptr(), state.m.ptr(), nxyz, N, h, rho_0);
+    init_box_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(min, state.xx.ptr(),
+        state.xy.ptr(), state.xz.ptr(), state.vx.ptr(), state.vy.ptr(),
+        state.vz.ptr(), state.m.ptr(), nxyz, N, h, rho_0);
     CUDA_CHECK(cudaGetLastError());
 
     // block and wait for operation to complete
-    // CUDA_CHECK(cudaDeviceSynchronize());
+    CUDA_CHECK(cudaDeviceSynchronize());
 }
 
 __global__ void _hard_enforce_bounds(const float3 bound_min,
-    const float3 bound_max, uint N, float3* x, float3* v)
+    const float3 bound_max, uint N, float* __restrict__ xx,
+    float* __restrict__ xy, float* __restrict__ xz, float* __restrict__ vx,
+    float* __restrict__ vy, float* __restrict__ vz)
 {
     // calculate index and ensure safety at bounds
     auto i { blockIdx.x * blockDim.x + threadIdx.x };
     if (i >= N)
         return;
     // if the point is within the bounding volume, exit early.
-    const float3 x_i { x[i] };
+    const float3 x_i { v3(i, xx, xy, xz) };
     if (bound_min.x <= x_i.x && x_i.x <= bound_max.x && bound_min.y <= x_i.y
         && x_i.y <= bound_max.y && bound_min.z <= x_i.z && x_i.z <= bound_max.z)
         return;
     // if execution reaches this point, find out what violation occured and fix
     // it
     if (x_i.x < bound_min.x) {
-        x[i].x = bound_min.x;
-        v[i].x *= -1e-1;
+        xx[i] = bound_min.x;
+        vx[i] *= -0.5;
     }
     if (x_i.x > bound_max.x) {
-        x[i].x = bound_max.x;
-        v[i].x *= -1e-1;
+        xx[i] = bound_max.x;
+        vx[i] *= -0.5;
     }
     // same for y
     if (x_i.y < bound_min.y) {
-        x[i].y = bound_min.y;
-        v[i].y *= -1e-1;
+        xy[i] = bound_min.y;
+        vy[i] *= -0.5;
     }
     if (x_i.y > bound_max.y) {
-        x[i].y = bound_max.y;
-        v[i].y *= -1e-1;
+        xy[i] = bound_max.y;
+        vy[i] *= -0.5;
     }
     // same for z
     if (x_i.z < bound_min.z) {
-        x[i].z = bound_min.z;
-        v[i].z *= -1e-1;
+        xz[i] = bound_min.z;
+        vz[i] *= -0.5;
     }
     if (x_i.z > bound_max.z) {
-        x[i].z = bound_max.z;
-        v[i].z *= -1e-1;
+        xz[i] = bound_max.z;
+        vz[i] *= -0.5;
     }
 }
 void Scene::hard_enforce_bounds(Particles& state) const
 {
-    _hard_enforce_bounds<<<BLOCKS(N), BLOCK_SIZE>>>(
-        bound_min, bound_max, N, state.x.ptr(), state.v.ptr());
+    _hard_enforce_bounds<<<BLOCKS(N), BLOCK_SIZE>>>(bound_min, bound_max, N,
+        state.xx.ptr(), state.xy.ptr(), state.xz.ptr(), state.vx.ptr(),
+        state.vy.ptr(), state.vz.ptr());
     CUDA_CHECK(cudaGetLastError());
 };

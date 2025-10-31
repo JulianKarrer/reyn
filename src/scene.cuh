@@ -37,9 +37,8 @@ public:
 
     /// @brief Strictly enforce the simulation bounds set at scene creation,
     /// clamping all particle positions in the argument state to scenes bounding
-    /// volume and reflecting any offending velocities while also damping them
-    /// (factor 1e-6) to nearly zero.
-    /// @param state
+    /// volume and reflecting any offending velocities while also damping them.
+    /// @param state `Particles` to clamp to the bounds
     void hard_enforce_bounds(Particles& state) const;
 };
 

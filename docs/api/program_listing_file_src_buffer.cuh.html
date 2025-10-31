@@ -196,7 +196,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="structExternallyManagedBuffer.html">Template Struct ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
@@ -326,38 +326,28 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thrust/device_vector.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;gui.cuh&quot;</span>
 
-<span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">typename</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">ExternallyManagedBuffer</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">active</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">nullptr</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="n">GUI</span><span class="o">*</span><span class="w"> </span><span class="n">gui</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">nullptr</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span>
-<span class="p">};</span>
-
 <span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">typename</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="w"> </span><span class="p">{</span>
+
 <span class="n">private</span><span class="o">:</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">ExternallyManagedBuffer</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">active</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">};</span>
+<span class="w">        </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">nullptr</span><span class="w"> </span><span class="p">};</span>
+<span class="w">        </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="p">};</span>
 <span class="w">    </span><span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">buf</span><span class="p">;</span>
-<span class="w">    </span><span class="n">ExternallyManagedBuffer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ext</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ExternallyManagedBuffer</span><span class="w"> </span><span class="n">ext</span><span class="p">;</span>
 
 <span class="n">public</span><span class="o">:</span>
 <span class="w">    </span><span class="n">DeviceBuffer</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
 <span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">buf</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
-<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">ext</span><span class="p">({</span><span class="w"> </span><span class="p">.</span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
-<span class="w">              </span><span class="p">.</span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span>
-<span class="w">              </span><span class="p">.</span><span class="n">gui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span>
-<span class="w">              </span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">ext</span><span class="p">({</span><span class="w"> </span><span class="p">.</span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{};</span>
 
 <span class="w">    </span><span class="n">DeviceBuffer</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">init</span><span class="p">)</span>
 <span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">buf</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="n">init</span><span class="p">)</span>
-<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">ext</span><span class="p">({</span><span class="w"> </span><span class="p">.</span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
-<span class="w">              </span><span class="p">.</span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span>
-<span class="w">              </span><span class="p">.</span><span class="n">gui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span>
-<span class="w">              </span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">ext</span><span class="p">({</span><span class="w"> </span><span class="p">.</span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{};</span>
 
 <span class="w">    </span><span class="n">DeviceBuffer</span><span class="p">(</span><span class="n">GUI</span><span class="o">*</span><span class="w"> </span><span class="n">_gui</span><span class="p">)</span>
-<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">ext</span><span class="p">({</span><span class="w"> </span><span class="p">.</span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span>
-<span class="w">              </span><span class="p">.</span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span>
-<span class="w">              </span><span class="p">.</span><span class="n">gui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_gui</span><span class="p">,</span>
-<span class="w">              </span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_gui</span><span class="o">-&gt;</span><span class="n">N</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">ext</span><span class="p">({</span><span class="w"> </span><span class="p">.</span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_gui</span><span class="o">-&gt;</span><span class="n">N</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{};</span>
 
 <span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">size</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">    </span><span class="p">{</span>
@@ -370,62 +360,56 @@
 
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">resize</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">new_size</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">data</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span>
 <span class="w">                </span><span class="s">&quot;Resizing an externally managed `DeviceBuffer` using data to &quot;</span>
 <span class="w">                </span><span class="s">&quot;initialize additionally allocated elements with is &quot;</span>
 <span class="w">                </span><span class="s">&quot;unimplemented.&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="n">buf</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">new_size</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">buf</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">new_size</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">};</span>
 
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">resize</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">new_size</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">constexpr</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_same_v</span><span class="o">&lt;</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="kt">float3</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="c1">// if the resized buffer is a float3 buffer, we might have to call</span>
-<span class="w">            </span><span class="c1">// the gui to resize it for us</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="n">ext</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_size</span><span class="p">;</span>
-<span class="w">                </span><span class="n">ext</span><span class="p">.</span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ext</span><span class="p">.</span><span class="n">gui</span><span class="o">-&gt;</span><span class="n">resize_mapped_buffer</span><span class="p">(</span><span class="n">new_size</span><span class="p">);</span>
-<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="n">buf</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">new_size</span><span class="p">);</span>
-<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span>
+<span class="w">                </span><span class="s">&quot;Cannot call resize on externmally managed buffer. Try &quot;</span>
+<span class="w">                </span><span class="s">&quot;GUI::resize_mapped_buffers if applicable&quot;</span><span class="p">);</span>
 <span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="c1">// otherwise, externally managed buffers are unsupported</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span>
-<span class="w">                </span><span class="n">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span>
-<span class="w">                    </span><span class="s">&quot;Externally managed buffers that are not `float3` are &quot;</span>
-<span class="w">                    </span><span class="s">&quot;currently not supported, since they are not resized using &quot;</span>
-<span class="w">                    </span><span class="s">&quot;`gui-&gt;resize_mapped_buffer(new_size)`.&quot;</span><span class="p">);</span>
 <span class="w">            </span><span class="n">buf</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">new_size</span><span class="p">);</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">};</span>
 
 <span class="w">    </span><span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">get</span><span class="p">()</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span>
 <span class="w">                </span><span class="s">&quot;Trying to obtain the `thrust::device_vector` of an externally &quot;</span>
 <span class="w">                </span><span class="s">&quot;managed `DeviceBuffer` cannot succeed.&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="k">else</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">buf</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">};</span>
 
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">thrust</span><span class="o">::</span><span class="n">device_vector</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">get</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span>
 <span class="w">                </span><span class="s">&quot;Trying to obtain the `thrust::device_vector` of an externally &quot;</span>
 <span class="w">                </span><span class="s">&quot;managed `DeviceBuffer` cannot succeed.&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="k">else</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">buf</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">};</span>
 
 <span class="w">    </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="nf">ptr</span><span class="p">()</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">ext</span><span class="p">.</span><span class="n">raw</span><span class="p">;</span>
-<span class="w">        </span><span class="k">else</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">thrust</span><span class="o">::</span><span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">buf</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">};</span>
 
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="nf">ptr</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
@@ -436,17 +420,18 @@
 <span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">thrust</span><span class="o">::</span><span class="n">raw_pointer_cast</span><span class="p">(</span><span class="n">buf</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
 <span class="w">    </span><span class="p">};</span>
 
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">update_raw_ptr</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">new_ptr</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">update_raw_ptr</span><span class="p">(</span><span class="n">T</span><span class="o">*</span><span class="w"> </span><span class="n">new_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">N</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span>
 <span class="w">                </span><span class="s">&quot;Trying to update the raw pointer to a `DeviceBuffer` that was &quot;</span>
 <span class="w">                </span><span class="s">&quot;not constructed to be externally managed.&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="k">else</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">ext</span><span class="p">.</span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new_ptr</span><span class="p">;</span>
+<span class="w">            </span><span class="n">ext</span><span class="p">.</span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">N</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 
-<span class="w">    </span><span class="c1">// prevent copying</span>
 <span class="w">    </span><span class="n">DeviceBuffer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">delete</span><span class="p">;</span>
 <span class="w">    </span><span class="n">DeviceBuffer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">delete</span><span class="p">;</span>
 <span class="p">};</span>

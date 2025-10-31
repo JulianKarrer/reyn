@@ -16,6 +16,20 @@ inline __host__ __device__ float3 v3(const float& x)
     return make_float3(x, x, x);
 };
 
+inline __host__ __device__ float3 v3(const uint& i, const float* __restrict__ x,
+    const float* __restrict__ y, const float* __restrict__ z)
+{
+    return make_float3(x[i], y[i], z[i]);
+};
+
+inline __host__ __device__ void store_v3(const float3& vec, const uint& i,
+    float* __restrict__ x, float* __restrict__ y, float* __restrict__ z)
+{
+    x[i] = vec.x;
+    y[i] = vec.y;
+    z[i] = vec.z;
+};
+
 // BINARY ARITHMATIC OPERATORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 inline __host__ __device__ float3 operator-(const float3& a, const float3& b)

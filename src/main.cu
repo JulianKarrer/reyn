@@ -12,28 +12,37 @@ int main()
         // Setup in required order
         // GUI -> Particles -> Scene -> everything else
         GUI gui(1280, 720, false);
+        std::cout << "gui initialized" << std::endl;
         Particles state(&gui, 1.);
+        // Particles state(10000, 1.);
+        std::cout << "state initialized" << std::endl;
 
         const float dt { 0.0008 };
         const Scene scene(1000000, v3(-1.), v3(0.), v3(-1), v3(1.), 1., state);
+        std::cout << "scene initialized, h=" << scene.h << std::endl;
         const B3 W(2.f * scene.h);
         const uint N { scene.N };
 
         double time { 0. };
         UniformGridBuilder uniform_grid(
             scene.bound_min, scene.bound_max, 2. * scene.h);
+        std::cout << "grid initialized" << std::endl;
+        // single tmp buffer shared for every operation
+        DeviceBuffer<float> tmp(N);
         SESPH<B3, Resort::yes> solver(W, N, 0.005f, scene.h);
+        std::cout << "solver initialized" << std::endl;
 
         // MAIN LOOP
+        std::cout << "fully initialized" << std::endl;
         while (gui.update_or_exit(state, scene)) {
             // update the acceleration datastructure
-            const auto grid { uniform_grid.construct_and_reorder(state) };
+            const auto grid { uniform_grid.construct_and_reorder(state, tmp) };
 
             // then invoke the fluid solver
             solver.step(state, grid, dt);
 
-            // enforce boundary conditions by clamping since the grid relies on
-            // scene bounds being strict for memory safety
+            // enforce boundary conditions by clamping since the grid relies
+            // on scene bounds being strict for memory safety
             scene.hard_enforce_bounds(state);
 
             time += dt;

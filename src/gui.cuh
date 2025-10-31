@@ -55,7 +55,7 @@ public:
     /// to go
     /// @param state `Particles` instance wrapping the VBO of particle positions
     /// allocated by the GUI
-    void initialize_buffer(Particles& state);
+    void initialize_buffers(Particles& state);
 
     /// @brief Update the GUI, rendering particles to screen, handling inputs
     /// and updating the UI if enough time has passed since the last update,
@@ -71,18 +71,12 @@ public:
     /// through the GUI, `true` otherwise
     bool update_or_exit(Particles& state, const Scene scene);
 
-    /// @brief Map the position VBO for use by CUDA and obtain a pointer to the
-    /// buffer of particle positions
-    float3* map_buffer();
-    /// @brief Unmap the position vertex buffer from CUDA and enable its use by
-    /// OpenGL for rendering
-    void unmap_buffer();
-
     /// @brief Resize the particle positions buffer. Must be called while mapped
     /// for use by CUDA.
     /// @param N desired number of particles
+    /// @param state state containing position `DeviceBuffer`s to update
     /// @returns pointer to the resized and mapped buffer.
-    float3* resize_mapped_buffer(uint N);
+    void resize_mapped_buffers(uint N, Particles& state);
 
     /// @brief Update the projection matrix representing the current camera
     /// frustum, which depends on the fov, aspect ratio, near and far planes.
@@ -112,6 +106,14 @@ public:
     GUI& operator=(const GUI&) = delete;
 
 private:
+    /// @brief Map the position VBO for use by CUDA and upodate pointers to the
+    /// buffer of particle positions in the `Particles` state
+    void map_buffers(Particles& state);
+
+    /// @brief Unmap the position vertex buffer from CUDA and enable its use by
+    /// OpenGL for rendering
+    void unmap_buffers();
+
     /// @brief whether or not the position buffer is currently mapped for access
     /// by CUDA
     bool pos_cuda_mapped { false };
@@ -126,6 +128,11 @@ private:
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
     std::atomic<bool> exit_requested { ATOMIC_VAR_INIT(false) };
+    /// @brief Whether the GUI should run at the maximum frame rate,
+    /// unthrottled. This is generally not recommended for computationally
+    /// undemanding scenes since the simulation and rendering will essentially
+    /// run in lockstep, reducing simulation FPS
+    bool fps_gui_sim_coupled { false };
     /// @brief Target maximum FPS in case throttling is required
     double target_fps { 60. };
     /// @brief Measuered frames per second of the simulation
@@ -215,7 +222,7 @@ private:
     ImFont* font;
 
     // OpenGL resources
-    GLuint shader_program, vao, pos_vbo, col_vbo;
+    GLuint shader_program, vao, x_vbo, y_vbo, z_vbo, col_vbo;
     float fov { 45.0 };
     glm::mat4 proj;
     /// @brief The view matrix, representing the orientation of the camera in
@@ -262,7 +269,9 @@ private:
     int colour_map_selector { 0 };
 
     // CUDA resources
-    cudaGraphicsResource* cuda_pos_vbo_resource = nullptr;
+    cudaGraphicsResource* cuda_x_vbo_resource = nullptr;
+    cudaGraphicsResource* cuda_y_vbo_resource = nullptr;
+    cudaGraphicsResource* cuda_z_vbo_resource = nullptr;
     cudaGraphicsResource* cuda_col_vbo_resource = nullptr;
 
     // internal functions for setup and events
@@ -276,7 +285,7 @@ private:
     /// @brief Create the VBO and VAO for positions and register the buffer with
     /// CUDA
     /// @param N The number of `float3` to fit in the positions buffer
-    void create_and_register_buffer(uint N);
+    void create_and_register_buffers(uint N);
 
     /// @brief Delete the VBO and VAO for positions and unregister the buffer
     /// from CUDA.

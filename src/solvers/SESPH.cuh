@@ -35,9 +35,11 @@ public:
         , rho(_N) {};
     ~SESPH() {};
 
-    void step(Particles& state, const UniformGrid<R> grid, float dt);
+    void step(Particles& state, const UniformGrid<R> grid, const float dt);
 
+    /// disallow copying
     SESPH(const SESPH&) = delete;
+    /// disallow assignment
     SESPH& operator=(const SESPH&) = delete;
 };
 

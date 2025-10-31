@@ -24,22 +24,17 @@ class GUI;
 /// time step.
 class Particles {
 public:
-    DeviceBuffer<float3> x;
-    DeviceBuffer<float3> v;
+    DeviceBuffer<float> xx;
+    DeviceBuffer<float> xy;
+    DeviceBuffer<float> xz;
+    DeviceBuffer<float> vx;
+    DeviceBuffer<float> vy;
+    DeviceBuffer<float> vz;
     DeviceBuffer<float> m;
     float rho_0;
 
-    DeviceBuffer<float3> tmp3;
-    DeviceBuffer<float> tmp;
-
     Particles(const int N, float rho_0);
     Particles(GUI* _gui, float _rho_0);
-
-    /// @brief Set the pointer to the position buffer. Used by GUI to ensure
-    /// externally managed position buffers that are shared with OpenGL VBOs and
-    /// mapped for use by CUDA are consistent.
-    /// @param x new pointer to positions
-    void set_x(float3* x);
 
     /// Resize all buffers. This leaves the positions buffer uninitialized if
     /// externally handled by the GUI for OpenGL interop!
@@ -49,7 +44,7 @@ public:
     /// and `nullptr` otherwise
     GUI* const gui { nullptr };
 
-    void gather(const DeviceBuffer<uint>& sorted);
+    void gather(const DeviceBuffer<uint>& sorted, DeviceBuffer<float>& tmp);
 
     // Explicitly forbid a copy constructor, since destructor must only be
     // called once to ensure cudaFree does not free twice

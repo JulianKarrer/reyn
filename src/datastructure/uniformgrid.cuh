@@ -109,15 +109,16 @@ template <Resort R> struct UniformGrid : MaybeSorted<R> {
         const float3, const float>;
 
     template <typename MapOp>
-    __device__ inline auto ff_nbrs(const float3* __restrict__ x, const uint i,
-        MapOp map,
+    __device__ inline auto ff_nbrs(const float* __restrict__ xx,
+        const float* __restrict__ xy, const float* __restrict__ xz,
+        const uint i, MapOp map,
         // the default initial value of the accumulator is the default
         // zero-initialized value of the type that is being accumulated
         AccType<MapOp> initial_value = AccType<MapOp> {}) const
     {
         AccType<MapOp> acc { initial_value };
         // compute the cell id of the queried position
-        const float3 x_i { x[i] };
+        const float3 x_i { v3(i, xx, xy, xz) };
         const int3 cid3 { _index3(x_i, bound_min, cell_size) };
 
         // this strip must be shifted in y and z direction to nine different
@@ -127,21 +128,11 @@ template <Resort R> struct UniformGrid : MaybeSorted<R> {
             for (int iy { -1 }; iy <= 1; ++iy) {
                 const int cid_y { cid3.y + iy };
                 const int cid_z { cid3.z + iz };
-
-                // check if the index provided is in the viable range
-                // otherwise, at the edge of the datastructure, skip
-                // non-existant cells
-                // if (cid_y < 0 || cid_z < 0 || cid_y >=
-                // nxyz.y || cid_z >= nxyz.z)
-                //     continue;
-
                 // from here on, at the given y and z offset, traverse a strip
                 // of grid cells in x-direction, looking for neighbouring
                 // particles:
 
                 // start iterating one cell prior (x-1)
-                // clamping should not be required due to margins:
-                // const int cid_x{max(0, cid3.x - 1)};
                 const int cid_x { cid3.x - 1 };
                 // now, the linearized cell id of the cell at (x-1,y,z) can be
                 // computed
@@ -154,16 +145,13 @@ template <Resort R> struct UniformGrid : MaybeSorted<R> {
                 // cell (x+1,y,z): the index of the last particle in the x+1
                 // cell is < that of the first particle two cells over, i.e. in
                 // (x+2,y,z) or cid_i+3
-
-                // clamping should not be required due to margins:
-                // const uint end_id{prefix[min(nxnynz, cid + 3)]};
                 const uint end_id { prefix[cid + 3] };
 
                 // iterate from start_id inclusive to end_id exclusive
                 for (uint j { start_id }; j < end_id; ++j) {
                     // skip any sample that is not within the search radius
                     const uint s_j { sorted_lookup(j) };
-                    const float3 x_j { x[s_j] };
+                    const float3 x_j { v3(s_j, xx, xy, xz) };
                     const float3 x_ij { x_i - x_j };
                     const float x_ij_l2 { dot(x_ij, x_ij) };
                     // for maximum perfomance, avoid sqrt and compare squared
@@ -231,7 +219,8 @@ private:
     /// coordinate of each cell a particle may reside in
     DeviceBuffer<uint> sorted;
 
-    void _construct(const DeviceBuffer<float3>& x);
+    void _construct(const DeviceBuffer<float>& xx,
+        const DeviceBuffer<float>& xy, const DeviceBuffer<float>& xz);
 
 public:
     /// @brief Construct a uniform grid to efficiently query the neighbourhood
@@ -248,10 +237,13 @@ public:
     /// returning a POD structure that may be used on the device for querying
     /// neighbouring particles at positions within the AABB defined at
     /// construction of this `UniformGridBuilder`.
-    /// @param x the buffer of positions to query
+    /// @param xx x-components of positions to query
+    /// @param xy y-components of positions to query
+    /// @param xz z-components of positions to query
     /// @return a POD usable in a `__device__` context to providee functors that
     /// map and reduce over neighbouring particles around some query position
-    UniformGrid<Resort::no> construct(const DeviceBuffer<float3>& x);
+    UniformGrid<Resort::no> construct(const DeviceBuffer<float>& xx,
+        const DeviceBuffer<float>& xy, const DeviceBuffer<float>& xz);
 
     /// @brief Construct the uniform grid for the given buffer of query points,
     /// returning a POD structure that may be used on the device for querying
@@ -263,9 +255,12 @@ public:
     /// coherency.
     /// @param state the `Particles` state containing the positions to query and
     /// the buffers to reorder
+    /// @param tmp a temporary buffer used for the gathering operation that
+    /// reorders particle quantities
     /// @return a POD usable in a `__device__` context to providee functors that
     /// map and reduce over neighbouring particles around some query position
-    UniformGrid<Resort::yes> construct_and_reorder(Particles& state);
+    UniformGrid<Resort::yes> construct_and_reorder(
+        Particles& state, DeviceBuffer<float>& tmp);
 
     // no copying
     UniformGridBuilder(const UniformGridBuilder&) = delete;

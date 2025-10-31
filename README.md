@@ -20,6 +20,7 @@
 - [x] Add benchmarking for performance optimization
 - [x] Reorder state according to space-filling curve to improve memory coherency
 - [x] Colour particles according to some attribute like velocity
+- [x] Use Structure of Arrays (AoS) layout for all particle attributes to improve coalescing
 - [ ] Parameterize uniform grid with cell size different from search radius and benchmark for optimal grid size
 - [ ] Add settings management with de-/serialization and expose solver and scene options to GUI
 - [ ] Add scene management, sampling and de-/serialization

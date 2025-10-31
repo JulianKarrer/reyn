@@ -10,8 +10,10 @@ const char* FONT_PATH { "res/JBM.ttf" };
 /// Vertex shader for creating billboard spheres from glPoints
 const char* VERTEX_SHADER = R"GLSL(
     #version 330 core
-    layout (location = 0) in vec3 aPos;
-    layout (location = 1) in float aCol;
+    layout (location = 0) in float x;
+    layout (location = 1) in float y;
+    layout (location = 2) in float z;
+    layout (location = 3) in float col;
     uniform mat4 view; // view matrix
     uniform mat4 proj; // projection matrix
     uniform vec2 viewport; // viewport size
@@ -22,10 +24,10 @@ const char* VERTEX_SHADER = R"GLSL(
 
     void main() {
         // pass the colour vertex attribute through to the fragment shader
-        colour = aCol;
+        colour = col;
 
         // compute the centre of the sphere in view space and clip space
-        centre_vs = view * vec4(aPos, 1.0);
+        centre_vs = view * vec4(x,y,z, 1.0);
         gl_Position = proj * centre_vs;
 
         // if the sphere is behind the camera, disregard it by setting point size to zero
@@ -217,47 +219,60 @@ const char* FRAGMENT_SHADER = R"GLSL(
 
 // OpenGL helper functions
 
-/// OpenGL error checking macro that generalizes using a getIv command for a
-/// specified flag such as `GL_COMPILE_STATUS` or `GL_LINK_STATUS`, checking for
-/// success of the operation and retrieving and displaying errors if any
-/// occured. See https://learnopengl.com/Getting-started/Shaders
-#define OPENGL_CHECK(command, flag, shader, message)                           \
-    {                                                                          \
-        int success;                                                           \
-        char log[512];                                                         \
-        command(shader, flag, &success);                                       \
-        if (!success) {                                                        \
-            glGetShaderInfoLog(shader, 512, NULL, log);                        \
-            std::cout << message << "\n" << log << std::endl;                  \
-        }                                                                      \
+/// @brief OpenGL convenience function for checking the success of shader
+/// compilation and retrieving and displaying errors if any occured. See
+/// https://learnopengl.com/Getting-started/Shaders
+/// @param shader shader to check
+/// @param message message to display on failure
+static void _opengl_check_compile(GLuint shader, const char* message)
+{
+    int success;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        char log[512];
+        glGetShaderInfoLog(shader, 512, NULL, log);
+        std::cout << message << "\n" << log << std::endl;
     }
+}
+/// @brief OpenGL convenience function for checking the success of program
+/// linking and retrieving and displaying errors if any occured. See
+/// https://learnopengl.com/Getting-started/Shaders
+/// @param program program to check
+/// @param message message to display on failure
+static void _opengl_check_link(GLuint program, const char* message)
+{
+    int success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        char log[512];
+        glGetProgramInfoLog(program, 512, NULL, log);
+        std::cout << message << "\n" << log << std::endl;
+    }
+}
 
 GLuint GUI::compile_shader(void)
 {
     // compile the shaders, checking for errors
-    GLuint vertex_shader { glCreateShader(GL_VERTEX_SHADER) };
-    glShaderSource(vertex_shader, 1, &VERTEX_SHADER, NULL);
-    glCompileShader(vertex_shader);
-    OPENGL_CHECK(glGetShaderiv, GL_COMPILE_STATUS, vertex_shader,
-        "Vertex shader compilation failed:")
+    GLuint vert_shader { glCreateShader(GL_VERTEX_SHADER) };
+    glShaderSource(vert_shader, 1, &VERTEX_SHADER, NULL);
+    glCompileShader(vert_shader);
+    _opengl_check_compile(vert_shader, "Vertex shader compilation failed:");
 
-    GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &FRAGMENT_SHADER, NULL);
-    glCompileShader(fragment_shader);
-    OPENGL_CHECK(glGetShaderiv, GL_COMPILE_STATUS, fragment_shader,
-        "Fragment shader compilation failed:")
+    GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(frag_shader, 1, &FRAGMENT_SHADER, NULL);
+    glCompileShader(frag_shader);
+    _opengl_check_compile(frag_shader, "Fragment shader compilation failed:");
 
     // build program from vertex and fragment shaders
     GLuint program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
+    glAttachShader(program, vert_shader);
+    glAttachShader(program, frag_shader);
     glLinkProgram(program);
-    OPENGL_CHECK(glGetProgramiv, GL_LINK_STATUS, fragment_shader,
-        "Shader program linking failed:")
+    _opengl_check_link(program, "Shader program linking failed:");
 
     // delete shaders, return the program id
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
+    glDeleteShader(vert_shader);
+    glDeleteShader(frag_shader);
     return program;
 };
 
@@ -472,7 +487,7 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
     update_view();
 
     // create a buffer and register it for use with CUDA
-    create_and_register_buffer(N);
+    create_and_register_buffers(N);
 
     // start a timer in another thread that periodically sets an atomic bool to
     // true to signal the main thread to update and render the GUI at the target
@@ -486,12 +501,18 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
     });
 }
 
-void GUI::create_and_register_buffer(uint N)
+void GUI::create_and_register_buffers(uint N)
 {
     // create VBO for positions
-    glGenBuffers(1, &pos_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-    glBufferData(GL_ARRAY_BUFFER, N * sizeof(float3), nullptr, GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &x_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, x_vbo);
+    glBufferData(GL_ARRAY_BUFFER, N * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &y_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, y_vbo);
+    glBufferData(GL_ARRAY_BUFFER, N * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &z_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, z_vbo);
+    glBufferData(GL_ARRAY_BUFFER, N * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
     // create vbo for colours
     glGenBuffers(1, &col_vbo);
@@ -500,21 +521,34 @@ void GUI::create_and_register_buffer(uint N)
 
     // expose VBOs to CUDA
     CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
-        &cuda_pos_vbo_resource, pos_vbo, cudaGraphicsMapFlagsWriteDiscard));
+        &cuda_x_vbo_resource, x_vbo, cudaGraphicsMapFlagsWriteDiscard));
+    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
+        &cuda_y_vbo_resource, y_vbo, cudaGraphicsMapFlagsWriteDiscard));
+    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
+        &cuda_z_vbo_resource, z_vbo, cudaGraphicsMapFlagsWriteDiscard));
     CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
         &cuda_col_vbo_resource, col_vbo, cudaGraphicsMapFlagsWriteDiscard));
 
     // create VAO:
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    // - bind position vbo
-    glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float3), (void*)0);
+    // - bind position vbos
+    glBindBuffer(GL_ARRAY_BUFFER, x_vbo);
+    glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // - bind colour vbo
-    glBindBuffer(GL_ARRAY_BUFFER, col_vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, y_vbo);
     glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, z_vbo);
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+    glEnableVertexAttribArray(2);
+
+    // - bind colour vbo
+    glBindBuffer(GL_ARRAY_BUFFER, col_vbo);
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+    glEnableVertexAttribArray(3);
 
     glBindVertexArray(0);
 }
@@ -522,26 +556,48 @@ void GUI::create_and_register_buffer(uint N)
 void GUI::destroy_and_deregister_buffers()
 {
     // de-register VBO from use by CUDA
-    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_pos_vbo_resource));
+    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_x_vbo_resource));
+    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_y_vbo_resource));
+    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_z_vbo_resource));
+
     CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_col_vbo_resource));
+
     // delete VBO and VAO buffers
-    glDeleteBuffers(1, &pos_vbo);
+    glDeleteBuffers(1, &x_vbo);
+    glDeleteBuffers(1, &y_vbo);
+    glDeleteBuffers(1, &z_vbo);
+
     glDeleteBuffers(1, &col_vbo);
     glDeleteVertexArrays(1, &vao);
 }
 
-float3* GUI::map_buffer()
+void GUI::map_buffers(Particles& state)
 {
     // map the buffer for CUDA access
     pos_cuda_mapped = true;
-    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_pos_vbo_resource, 0));
 
-    float3* vertices = nullptr;
-    size_t num_bytes;
+    size_t _num_bytes;
+
+    // map x position buffer and update xx pointer in state
+    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_x_vbo_resource, 0));
+    float* x_ptr = nullptr;
     CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
-        (void**)&vertices, &num_bytes, cuda_pos_vbo_resource));
+        (void**)&x_ptr, &_num_bytes, cuda_x_vbo_resource));
+    state.xx.update_raw_ptr(x_ptr, N);
 
-    return vertices;
+    // map y position buffer and update xy pointer in state
+    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_y_vbo_resource, 0));
+    float* y_ptr = nullptr;
+    CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
+        (void**)&y_ptr, &_num_bytes, cuda_y_vbo_resource));
+    state.xy.update_raw_ptr(y_ptr, N);
+
+    // map z position buffer and update xz pointer in state
+    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_z_vbo_resource, 0));
+    float* z_ptr = nullptr;
+    CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
+        (void**)&z_ptr, &_num_bytes, cuda_z_vbo_resource));
+    state.xz.update_raw_ptr(z_ptr, N);
 }
 
 float* GUI::map_colour_buffer()
@@ -558,10 +614,12 @@ float* GUI::map_colour_buffer()
     return colours;
 }
 
-void GUI::unmap_buffer()
+void GUI::unmap_buffers()
 {
     pos_cuda_mapped = false;
-    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_pos_vbo_resource, 0));
+    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_x_vbo_resource, 0))
+    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_y_vbo_resource, 0))
+    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_z_vbo_resource, 0))
 }
 
 void GUI::unmap_colour_buffer()
@@ -570,16 +628,16 @@ void GUI::unmap_colour_buffer()
     CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_col_vbo_resource, 0));
 }
 
-float3* GUI::resize_mapped_buffer(uint N_new)
+void GUI::resize_mapped_buffers(uint N_new, Particles& state)
 {
     // require that the positions buffer be currently mapped for usage by CUDA,
     // such that a CUDA-valid pointer can be returned after remapping
     if (!pos_cuda_mapped)
         throw std::runtime_error(
-            "resize_mapped_buffer called on an unmapped buffer");
+            "resize_mapped_buffers called on an unmapped buffer");
 
     // unmap the buffer
-    unmap_buffer();
+    unmap_buffers();
 
     // clean up CUDA binding of vbo
     destroy_and_deregister_buffers();
@@ -588,24 +646,24 @@ float3* GUI::resize_mapped_buffer(uint N_new)
     this->N = N_new;
 
     // create the buffer with the correct, new size
-    create_and_register_buffer(N_new);
+    create_and_register_buffers(N_new);
 
     // map the buffer for use by CUDA and return the resulting pointer
-    return map_buffer();
+    map_buffers(state);
 }
 
-void GUI::initialize_buffer(Particles& state)
-{
-    // map the buffer and let the state of the particle reflect the location of
-    // the mapped position buffer
-    state.set_x(map_buffer());
-};
+void GUI::initialize_buffers(Particles& state) { map_buffers(state); };
 
 bool GUI::update_or_exit(Particles& state, const Scene scene)
 {
     // declare a static variable for measuring how much time has passed since
     // the last re-render
     static auto prev { std::chrono::steady_clock::now() };
+    // update the fps counter of the simulation, regardless of whether the GUI
+    // will re-render in this invocation
+    const auto now { std::chrono::steady_clock::now() };
+    sim_fps = 1000ms / (now - prev);
+    prev = now;
 
     // if an  exit was requested by the GUI, pass that information on to the
     // caller and return immediately
@@ -614,7 +672,7 @@ bool GUI::update_or_exit(Particles& state, const Scene scene)
     // if the `timer` thread has not deemed it time to re-render yet, also
     // return early but with return value indicating no exit from the
     // application
-    if (!should_render.load())
+    if (!fps_gui_sim_coupled && !should_render.load())
         return true;
 
     // otherwise, render:
@@ -622,27 +680,30 @@ bool GUI::update_or_exit(Particles& state, const Scene scene)
     // first, fill the colour buffer
     if (use_per_particle_colour) {
         float* col_buf = map_colour_buffer();
-        thrust::transform(state.v.get().begin(), state.v.get().end(), col_buf,
-            [] __device__(float3 const v) { return norm(v); });
+        // display velocities
+        auto vx { state.vx.ptr() };
+        auto vy { state.vy.ptr() };
+        auto vz { state.vz.ptr() };
+        thrust::transform(thrust::counting_iterator<size_t>(0),
+            thrust::counting_iterator<size_t>(state.vx.size()),
+            thrust::device_pointer_cast(col_buf),
+            [vx, vy, vz] __device__(
+                size_t i) { return norm(v3(vx[i], vy[i], vz[i])); });
+
         unmap_colour_buffer();
     }
 
     // then unmap the particle position buffer from CUDA so that OpenGL can use
     // it as a VBO for drawing spheres
-    unmap_buffer();
-
-    // update the fps counter of the GUI
-    const auto now { std::chrono::steady_clock::now() };
-    sim_fps = 1000ms / (now - prev);
-    prev = now;
+    unmap_buffers();
 
     // now the main update to the GUI can happen, drawing to the screen,
     // processing inputs and handling interaction with UI elements
     update(scene.h);
 
-    // before returning, remap the positions buffer and reflect that change in
+    // before returning, remap the positions buffers and reflect that change in
     // the particle state in case the pointer has changed
-    state.set_x(map_buffer());
+    map_buffers(state);
 
     // finally, reset the flag for needing to render until the timer sets it
     // again to throttle rendering to the `target_fps`
@@ -736,6 +797,7 @@ void GUI::imgui_draw()
     ImGui::Text("GUI interval %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
         io->Framerate);
     ImGui::Text("SIM interval %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
+    ImGui::Checkbox("Run GUI and SIM at same rate", &fps_gui_sim_coupled);
     if (ImGui::Button("Exit"))
         exit_requested.store(true);
     if (ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f))
@@ -764,7 +826,7 @@ GUI::~GUI()
     // join the timer thread to prevent leaks
     timer.join();
     // unmap, unregister VBOs from CUDA and delete them
-    unmap_buffer();
+    unmap_buffers();
     destroy_and_deregister_buffers();
     // clearn up OpenGL
     glDeleteProgram(shader_program);

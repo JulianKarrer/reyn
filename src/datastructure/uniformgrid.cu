@@ -3,24 +3,31 @@
 #include <thrust/scan.h>
 #include <thrust/shuffle.h>
 #include <thrust/random.h>
+#include <thrust/sequence.h>
+#include <thrust/gather.h>
+#include <iostream>
+#include <fstream>
 
 #include <random>
 
 #include "datastructure/uniformgrid.cuh"
 #include "doctest/doctest.h"
 #include <nanobench.h>
+#include "kernels.cuh"
 
 /// @brief Called first during uniform grid construction: atomically count the
 /// number of particles in each grid cell
 __global__ void _count_particles_per_cell(const uint N,
-    const float3* __restrict__ x, uint* __restrict__ counts, const uint nx,
+    const float* __restrict__ xx, const float* __restrict__ xy,
+    const float* __restrict__ xz, uint* __restrict__ counts, const uint nx,
     const uint nxny, const float3 bound_min, const float cell_size)
 {
     auto i { blockIdx.x * blockDim.x + threadIdx.x };
     if (i >= N)
         return;
     // compute linearized cell index of particle position
-    auto index_linear = _index_linear(x[i], bound_min, cell_size, nx, nxny);
+    const float3 x_i { v3(i, xx, xy, xz) };
+    auto index_linear = _index_linear(x_i, bound_min, cell_size, nx, nxny);
     // also, atomically increment the particle count for the cell in the linear
     // list of grid cells
     atomicAdd(&counts[index_linear], 1); // don't use return value
@@ -30,7 +37,8 @@ __global__ void _count_particles_per_cell(const uint N,
 /// indices by obtaining the index into particles of the same cell from the
 /// prefix sum and the index within the cell from atomically decrementing the
 /// particle counts per cell
-__global__ void _counting_sort(const uint N, const float3* __restrict__ x,
+__global__ void _counting_sort(const uint N, const float* __restrict__ xx,
+    const float* __restrict__ xy, const float* __restrict__ xz,
     uint* __restrict__ sorted, uint* __restrict__ counts,
     const uint* __restrict__ prefix, const uint nx, const uint nxny,
     const float3 bound_min, const float cell_size)
@@ -39,7 +47,8 @@ __global__ void _counting_sort(const uint N, const float3* __restrict__ x,
     if (i >= N)
         return;
     // recompute linearized particle index
-    uint index_linear { _index_linear(x[i], bound_min, cell_size, nx, nxny) };
+    const float3 x_i { v3(i, xx, xy, xz) };
+    uint index_linear { _index_linear(x_i, bound_min, cell_size, nx, nxny) };
     // the index to the first particle in the same cell as particle i is given
     // by the number of particles with a lower index, i.e. the prefix sum at i
     uint offset_to_cell { prefix[index_linear] };
@@ -85,10 +94,11 @@ UniformGridBuilder::UniformGridBuilder(const float3 bound_min,
                                  "construction of uniform grid.");
 };
 
-void UniformGridBuilder::_construct(const DeviceBuffer<float3>& x)
+void UniformGridBuilder::_construct(const DeviceBuffer<float>& xx,
+    const DeviceBuffer<float>& xy, const DeviceBuffer<float>& xz)
 {
     // get the number of particles
-    const uint N { (uint)x.size() };
+    const uint N { (uint)xx.size() };
 
     // resize the buffer of sorted indices to fit the number of particles, if
     // required initialization does not matter since everything is overwritten
@@ -98,8 +108,9 @@ void UniformGridBuilder::_construct(const DeviceBuffer<float3>& x)
     // - compute the cell index of each particle
     // - linearize it to obtain a pointer into the flat `counts` array
     // - and atomically increment the particle count in the `counts`
-    _count_particles_per_cell<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
-        counts.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min, _cell_size);
+    _count_particles_per_cell<<<BLOCKS(N), BLOCK_SIZE>>>(N, xx.ptr(), xy.ptr(),
+        xz.ptr(), counts.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min,
+        _cell_size);
     CUDA_CHECK(cudaGetLastError());
 
     // copy counts -> prefix
@@ -118,17 +129,18 @@ void UniformGridBuilder::_construct(const DeviceBuffer<float3>& x)
     // the prefix sum is an offset to particles in the same cell, atomicSub on
     // counts then distributes unique offsets on top of that for each particle
     // in the same cell
-    _counting_sort<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(), sorted.ptr(),
-        counts.ptr(), prefix.ptr(), nxyz.x, nxyz.x * nxyz.y, _bound_min,
-        _cell_size);
+    _counting_sort<<<BLOCKS(N), BLOCK_SIZE>>>(N, xx.ptr(), xy.ptr(), xz.ptr(),
+        sorted.ptr(), counts.ptr(), prefix.ptr(), nxyz.x, nxyz.x * nxyz.y,
+        _bound_min, _cell_size);
     CUDA_CHECK(cudaGetLastError());
 }
 
 UniformGrid<Resort::no> UniformGridBuilder::construct(
-    const DeviceBuffer<float3>& x)
+    const DeviceBuffer<float>& xx, const DeviceBuffer<float>& xy,
+    const DeviceBuffer<float>& xz)
 {
     // reconstruct the datastructure from current position data
-    _construct(x);
+    _construct(xx, xy, xz);
     // pack all relevant pointers and information for queries into a POD struct
     // and return it
     return UniformGrid<Resort::no> { { .sorted = sorted.ptr() }, _bound_min,
@@ -137,14 +149,14 @@ UniformGrid<Resort::no> UniformGridBuilder::construct(
 }
 
 UniformGrid<Resort::yes> UniformGridBuilder::construct_and_reorder(
-    Particles& state)
+    Particles& state, DeviceBuffer<float>& tmp)
 {
     // reconstruct the datastructure from current position data
-    _construct(state.x);
+    _construct(state.xx, state.xy, state.xz);
     // then reorder the particle state such that the sorted array becomes the
     // sequence 0...N-1, i.e. redirection through sorted becomes superfluous and
     // a more efficient uniform grid can be returned
-    state.gather(sorted);
+    state.gather(sorted, tmp);
 
     // pack all relevant pointers and information for queries into a POD
     // struct and return it
@@ -161,7 +173,8 @@ UniformGrid<Resort::yes> UniformGridBuilder::construct_and_reorder(
 // TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 __global__ void _test_kernel_uniform_grid(const uint N,
-    const float3* __restrict__ x, uint* __restrict__ count_out,
+    const float* __restrict__ xx, const float* __restrict__ xy,
+    const float* __restrict__ xz, uint* __restrict__ count_out,
     float* __restrict__ len2_out, float3* __restrict__ vec_out,
     const UniformGrid<Resort::no> grid, const float r_c_2)
 {
@@ -169,22 +182,22 @@ __global__ void _test_kernel_uniform_grid(const uint N,
     if (i >= N)
         return;
 
-    count_out[i] = grid.ff_nbrs(
-        x, i, [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+    count_out[i] = grid.ff_nbrs(xx, xy, xz, i,
+        [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
             return (x_ij_l2 <= r_c_2) ? (i == j ? 0u : 1u) : 0u;
         });
-    len2_out[i] = grid.ff_nbrs(
-        x, i, [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+    len2_out[i] = grid.ff_nbrs(xx, xy, xz, i,
+        [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
             return (x_ij_l2 <= r_c_2) ? dot(x_ij, x_ij) : 0.f;
         });
-    vec_out[i] = grid.ff_nbrs(
-        x, i, [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+    vec_out[i] = grid.ff_nbrs(xx, xy, xz, i,
+        [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
             return (x_ij_l2 <= r_c_2) ? x_ij : v3(0.);
         });
 }
-
 __global__ void _test_kernel_uniform_grid_brute_force(const uint N,
-    const float3* __restrict__ x, uint* __restrict__ count_out,
+    const float* __restrict__ xx, const float* __restrict__ xy,
+    const float* __restrict__ xz, uint* __restrict__ count_out,
     float* __restrict__ len2_out, float3* __restrict__ vec_out,
     const UniformGrid<Resort::no> grid, const float r_c_2)
 {
@@ -192,9 +205,9 @@ __global__ void _test_kernel_uniform_grid_brute_force(const uint N,
     if (i >= N)
         return;
 
-    const float3 x_i { x[i] };
+    const float3 x_i { v3(i, xx, xy, xz) };
     for (uint j { 0 }; j < N; ++j) {
-        const float3 x_ij { x_i - x[j] };
+        const float3 x_ij { x_i - v3(j, xx, xy, xz) };
         const float x_ij_l2 { dot(x_ij, x_ij) };
         if (x_ij_l2 <= r_c_2) {
             count_out[i] += i == j ? 0u : 1u;
@@ -202,6 +215,21 @@ __global__ void _test_kernel_uniform_grid_brute_force(const uint N,
             vec_out[i] += x_ij;
         }
     }
+}
+
+template <IsKernel K, Resort R>
+__global__ void _benchmark_kernel(const uint N, const float* __restrict__ xx,
+    const float* __restrict__ xy, const float* __restrict__ xz,
+    float* __restrict__ res_out, const UniformGrid<R> grid, const K W)
+{
+    auto i { blockIdx.x * blockDim.x + threadIdx.x };
+    if (i >= N)
+        return;
+
+    res_out[i] = grid.ff_nbrs(
+        xx, xy, xz, i, [=] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+            return xx[i] * xx[j] * W(x_ij);
+        });
 }
 
 TEST_CASE("Test Uniform Grid")
@@ -215,29 +243,31 @@ TEST_CASE("Test Uniform Grid")
 
     /// create a seeded pseudorandom vector of float3 uniformly randomly
     /// distributed in [0; box_size]^3 on the host side
-    thrust::host_vector<float3> x_host(N);
+    thrust::host_vector<float> xx_host(N);
+    thrust::host_vector<float> xy_host(N);
+    thrust::host_vector<float> xz_host(N);
     std::mt19937 rng(161);
     std::uniform_real_distribution<float> uniform_dist(0.f, 1.f);
 
-    uint i { 0 };
-    for (uint x { 0 }; x < side_length; ++x)
-        for (uint y { 0 }; y < side_length; ++y)
-            for (uint z { 0 }; z < side_length; ++z) {
-                auto half_jitter { v3(h * uniform_dist(rng),
-                    h * uniform_dist(rng), h * uniform_dist(rng)) };
-                x_host[i] = half_jitter + v3((float)x, (float)y, (float)z);
-                i += 1;
-            }
+    for (uint i { 0 }; i < N; ++i) {
+        xx_host[i] = box_size * uniform_dist(rng);
+        xy_host[i] = box_size * uniform_dist(rng);
+        xz_host[i] = box_size * uniform_dist(rng);
+    }
 
     // copy the random host-side buffer to the device
-    DeviceBuffer<float3> x(N);
-    thrust::copy(x_host.begin(), x_host.end(), x.get().begin());
+    DeviceBuffer<float> xx(N);
+    DeviceBuffer<float> xy(N);
+    DeviceBuffer<float> xz(N);
+    thrust::copy(xx_host.begin(), xx_host.end(), xx.get().begin());
+    thrust::copy(xy_host.begin(), xy_host.end(), xy.get().begin());
+    thrust::copy(xz_host.begin(), xz_host.end(), xz.get().begin());
 
     // create the uniform grid
     UniformGridBuilder uni_grid { UniformGridBuilder(
-        v3(0.f), v3(box_size), cell_size) };
+        v3(-h), v3(box_size + h), cell_size) };
     // build the device-side usable POD
-    const UniformGrid grid { uni_grid.construct(x) };
+    const UniformGrid grid { uni_grid.construct(xx, xy, xz) };
 
     // allocate buffers for the results
     DeviceBuffer<uint> d_res_count(N, 0);
@@ -248,13 +278,14 @@ TEST_CASE("Test Uniform Grid")
     DeviceBuffer<float3> d_res_vec_bf(N, v3(0.f));
 
     // execute both kernels
-    _test_kernel_uniform_grid_brute_force<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
-        d_res_count_bf.ptr(), d_res_len2_bf.ptr(), d_res_vec_bf.ptr(), grid,
-        r_c_2);
+    _test_kernel_uniform_grid_brute_force<<<BLOCKS(N), BLOCK_SIZE>>>(N,
+        xx.ptr(), xy.ptr(), xz.ptr(), d_res_count_bf.ptr(), d_res_len2_bf.ptr(),
+        d_res_vec_bf.ptr(), grid, r_c_2);
     CUDA_CHECK(cudaGetLastError());
 
-    _test_kernel_uniform_grid<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
-        d_res_count.ptr(), d_res_len2.ptr(), d_res_vec.ptr(), grid, r_c_2);
+    _test_kernel_uniform_grid<<<BLOCKS(N), BLOCK_SIZE>>>(N, xx.ptr(), xy.ptr(),
+        xz.ptr(), d_res_count.ptr(), d_res_len2.ptr(), d_res_vec.ptr(), grid,
+        r_c_2);
     CUDA_CHECK(cudaGetLastError());
 
     // copy back to host
@@ -279,12 +310,12 @@ TEST_CASE("Test Uniform Grid")
             CAPTURE(i);
             // make sure there were no out of bounds positions due to
             // potential error in test setup
-            CHECK(x_host[i].x >= 0.);
-            CHECK(x_host[i].x <= box_size);
-            CHECK(x_host[i].y >= 0.);
-            CHECK(x_host[i].y <= box_size);
-            CHECK(x_host[i].z >= 0.);
-            CHECK(x_host[i].z <= box_size);
+            CHECK(xx_host[i] >= 0.);
+            CHECK(xx_host[i] <= box_size);
+            CHECK(xy_host[i] >= 0.);
+            CHECK(xy_host[i] <= box_size);
+            CHECK(xz_host[i] >= 0.);
+            CHECK(xz_host[i] <= box_size);
             // check if the brute-force O(N^2) approach and the uniform grid
             // agree
             CHECK(h_res_count[i] == h_res_count_bf[i]);
@@ -295,38 +326,57 @@ TEST_CASE("Test Uniform Grid")
         }
     }
 
-    // run benchmarks
+    // prepare benchmarks
     // use half-jittered uniform grid for more realistic setting for SPH
     uint i_grid { 0 };
     for (uint x { 0 }; x < side_length; ++x)
         for (uint y { 0 }; y < side_length; ++y)
             for (uint z { 0 }; z < side_length; ++z) {
-                x_host[i_grid] = v3(
-                    (float)x * cell_size + 0.5 * cell_size * uniform_dist(rng),
-                    (float)y * cell_size + 0.5 * cell_size * uniform_dist(rng),
-                    (float)z * cell_size + 0.5 * cell_size * uniform_dist(rng));
+                xx_host[i_grid] = (float)x * h + 0.5 * h * uniform_dist(rng);
+                xy_host[i_grid] = (float)y * h + 0.5 * h * uniform_dist(rng);
+                xz_host[i_grid] = (float)z * h + 0.5 * h * uniform_dist(rng);
                 ++i_grid;
             }
+    thrust::copy(xx_host.begin(), xx_host.end(), xx.get().begin());
+    thrust::copy(xy_host.begin(), xy_host.end(), xy.get().begin());
+    thrust::copy(xz_host.begin(), xz_host.end(), xz.get().begin());
 
-    thrust::copy(x_host.begin(), x_host.end(), x.get().begin());
+    // create a random permutation of the sequence 0..=N-1 to shuffle all three
+    // cooridnates with the same random order
+    thrust::device_vector<uint> permutation(N);
+    thrust::sequence(permutation.begin(), permutation.end());
+    thrust::default_random_engine rng_d(1614201312);
+    thrust::shuffle(permutation.begin(), permutation.end(), rng_d);
 
-    // shuffle it to simulate non-coherent accesses
-    thrust::default_random_engine g;
+    // reorder coordinates randomly, using d_res_len2_bf as a temporary buffer
+    thrust::gather(permutation.begin(), permutation.end(), xx.get().begin(),
+        d_res_len2_bf.get().begin());
+    d_res_len2_bf.get().swap(xx.get());
+    thrust::gather(permutation.begin(), permutation.end(), xy.get().begin(),
+        d_res_len2_bf.get().begin());
+    d_res_len2_bf.get().swap(xy.get());
+    thrust::gather(permutation.begin(), permutation.end(), xz.get().begin(),
+        d_res_len2_bf.get().begin());
+    d_res_len2_bf.get().swap(xz.get());
 
-    thrust::shuffle(x.get().begin(), x.get().end(), g);
+    // run benchmarks
+    ankerl::nanobench::Bench bench;
+    bench.title("Uniform Grid Benchmarks");
 
-    ankerl::nanobench::Bench().run(
-        "Uniform Grid Construction (No Reordering)", [&]() {
-            const UniformGrid grid { uni_grid.construct(x) };
-            CUDA_CHECK(cudaDeviceSynchronize());
-        });
+    bench.run("Construction (No Reordering)", [&]() {
+        const UniformGrid grid { uni_grid.construct(xx, xy, xz) };
+        CUDA_CHECK(cudaDeviceSynchronize());
+    });
 
-    const UniformGrid unordered_grid { uni_grid.construct(x) };
-    ankerl::nanobench::Bench().minEpochIterations(5).run(
-        "Uniform Grid Query (No Reordering)", [&]() {
-            _test_kernel_uniform_grid<<<BLOCKS(N), BLOCK_SIZE>>>(N, x.ptr(),
-                d_res_count.ptr(), d_res_len2.ptr(), d_res_vec.ptr(),
-                unordered_grid, r_c_2);
-            CUDA_CHECK(cudaDeviceSynchronize());
-        });
+    const B3 W(2.f * h);
+    const UniformGrid unordered_grid { uni_grid.construct(xx, xy, xz) };
+    bench.minEpochIterations(10).run("Query (No Reordering)", [&]() {
+        _benchmark_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(N, xx.ptr(), xy.ptr(),
+            xz.ptr(), d_res_len2.ptr(), unordered_grid, W);
+        CUDA_CHECK(cudaDeviceSynchronize());
+    });
+
+    // output benchmark to json
+    std::ofstream benchmark_output("./docs/_static/grid_query.html");
+    bench.render(ankerl::nanobench::templates::htmlBoxplot(), benchmark_output);
 }
