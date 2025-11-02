@@ -36,7 +36,8 @@ int main()
         std::cout << "fully initialized" << std::endl;
         while (gui.update_or_exit(state, scene)) {
             // update the acceleration datastructure
-            const auto grid { uniform_grid.construct_and_reorder(state, tmp) };
+            const auto grid { uniform_grid.construct_and_reorder(
+                2. * scene.h, tmp, state) };
 
             // then invoke the fluid solver
             solver.step(state, grid, dt);

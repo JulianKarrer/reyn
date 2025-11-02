@@ -43,16 +43,7 @@ void Particles::resize_uninit(uint N)
     m.resize(N);
 }
 
-__global__ void _reorder(const uint* map, float* __restrict__ src,
-    float* __restrict__ dst, const uint N)
-{
-    auto i { blockIdx.x * blockDim.x + threadIdx.x };
-    if (i >= N)
-        return;
-    dst[i] = src[map[i]];
-}
-
-void Particles::gather(
+void Particles::reorder(
     const DeviceBuffer<uint>& sorted, DeviceBuffer<float>& tmp)
 {
     // resize the temporary buffers for resorting to fit all particles
@@ -60,34 +51,16 @@ void Particles::gather(
         tmp.resize(sorted.size());
     }
 
-    // gather velocities
-    for (auto v : { &vx, &vy, &vz }) {
-        thrust::gather(sorted.get().begin(), sorted.get().end(),
-            v->get().begin(), tmp.get().begin());
-        tmp.get().swap(v->get());
-    }
+    // reorder velocities
+    vx.reorder(sorted, tmp);
+    vy.reorder(sorted, tmp);
+    vz.reorder(sorted, tmp);
 
-    // gather masses
-    thrust::gather(sorted.get().begin(), sorted.get().end(), m.get().begin(),
-        tmp.get().begin());
-    tmp.get().swap(m.get());
+    // reorder masses
+    m.reorder(sorted, tmp);
 
-    // gather positions
-    for (auto x : { &xx, &xy, &xz }) {
-        if (gui) {
-            uint N { (uint)xx.size() };
-            // if the buffer is externally managed, manually gather
-            _reorder<<<BLOCKS(N), BLOCK_SIZE>>>(
-                sorted.ptr(), x->ptr(), tmp.ptr(), N);
-            // in this case, a copy is required because thrust device_buffer and
-            // a manually managed float* cannot be trivially pointer-swapped
-            cudaMemcpy(x->ptr(), tmp.ptr(), N * sizeof(float),
-                cudaMemcpyDeviceToDevice);
-        } else {
-            // otherwise thrust may be used
-            thrust::gather(sorted.get().begin(), sorted.get().end(),
-                x->get().begin(), tmp.get().begin());
-            tmp.get().swap(x->get());
-        }
-    }
+    // reorder positions
+    xx.reorder(sorted, tmp);
+    xy.reorder(sorted, tmp);
+    xz.reorder(sorted, tmp);
 }

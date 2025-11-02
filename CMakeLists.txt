@@ -2,6 +2,9 @@
 cmake_minimum_required(VERSION 3.6)
 project(reyn LANGUAGES CUDA CXX C ) # C is required for glad
 
+# options when building: benchmark mode
+option(BENCH "define the BENCH preprocessor macro for the `test` target to increase ankerl::nanobench minEpoch count and the size of the test scene" OFF)
+
 # check if cuda is available
 include(CheckLanguage)
 check_language(CUDA)
@@ -195,6 +198,9 @@ set_target_properties(tests PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
     CUDA_RUNTIME_LIBRARY Shared
 )
+
+# for the testing target, the bench macro may be set if requested
+target_compile_definitions(tests PRIVATE $<$<BOOL:${BENCH}>:BENCH>)
 
 target_compile_options(tests PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
     --extended-lambda

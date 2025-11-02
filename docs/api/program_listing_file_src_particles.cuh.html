@@ -195,6 +195,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
@@ -347,7 +348,7 @@
 
 <span class="w">    </span><span class="n">GUI</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">gui</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">nullptr</span><span class="w"> </span><span class="p">};</span>
 
-<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">gather</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="n">uint</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">sorted</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">tmp</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">reorder</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="n">uint</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">sorted</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">tmp</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// Explicitly forbid a copy constructor, since destructor must only be</span>
 <span class="w">    </span><span class="c1">// called once to ensure cudaFree does not free twice</span>

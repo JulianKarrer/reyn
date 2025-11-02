@@ -26,8 +26,9 @@ protected:
     /// The base constructor is protected, instantiate subclasses instead.
     ///
     /// Pre-compute constant values in the constructor:
-    /// - the kernel function is scaled by alpha / h^d
-    /// - the kernel function gradient is scaled by alpha / h^(d+1)
+    /// - the kernel function is scaled by \f$\frac{\alpha}{\hbar^d}\f$
+    /// - the kernel function gradient is scaled by
+    /// \f$\frac{\alpha}{\hbar^{d+1}}\f$
     __host__ __device__ __forceinline__ Kernel(float h_bar, const float alpha)
         : _h_bar_inv(1.0f / h_bar)
         , _W_scale(alpha / (h_bar * h_bar * h_bar))
@@ -76,6 +77,8 @@ concept IsKernel = std::is_base_of_v<Kernel<T>, T>;
 // Kernel function implementations ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// @brief Wendland C2 kernel function [Wendland 95, taken from Stefan Band]
+/// \f[ \alpha = \frac{21}{2\pi} \f]
+/// \f[ w(q) = \left( 1 - q \right)_{+}^4 \cdot (4q + 1) \f]
 class C2 : public Kernel<C2> {
 public:
     __host__ __device__ __forceinline__ C2(float h_bar)
@@ -96,6 +99,9 @@ public:
 };
 
 /// @brief Cubic B-Spline kernel function [Monaghan 92, taken from Stefan Band]
+/// \f[ \alpha = \frac{16}{\pi} \f]
+/// \f[ w(q) = \left( 1 - q \right)_{+}^3 -4 \left(\frac{1}{2} - q\right)_{+}^3
+/// \f]
 class B3 : public Kernel<B3> {
 public:
     __host__ __device__ __forceinline__ B3(float h_bar)

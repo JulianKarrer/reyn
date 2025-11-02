@@ -99,11 +99,13 @@ void UniformGridBuilder::_construct(const DeviceBuffer<float>& xx,
 {
     // get the number of particles
     const uint N { (uint)xx.size() };
+    // the number of entires must be the same across all components
+    assert(xx.size() == xy.size() && xx.size() == xz.size());
 
-    // resize the buffer of sorted indices to fit the number of particles, if
-    // required initialization does not matter since everything is overwritten
-    if (sorted.size() != N)
-        sorted.resize(N);
+    // resize the buffer of sorted indices to fit the number of particles,
+    // if required.
+    //  initialization does not matter since everything is overwritten
+    sorted.resize(N);
 
     // - compute the cell index of each particle
     // - linearize it to obtain a pointer into the flat `counts` array
@@ -135,7 +137,7 @@ void UniformGridBuilder::_construct(const DeviceBuffer<float>& xx,
     CUDA_CHECK(cudaGetLastError());
 }
 
-UniformGrid<Resort::no> UniformGridBuilder::construct(
+UniformGrid<Resort::no> UniformGridBuilder::construct(const float search_radius,
     const DeviceBuffer<float>& xx, const DeviceBuffer<float>& xy,
     const DeviceBuffer<float>& xz)
 {
@@ -144,31 +146,79 @@ UniformGrid<Resort::no> UniformGridBuilder::construct(
     // pack all relevant pointers and information for queries into a POD struct
     // and return it
     return UniformGrid<Resort::no> { { .sorted = sorted.ptr() }, _bound_min,
-        _cell_size, _cell_size * _cell_size, nxyz.x, nxyz.x * nxyz.y,
+        _cell_size, search_radius * search_radius, nxyz.x, nxyz.x * nxyz.y,
         prefix.ptr() };
 }
 
 UniformGrid<Resort::yes> UniformGridBuilder::construct_and_reorder(
-    Particles& state, DeviceBuffer<float>& tmp)
+    const float search_radius, DeviceBuffer<float>& tmp, Particles& state)
 {
     // reconstruct the datastructure from current position data
     _construct(state.xx, state.xy, state.xz);
     // then reorder the particle state such that the sorted array becomes the
     // sequence 0...N-1, i.e. redirection through sorted becomes superfluous and
     // a more efficient uniform grid can be returned
-    state.gather(sorted, tmp);
+    tmp.resize(sorted.size());
+    state.reorder(sorted, tmp);
 
     // pack all relevant pointers and information for queries into a POD
     // struct and return it
+    // indicate that corresponding buffers are sorted so no indirection is
+    // needed in the query
     return UniformGrid<Resort::yes> {
         .bound_min = _bound_min,
         .cell_size = _cell_size,
-        .r_c_2 = _cell_size * _cell_size,
+        .r_c_2 = search_radius * search_radius,
         .nx = nxyz.x,
         .nxny = nxyz.x * nxyz.y,
         .prefix = prefix.ptr(),
     };
 }
+
+template <IsFltDevBufPtr... MoreBufs>
+    requires(sizeof...(MoreBufs) >= 0) // at least one buffer to reorder
+UniformGrid<Resort::yes> UniformGridBuilder::construct_and_reorder(
+    const float search_radius, DeviceBuffer<float>& tmp,
+    DeviceBuffer<float>& xx, DeviceBuffer<float>& xy, DeviceBuffer<float>& xz,
+    MoreBufs... reorder)
+{
+    // construct
+    _construct(xx, xy, xz);
+
+    // reorder (variadic)
+    // reuse the tmp buffer to save memory at the cost of not being able to use
+    // multiple cudaStreams
+    // reorder all position vectors to ensure the query is correct, but also any
+    // of the variable number of additional buffers that were passed in
+    uint N { (uint)sorted.size() };
+    tmp.resize(sorted.size());
+    DeviceBuffer<float>* buffers[] = { reorder... };
+    for (DeviceBuffer<float>* buf : buffers) {
+        buf->reorder(sorted, tmp);
+        // ensure that all resorted buffers fit to reduce the risk of
+        // misusage and runtime errors
+        if (buf->size() != N) {
+            throw std::runtime_error(
+                "Attempted to resort an array of grid construction the "
+                "dimensions of which don't match the number of particles in "
+                "the sorting.");
+        }
+    }
+    xx.reorder(sorted, tmp);
+    xy.reorder(sorted, tmp);
+    xz.reorder(sorted, tmp);
+
+    // return datastructure indicating that corresponding buffers are sorted so
+    // no indirection is needed in the query
+    return UniformGrid<Resort::yes> {
+        .bound_min = _bound_min,
+        .cell_size = _cell_size,
+        .r_c_2 = search_radius * search_radius,
+        .nx = nxyz.x,
+        .nxny = nxyz.x * nxyz.y,
+        .prefix = prefix.ptr(),
+    };
+};
 
 // TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -234,7 +284,14 @@ __global__ void _benchmark_kernel(const uint N, const float* __restrict__ xx,
 
 TEST_CASE("Test Uniform Grid")
 {
-    const uint side_length { 60 };
+
+#ifdef BENCH
+    const uint nanobench_minepoch_qeuery { 50 };
+    const uint side_length { 100 };
+#else
+    const uint nanobench_minepoch_qeuery { 10 };
+    const uint side_length { 50 };
+#endif
     const uint N { side_length * side_length * side_length };
     const float h { 1.1 };
     const float box_size { h * (float)side_length };
@@ -265,9 +322,9 @@ TEST_CASE("Test Uniform Grid")
 
     // create the uniform grid
     UniformGridBuilder uni_grid { UniformGridBuilder(
-        v3(-h), v3(box_size + h), cell_size) };
+        v3(-h * 2.), v3(box_size + h * 2.), h) };
     // build the device-side usable POD
-    const UniformGrid grid { uni_grid.construct(xx, xy, xz) };
+    const UniformGrid grid { uni_grid.construct(2. * h, xx, xy, xz) };
 
     // allocate buffers for the results
     DeviceBuffer<uint> d_res_count(N, 0);
@@ -362,21 +419,47 @@ TEST_CASE("Test Uniform Grid")
     // run benchmarks
     ankerl::nanobench::Bench bench;
     bench.title("Uniform Grid Benchmarks");
-
-    bench.run("Construction (No Reordering)", [&]() {
-        const UniformGrid grid { uni_grid.construct(xx, xy, xz) };
-        CUDA_CHECK(cudaDeviceSynchronize());
-    });
-
     const B3 W(2.f * h);
-    const UniformGrid unordered_grid { uni_grid.construct(xx, xy, xz) };
-    bench.minEpochIterations(10).run("Query (No Reordering)", [&]() {
-        _benchmark_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(N, xx.ptr(), xy.ptr(),
-            xz.ptr(), d_res_len2.ptr(), unordered_grid, W);
+
+    bench.minEpochIterations(nanobench_minepoch_qeuery)
+        .run("Construction (No Reordering)", [&]() {
+            const UniformGrid _ { uni_grid.construct(2. * h, xx, xy, xz) };
+            CUDA_CHECK(cudaDeviceSynchronize());
+        });
+
+    const UniformGrid unordered_grid { uni_grid.construct(2. * h, xx, xy, xz) };
+    bench.minEpochIterations(nanobench_minepoch_qeuery)
+        .run("Query (No Reordering)", [&]() {
+            _benchmark_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(N, xx.ptr(), xy.ptr(),
+                xz.ptr(), d_res_len2.ptr(), unordered_grid, W);
+            CUDA_CHECK(cudaDeviceSynchronize());
+        });
+
+    // now reorder the position attributes using d_res_len2 as a temprorary
+    // buffer
+
+    bench.run("Construction (Reordering)", [&]() {
+        // to make the comparison more fair, reorder 4 additional arrays to
+        // emulate reordering m,vx,vy,vz - but in this benchmark just reorder
+        // the same array 4 times for this
+        const UniformGrid _ { uni_grid.construct_and_reorder(2. * h, d_res_len2,
+            xx, xy, xz, &d_res_len2_bf, &d_res_len2_bf, &d_res_len2_bf,
+            &d_res_len2_bf) };
         CUDA_CHECK(cudaDeviceSynchronize());
     });
 
+    const UniformGrid ordered_grid { uni_grid.construct_and_reorder(
+        2. * h, d_res_len2, xx, xy, xz) };
+    bench.minEpochIterations(nanobench_minepoch_qeuery)
+        .run("Query (Reordering)", [&]() {
+            _benchmark_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(N, xx.ptr(), xy.ptr(),
+                xz.ptr(), d_res_len2.ptr(), ordered_grid, W);
+            CUDA_CHECK(cudaDeviceSynchronize());
+        });
+
+#ifdef BENCH
     // output benchmark to json
-    std::ofstream benchmark_output("./docs/_static/grid_query.html");
-    bench.render(ankerl::nanobench::templates::htmlBoxplot(), benchmark_output);
+    std::ofstream jsonout("./builddocs/_staticc/benchmarks/Current.json");
+    bench.render(ankerl::nanobench::templates::json(), jsonout);
+#endif
 }

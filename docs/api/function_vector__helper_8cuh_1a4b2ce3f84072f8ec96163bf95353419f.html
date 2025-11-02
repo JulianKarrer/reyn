@@ -7,7 +7,7 @@
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Function _reorder - REYN documentation</title>
+        <title>Function floor - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -195,6 +195,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmarks</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
@@ -299,7 +300,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_particles_8cu_1aa1c51f6677446980f5f8e484f4d98c12.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_vector__helper_8cuh_1a4b2ce3f84072f8ec96163bf95353419f.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -317,17 +318,26 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="function-reorder">
-<span id="exhale-function-particles-8cu-1aa1c51f6677446980f5f8e484f4d98c12"></span><h1>Function _reorder<a class="headerlink" href="#function-reorder" title="Link to this heading">¶</a></h1>
+          <section id="function-floor">
+<span id="exhale-function-vector-helper-8cuh-1a4b2ce3f84072f8ec96163bf95353419f"></span><h1>Function floor<a class="headerlink" href="#function-floor" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_particles.cu.html#file-src-particles-cu"><span class="std std-ref">File particles.cu</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_vector_helper.cuh.html#file-src-vector-helper-cuh"><span class="std std-ref">File vector_helper.cuh</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv48_reorderPK4uintPfPfK4uint">
-<span id="_CPPv38_reorderPK4uintPfPfK4uint"></span><span id="_CPPv28_reorderPK4uintPfPfK4uint"></span><span id="_reorder__uintCP.floatP.floatP.uintC"></span><span class="target" id="particles_8cu_1aa1c51f6677446980f5f8e484f4d98c12"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_reorder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">map</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">src</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">dst</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48_reorderPK4uintPfPfK4uint" title="Link to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv45floorRK6float3">
+<span id="_CPPv35floorRK6float3"></span><span id="_CPPv25floorRK6float3"></span><span id="floor__float3CR"></span><span class="target" id="vector__helper_8cuh_1a4b2ce3f84072f8ec96163bf95353419f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">int3</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">floor</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv45floorRK6float3" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Round down each component of a <code class="docutils literal notranslate"><span class="pre">float3</span></code> to the next highest integer smaller than the component. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a</strong> – <code class="docutils literal notranslate"><span class="pre">float3</span></code> to round down </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">int3</span></code> with highest components less than or equal to the respective component of the original vector </p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 </section>
@@ -369,9 +379,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Function _reorder</a><ul>
+<li><a class="reference internal" href="#">Function floor</a><ul>
 <li><a class="reference internal" href="#function-documentation">Function Documentation</a><ul>
-<li><a class="reference internal" href="#_CPPv48_reorderPK4uintPfPfK4uint"><code class="docutils literal notranslate"><span class="pre">_reorder()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv45floorRK6float3"><code class="docutils literal notranslate"><span class="pre">floor()</span></code></a></li>
 </ul>
 </li>
 </ul>

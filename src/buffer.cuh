@@ -2,6 +2,7 @@
 #define BUFFER_H_
 
 #include <thrust/device_vector.h>
+#include <thrust/gather.h>
 #include "gui.cuh"
 
 /// @brief A convenience wrapper for device buffers with RAII handling of alloc
@@ -79,7 +80,8 @@ public:
             throw std::runtime_error(
                 "Cannot call resize on externmally managed buffer. Try "
                 "GUI::resize_mapped_buffers if applicable");
-        } else {
+        }
+        if (buf.size() != new_size) {
             buf.resize(new_size);
         }
     };
@@ -123,7 +125,7 @@ public:
     };
 
     /// @brief Obtain the raw CUDA pointer to the array underlying the device
-    /// buffer, for use in CUDA kernels. Uses `thrust::raw_pointer_cast`.
+    /// buffer, for use in CUDA kernels. Might use `thrust::raw_pointer_cast`.
     /// @return Pointer to the raw data
     const T* ptr() const
     {
@@ -147,6 +149,48 @@ public:
         } else {
             ext.raw = new_ptr;
             ext.size = N;
+        }
+    }
+
+    /// @brief Whether this `DeviceBuffer` has externally managed memory
+    /// underlying it (e.g. mapped for use by CUDA from OpenGL) or not (meaning
+    /// it is a `thrust::device_vector` and corresponding functionality may be
+    /// used)
+    /// @return `true` if externally managed, `false` if `thrust::device_vector`
+    bool is_externally_managed() const { return this->ext.active; }
+
+    /// @brief Reorder the buffer in the order provided by the map `sorted`,
+    /// which must be a permutation of the numbers \f$[0; N-1]\f$. This is
+    /// essentially a gather operation.
+    /// @param sorted permutation of \f$[0; N-1]\f$ to resort
+    /// the buffer with. Must have the same length as the buffer itself.
+    /// @param tmpa temporary buffer used to resort efficiently (and not
+    /// in-place). Must not be an externally managed `DeviceBuffer` since
+    /// `thrust` functionality is used, so this would throw an error.
+    void reorder(const DeviceBuffer<uint>& sorted, DeviceBuffer<float>& tmp)
+    {
+        if (tmp.is_externally_managed() || sorted.is_externally_managed()) {
+            throw std::runtime_error(
+                "map and tmp in reorder operation is must be a "
+                "thrust::device_vector internally");
+        }
+
+        if (this->is_externally_managed()) {
+            // manually reorder and copy
+            uint N { (uint)this->size() };
+            auto data_d { this->ptr() };
+            thrust::transform(sorted.get().begin(), sorted.get().end(),
+                tmp.get().begin(),
+                [data_d] __device__(uint map_i) { return data_d[map_i]; });
+
+            cudaMemcpy(this->ptr(), tmp.ptr(), N * sizeof(float),
+                cudaMemcpyDeviceToDevice);
+        } else {
+            // this, sorting and tmp are all thrust-arrays:
+            // use thrust gather
+            thrust::gather(sorted.get().begin(), sorted.get().end(),
+                this->get().begin(), tmp.get().begin());
+            tmp.get().swap(this->get());
         }
     }
 

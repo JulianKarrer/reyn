@@ -193,6 +193,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmarks</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api/library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
@@ -342,8 +343,6 @@
 </li>
         <li><a href="api/function_gui_8cu_1a53440411e4584cb892884a39acc421d5.html#_CPPv418_opengl_check_link6GLuintPKc">_opengl_check_link (C++ function)</a>
 </li>
-        <li><a href="api/function_particles_8cu_1aa1c51f6677446980f5f8e484f4d98c12.html#_CPPv48_reorderPK4uintPfPfK4uint">_reorder (C++ function)</a>
-</li>
         <li><a href="api/function_uniformgrid_8cu_1a32bdd19d22ec5837c733e70917d76b65.html#_CPPv425_test_kernel_uniform_gridK4uintPKfPKfPKfP4uintPfP6float3K11UniformGridIN6Resort2noEEKf">_test_kernel_uniform_grid (C++ function)</a>
 </li>
         <li><a href="api/function_uniformgrid_8cu_1a709e97ac4be626484c4ff4626bad3797.html#_CPPv437_test_kernel_uniform_grid_brute_forceK4uintPKfPKfPKfP4uintPfP6float3K11UniformGridIN6Resort2noEEKf">_test_kernel_uniform_grid_brute_force (C++ function)</a>
@@ -426,13 +425,17 @@
 </li>
         <li><a href="api/structDeviceBuffer_1_1ExternallyManagedBuffer.html#_CPPv4N12DeviceBuffer23ExternallyManagedBuffer4sizeE">DeviceBuffer::ExternallyManagedBuffer::size (C++ member)</a>
 </li>
+        <li><a href="api/classDeviceBuffer.html#_CPPv4N12DeviceBuffer3getEv">DeviceBuffer::get (C++ function)</a>, <a href="api/classDeviceBuffer.html#_CPPv4NK12DeviceBuffer3getEv">[1]</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/classDeviceBuffer.html#_CPPv4N12DeviceBuffer3getEv">DeviceBuffer::get (C++ function)</a>, <a href="api/classDeviceBuffer.html#_CPPv4NK12DeviceBuffer3getEv">[1]</a>
+        <li><a href="api/classDeviceBuffer.html#_CPPv4NK12DeviceBuffer21is_externally_managedEv">DeviceBuffer::is_externally_managed (C++ function)</a>
 </li>
         <li><a href="api/classDeviceBuffer.html#_CPPv4N12DeviceBufferaSERK12DeviceBuffer">DeviceBuffer::operator= (C++ function)</a>
 </li>
         <li><a href="api/classDeviceBuffer.html#_CPPv4N12DeviceBuffer3ptrEv">DeviceBuffer::ptr (C++ function)</a>, <a href="api/classDeviceBuffer.html#_CPPv4NK12DeviceBuffer3ptrEv">[1]</a>
+</li>
+        <li><a href="api/classDeviceBuffer.html#_CPPv4N12DeviceBuffer7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE">DeviceBuffer::reorder (C++ function)</a>
 </li>
         <li><a href="api/classDeviceBuffer.html#_CPPv4N12DeviceBuffer6resizeE6size_t">DeviceBuffer::resize (C++ function)</a>, <a href="api/classDeviceBuffer.html#_CPPv4N12DeviceBuffer6resizeE6size_tRK1T">[1]</a>
 </li>
@@ -450,12 +453,16 @@
   <h2>F</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/function_vector__helper_8cuh_1a4b2ce3f84072f8ec96163bf95353419f.html#_CPPv45floorRK6float3">floor (C++ function)</a>
+</li>
         <li><a href="api/function_vector__helper_8cuh_1a683a1c9742c1856814004c2d5b70d1ff.html#_CPPv49floor_divRK6float3RKf">floor_div (C++ function)</a>
 </li>
-        <li><a href="api/variable_gui_8cu_1a2937ec248f8396286f6596f62ef50111.html#_CPPv49FONT_PATH">FONT_PATH (C++ member)</a>
+        <li><a href="api/function_vector__helper_8cuh_1af5fe7411fd2df55cd4380a55700d411e.html#_CPPv46floorfRK6float3">floorf (C++ function)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/variable_gui_8cu_1a2937ec248f8396286f6596f62ef50111.html#_CPPv49FONT_PATH">FONT_PATH (C++ member)</a>
+</li>
         <li><a href="api/define_kernels_8cuh_1a1ea0e977ce63145bfc4c8278ed600e66.html#c.FOREACH_KERNEL">FOREACH_KERNEL (C macro)</a>
 </li>
         <li><a href="api/variable_gui_8cu_1ad2341c973a4fd502c489c9da2c268f87.html#_CPPv415FRAGMENT_SHADER">FRAGMENT_SHADER (C++ member)</a>
@@ -610,8 +617,6 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/classParticles.html#_CPPv49Particles">Particles (C++ class)</a>
 </li>
-        <li><a href="api/classParticles.html#_CPPv4N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE">Particles::gather (C++ function)</a>
-</li>
         <li><a href="api/classParticles.html#_CPPv4N9Particles3guiE">Particles::gui (C++ member)</a>
 </li>
         <li><a href="api/classParticles.html#_CPPv4N9Particles1mE">Particles::m (C++ member)</a>
@@ -619,6 +624,8 @@
         <li><a href="api/classParticles.html#_CPPv4N9ParticlesaSERK9Particles">Particles::operator= (C++ function)</a>
 </li>
         <li><a href="api/classParticles.html#_CPPv4N9Particles9ParticlesEKif">Particles::Particles (C++ function)</a>, <a href="api/classParticles.html#_CPPv4N9Particles9ParticlesEP3GUIf">[1]</a>, <a href="api/classParticles.html#_CPPv4N9Particles9ParticlesERK9Particles">[2]</a>
+</li>
+        <li><a href="api/classParticles.html#_CPPv4N9Particles7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE">Particles::reorder (C++ function)</a>
 </li>
         <li><a href="api/classParticles.html#_CPPv4N9Particles13resize_uninitE4uint">Particles::resize_uninit (C++ function)</a>
 </li>
@@ -748,9 +755,9 @@
 </li>
         <li><a href="api/classUniformGridBuilder.html#_CPPv418UniformGridBuilder">UniformGridBuilder (C++ class)</a>
 </li>
-        <li><a href="api/classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder9constructERK12DeviceBufferIfERK12DeviceBufferIfERK12DeviceBufferIfE">UniformGridBuilder::construct (C++ function)</a>
+        <li><a href="api/classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder9constructEKfRK12DeviceBufferIfERK12DeviceBufferIfERK12DeviceBufferIfE">UniformGridBuilder::construct (C++ function)</a>
 </li>
-        <li><a href="api/classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder21construct_and_reorderER9ParticlesR12DeviceBufferIfE">UniformGridBuilder::construct_and_reorder (C++ function)</a>
+        <li><a href="api/classUniformGridBuilder.html#_CPPv4I_Dp14IsFltDevBufPtrEN18UniformGridBuilder21construct_and_reorderE11UniformGridIN6Resort3yesEEKfR12DeviceBufferIfER12DeviceBufferIfER12DeviceBufferIfER12DeviceBufferIfEDp8MoreBufs">UniformGridBuilder::construct_and_reorder (C++ function)</a>, <a href="api/classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder21construct_and_reorderEKfR12DeviceBufferIfER9Particles">[1]</a>
 </li>
         <li><a href="api/classUniformGridBuilder.html#_CPPv4N18UniformGridBuilderaSERK18UniformGridBuilder">UniformGridBuilder::operator= (C++ function)</a>
 </li>

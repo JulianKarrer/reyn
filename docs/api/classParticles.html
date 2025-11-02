@@ -195,6 +195,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
@@ -355,9 +356,18 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE">
-<span id="_CPPv3N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE"></span><span id="_CPPv2N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE"></span><span id="Particles::gather__DeviceBuffer:uint:CR.DeviceBuffer:float:R"></span><span class="target" id="classParticles_1a48923063e2d385d5213358f6cc7a27f3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">gather</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sorted</span></span>, <a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tmp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE" title="Link to this definition">¶</a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N9Particles7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE">
+<span id="_CPPv3N9Particles7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE"></span><span id="_CPPv2N9Particles7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE"></span><span id="Particles::reorder__DeviceBuffer:uint:CR.DeviceBuffer:float:R"></span><span class="target" id="classParticles_1aa97afe343ce61c9adb991c5fcfeb9f7b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reorder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sorted</span></span>, <a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">tmp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Particles7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Reorder all particle attributes (mass, velocities, positions) in the order provided by the map <code class="docutils literal notranslate"><span class="pre">sorted</span></code>, which must be a permutation of the numbers <span class="math notranslate nohighlight">\([0; N-1]\)</span>. This is essentially a gather operation, lifted on all particle attributes. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sorted</strong> – permutation of <span class="math notranslate nohighlight">\([0; N-1]\)</span> to resort particle attributes with. Must have length <code class="docutils literal notranslate"><span class="pre">N</span></code> for <code class="docutils literal notranslate"><span class="pre">N</span></code> particles. </p></li>
+<li><p><strong>tmp</strong> – a temporary buffer used to resort efficiently (and not in-place). Must not be an externally managed <code class="docutils literal notranslate"><a class="reference internal" href="classDeviceBuffer.html#classDeviceBuffer"><span class="std std-ref"><span class="pre">DeviceBuffer</span></span></a></code> since <code class="docutils literal notranslate"><span class="pre">thrust</span></code> functionality is used, so this would throw an error. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N9Particles9ParticlesERK9Particles">
@@ -485,7 +495,7 @@
 <li><a class="reference internal" href="#_CPPv4N9Particles9ParticlesEKif"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles9ParticlesEP3GUIf"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles13resize_uninitE4uint"><code class="docutils literal notranslate"><span class="pre">resize_uninit()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">gather()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9Particles7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">reorder()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles9ParticlesERK9Particles"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9ParticlesaSERK9Particles"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles2xxE"><code class="docutils literal notranslate"><span class="pre">xx</span></code></a></li>
@@ -518,5 +528,7 @@
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
     <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

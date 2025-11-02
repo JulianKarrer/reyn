@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Struct DeviceBuffer::ExternallyManagedBuffer" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html"><link rel="prev" title="FEATURES" href="../index.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Struct DeviceBuffer::ExternallyManagedBuffer" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html"><link rel="prev" title="Benchmarks" href="../benchmarks/index.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -195,6 +195,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmarks</a></li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
@@ -518,6 +519,8 @@
 <li class="toctree-l4"><a class="reference internal" href="classDeviceBuffer.html#_CPPv4N12DeviceBuffer3ptrEv"><code class="docutils literal notranslate"><span class="pre">ptr()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classDeviceBuffer.html#_CPPv4NK12DeviceBuffer3ptrEv"><code class="docutils literal notranslate"><span class="pre">ptr()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classDeviceBuffer.html#_CPPv4N12DeviceBuffer14update_raw_ptrEP1T6size_t"><code class="docutils literal notranslate"><span class="pre">update_raw_ptr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classDeviceBuffer.html#_CPPv4NK12DeviceBuffer21is_externally_managedEv"><code class="docutils literal notranslate"><span class="pre">is_externally_managed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classDeviceBuffer.html#_CPPv4N12DeviceBuffer7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">reorder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classDeviceBuffer.html#_CPPv4N12DeviceBuffer12DeviceBufferERK12DeviceBuffer"><code class="docutils literal notranslate"><span class="pre">DeviceBuffer()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classDeviceBuffer.html#_CPPv4N12DeviceBufferaSERK12DeviceBuffer"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 </ul>
@@ -583,7 +586,7 @@
 <li class="toctree-l4"><a class="reference internal" href="classParticles.html#_CPPv4N9Particles9ParticlesEKif"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classParticles.html#_CPPv4N9Particles9ParticlesEP3GUIf"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classParticles.html#_CPPv4N9Particles13resize_uninitE4uint"><code class="docutils literal notranslate"><span class="pre">resize_uninit()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="classParticles.html#_CPPv4N9Particles6gatherERK12DeviceBufferI4uintER12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">gather()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classParticles.html#_CPPv4N9Particles7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">reorder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classParticles.html#_CPPv4N9Particles9ParticlesERK9Particles"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classParticles.html#_CPPv4N9ParticlesaSERK9Particles"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classParticles.html#_CPPv4N9Particles2xxE"><code class="docutils literal notranslate"><span class="pre">xx</span></code></a></li>
@@ -654,8 +657,9 @@
 <li class="toctree-l2"><a class="reference internal" href="classUniformGridBuilder.html#class-documentation">Class Documentation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="classUniformGridBuilder.html#_CPPv418UniformGridBuilder"><code class="docutils literal notranslate"><span class="pre">UniformGridBuilder</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder18UniformGridBuilderEK6float3K6float3Kf"><code class="docutils literal notranslate"><span class="pre">UniformGridBuilder()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder9constructERK12DeviceBufferIfERK12DeviceBufferIfERK12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">construct()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder21construct_and_reorderER9ParticlesR12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">construct_and_reorder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder9constructEKfRK12DeviceBufferIfERK12DeviceBufferIfERK12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">construct()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder21construct_and_reorderEKfR12DeviceBufferIfER9Particles"><code class="docutils literal notranslate"><span class="pre">construct_and_reorder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="classUniformGridBuilder.html#_CPPv4I_Dp14IsFltDevBufPtrEN18UniformGridBuilder21construct_and_reorderE11UniformGridIN6Resort3yesEEKfR12DeviceBufferIfER12DeviceBufferIfER12DeviceBufferIfER12DeviceBufferIfEDp8MoreBufs"><code class="docutils literal notranslate"><span class="pre">construct_and_reorder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classUniformGridBuilder.html#_CPPv4N18UniformGridBuilder18UniformGridBuilderERK18UniformGridBuilder"><code class="docutils literal notranslate"><span class="pre">UniformGridBuilder()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="classUniformGridBuilder.html#_CPPv4N18UniformGridBuilderaSERK18UniformGridBuilder"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 </ul>
@@ -798,7 +802,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="file_src_particles.cu.html#includes">Includes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="file_src_particles.cu.html#functions">Functions</a></li>
 </ul>
 </li>
 </ul>
@@ -938,14 +941,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../index.html">
+          <a class="prev-page" href="../benchmarks/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Benchmarks</div>
                 
               </div>
             </a>

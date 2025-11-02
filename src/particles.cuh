@@ -44,7 +44,16 @@ public:
     /// and `nullptr` otherwise
     GUI* const gui { nullptr };
 
-    void gather(const DeviceBuffer<uint>& sorted, DeviceBuffer<float>& tmp);
+    /// @brief Reorder all particle attributes (mass, velocities, positions) in
+    /// the order provided by the map `sorted`, which must be a permutation of
+    /// the numbers \f$[0; N-1]\f$. This is essentially a gather operation,
+    /// lifted on all particle attributes.
+    /// @param sorted permutation of \f$[0; N-1]\f$ to resort
+    /// particle attributes with. Must have length `N` for `N` particles.
+    /// @param tmp a temporary buffer used to resort efficiently (and not
+    /// in-place). Must not be an externally managed `DeviceBuffer` since
+    /// `thrust` functionality is used, so this would throw an error.
+    void reorder(const DeviceBuffer<uint>& sorted, DeviceBuffer<float>& tmp);
 
     // Explicitly forbid a copy constructor, since destructor must only be
     // called once to ensure cudaFree does not free twice

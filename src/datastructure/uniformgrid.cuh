@@ -4,6 +4,7 @@
 #include "buffer.cuh"
 #include "vector_helper.cuh"
 #include "particles.cuh"
+#include <thrust/device_vector.h>
 
 /// @brief Compute the 3-dimensional index of a position `pos` within a grid of
 /// specified lower bound of AABB and cell size
@@ -117,35 +118,43 @@ template <Resort R> struct UniformGrid : MaybeSorted<R> {
         AccType<MapOp> initial_value = AccType<MapOp> {}) const
     {
         AccType<MapOp> acc { initial_value };
+        const AccType<MapOp> neutral_element {};
         // compute the cell id of the queried position
         const float3 x_i { v3(i, xx, xy, xz) };
         const int3 cid3 { _index3(x_i, bound_min, cell_size) };
 
-        // this strip must be shifted in y and z direction to nine different
-        // starting positions to cover the full cube of 27 neighbouring cells,
-        // while ensuring that no out-of-bounds accesses occur
-        for (int iz { -1 }; iz <= 1; ++iz) {
-            for (int iy { -1 }; iy <= 1; ++iy) {
-                const int cid_y { cid3.y + iy };
-                const int cid_z { cid3.z + iz };
-                // from here on, at the given y and z offset, traverse a strip
-                // of grid cells in x-direction, looking for neighbouring
-                // particles:
+        // the range is the ceil of the ratio of search radius over cell size,
+        // i.e. how many cells must be searched in each direction to guarantee
+        // that the search radius is covered.
+        // range = 1 if search radius is at most the cell size
+        // range = 2 if search radius is at most twice the cell size
+        // and so on
+        constexpr int range { 2 };
 
-                // start iterating one cell prior (x-1)
-                const int cid_x { cid3.x - 1 };
-                // now, the linearized cell id of the cell at (x-1,y,z) can be
-                // computed
-                const int cid { _linearize(cid_x, cid_y, cid_z, nx, nxny) };
+        // this strip must be shifted in y and z direction to all adjacent
+        // starting positions to cover the full cube of (2*range+1)^d
+        // neighbouring cells, while ensuring that no out-of-bounds accesses
+        // occur
+        for (int z_id { cid3.z - range }; z_id <= (cid3.z + range); ++z_id)
+            for (int y_id { cid3.y - range }; y_id <= (cid3.y + range);
+                 ++y_id) {
+                // traverse a strip of grid cells in x-direction, looking for
+                // neighbouring particles:
+
+                // start iterating at lower tip of the strip (x - range)
+                const int x_id { cid3.x - range };
+                // now, the linearized cell id of the cell at (x-range,y,z) can
+                // be computed
+                const int cid { _linearize(x_id, y_id, z_id, nx, nxny) };
                 // the prefix sum there is the number of particles with a lower
                 // cid, which should be the index to the first particle in the
-                // cell (x-1,y,z)
+                // cell (x-range,y,z)
                 const uint start_id { prefix[cid] };
                 // similarly, look up the index of the first particle past the
-                // cell (x+1,y,z): the index of the last particle in the x+1
-                // cell is < that of the first particle two cells over, i.e. in
-                // (x+2,y,z) or cid_i+3
-                const uint end_id { prefix[cid + 3] };
+                // cell (x+range,y,z): the index of the last particle in the
+                // x+range cell is < that of the first particle in the next cell
+                // over
+                const uint end_id { prefix[cid + (2 * range + 1)] };
 
                 // iterate from start_id inclusive to end_id exclusive
                 for (uint j { start_id }; j < end_id; ++j) {
@@ -154,24 +163,26 @@ template <Resort R> struct UniformGrid : MaybeSorted<R> {
                     const float3 x_j { v3(s_j, xx, xy, xz) };
                     const float3 x_ij { x_i - x_j };
                     const float x_ij_l2 { dot(x_ij, x_ij) };
-                    // for maximum perfomance, avoid sqrt and compare squared
-                    // distance to squared search radius, since squaring is
-                    // strictly monotonous on positive distances
-                    // TODO: benchmark - this might have to be replaced with a
-                    // conditional if the branch is not compiled such that warp
-                    // divergence is avoided
+                    // for better perfomance, avoid slow `sqrt` computation and
+                    // instead compare squared distance to squared search
+                    // radius, since squaring is strictly monotonous on positive
+                    // distances
                     if (x_ij_l2 <= r_c_2) {
                         // now, j is an actual neighbour of i
-                        // call the map operators and reduce operators
+                        // call the map operators and reduce in the accumulator
                         acc += map(i, s_j, x_ij, x_ij_l2);
                     }
                 }
             }
-        }
         // finally, return the accumulator
         return acc;
     };
 };
+
+/// Concept describing a DeviceBuffer<float>& for variadic overload of
+/// `construct_and_reorder`
+template <typename T>
+concept IsFltDevBufPtr = std::is_same_v<T, DeviceBuffer<float>*>;
 
 /// @brief A uniform grid implemented using a counting sort of particles within
 /// the bounds specified at construction with a single prefix sum for efficient
@@ -237,13 +248,16 @@ public:
     /// returning a POD structure that may be used on the device for querying
     /// neighbouring particles at positions within the AABB defined at
     /// construction of this `UniformGridBuilder`.
+    /// @param search_radius radius outside of which candidate neighbours around
+    /// the query point are pruned
     /// @param xx x-components of positions to query
     /// @param xy y-components of positions to query
     /// @param xz z-components of positions to query
     /// @return a POD usable in a `__device__` context to providee functors that
     /// map and reduce over neighbouring particles around some query position
-    UniformGrid<Resort::no> construct(const DeviceBuffer<float>& xx,
-        const DeviceBuffer<float>& xy, const DeviceBuffer<float>& xz);
+    UniformGrid<Resort::no> construct(const float search_radius,
+        const DeviceBuffer<float>& xx, const DeviceBuffer<float>& xy,
+        const DeviceBuffer<float>& xz);
 
     /// @brief Construct the uniform grid for the given buffer of query points,
     /// returning a POD structure that may be used on the device for querying
@@ -253,6 +267,8 @@ public:
     /// In contrast to the `construct` method, this calls on the `Particles` to
     /// reorder according to the sorting used by the grid to improve memory
     /// coherency.
+    /// @param search_radius radius outside of which candidate neighbours around
+    /// the query point are pruned
     /// @param state the `Particles` state containing the positions to query and
     /// the buffers to reorder
     /// @param tmp a temporary buffer used for the gathering operation that
@@ -260,7 +276,35 @@ public:
     /// @return a POD usable in a `__device__` context to providee functors that
     /// map and reduce over neighbouring particles around some query position
     UniformGrid<Resort::yes> construct_and_reorder(
-        Particles& state, DeviceBuffer<float>& tmp);
+        const float search_radius, DeviceBuffer<float>& tmp, Particles& state);
+
+    /// @brief Construct the uniform grid for the given buffer of query points,
+    /// returning a POD structure that may be used on the device for querying
+    /// neighbouring particles at positions within the AABB defined at
+    /// construction of this `UniformGridBuilder`.
+    ///
+    /// In contrast to the `construct` method, this calls on the `Particles` to
+    /// reorder according to the sorting used by the grid to improve memory
+    /// coherency.
+    /// @tparam ...MoreBufs Variable number of zero or more
+    /// `DeviceBuffer<float>*` to resort along the space-filling curve, must all
+    /// have the same number of entries
+    /// @param search_radius radius outside of which candidate neighbours around
+    /// the query point are pruned
+    /// @param tmp a temporary buffer used for the gathering operation that
+    /// reorders particle quantities
+    /// @param xx x-components of all points to index
+    /// @param xy y-components of all points to index
+    /// @param xz z-components of all points to index
+    /// @param ...reorder pack of zero or more `DeviceBuffer<float>` to resort
+    /// along the space-filling curve
+    /// @return a POD usable in a `__device__` context to providee functors that
+    /// map and reduce over neighbouring particles around some query position
+    template <IsFltDevBufPtr... MoreBufs>
+        requires(sizeof...(MoreBufs) >= 0) // at least one buffer to reorder
+    UniformGrid<Resort::yes> construct_and_reorder(const float search_radius,
+        DeviceBuffer<float>& tmp, DeviceBuffer<float>& xx,
+        DeviceBuffer<float>& xy, DeviceBuffer<float>& xz, MoreBufs... reorder);
 
     // no copying
     UniformGridBuilder(const UniformGridBuilder&) = delete;

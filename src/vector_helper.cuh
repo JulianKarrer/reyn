@@ -126,6 +126,26 @@ inline __host__ __device__ float norm(const float3& a)
 #endif
 };
 
+/// @brief Round down each component of a `float3` to the next highest integer
+/// smaller than the component
+/// @param a `float3` to round down
+/// @return `int3` with highest components less than or equal to the respective
+/// component of the original vector
+inline __host__ __device__ int3 floor(const float3& a)
+{
+    return make_int3((int)floorf(a.x), (int)floorf(a.y), (int)floorf(a.z));
+};
+
+/// @brief Round down each component of a `float3` to the next highest integer
+/// smaller than the component
+/// @param a `float3` to round down
+/// @return `float3` with highest components less than or equal to the
+/// respective component of the original vector
+inline __host__ __device__ float3 floorf(const float3& a)
+{
+    return v3(floorf(a.x), floorf(a.y), floorf(a.z));
+};
+
 // BINARY PREDICATES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /// @brief the disjunction (OR) of element-wise application of <=
