@@ -1,10 +1,12 @@
 #include "gui.cuh"
 #include "particles.cuh"
-#include "scene.cuh"
+#include "scene/scene.cuh"
 #include "kernels.cuh"
 #include "solvers/SESPH.cuh"
 #include "datastructure/uniformgrid.cuh"
 #include "vector_helper.cuh"
+#include "scene/loader.h"
+#include "scene/sample.cuh"
 
 int main()
 {
@@ -28,9 +30,18 @@ int main()
             scene.bound_min, scene.bound_max, 2. * scene.h);
         std::cout << "grid initialized" << std::endl;
         // single tmp buffer shared for every operation
-        DeviceBuffer<float> tmp(N);
-        SESPH<B3, Resort::yes> solver(W, N, 0.005f, scene.h);
+        DeviceBuffer<float> tmp(1);
+        SESPH<B3, Resort::yes> solver(W, N, tmp, 0.005f, scene.h);
         std::cout << "solver initialized" << std::endl;
+
+        const Mesh mesh = load_mesh_from_obj("scenes/cube.obj");
+        std::cout << std::format("mesh loaded, {} faces with {} vertices",
+            mesh.face_count(), mesh.vertex_count())
+                  << std::endl;
+        auto boundary_bufs { sample_mesh(mesh, scene.h) };
+        std::cout << std::format("mesh sampled, generated {} boundary points",
+            boundary_bufs.xs.size())
+                  << std::endl;
 
         // MAIN LOOP
         std::cout << "fully initialized" << std::endl;

@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Program Listing for File scene.cuh" href="program_listing_file_src_scene.cuh.html"><link rel="prev" title="Program Listing for File scene.cu" href="program_listing_file_src_scene.cu.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>File scene.cuh - REYN documentation</title>
+        <title>Namespace tinyobj - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -174,7 +174,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -194,14 +194,16 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
+  <ul>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmarks</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structMesh.html">Struct Mesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structUniformGrid.html">Template Struct UniformGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classB3.html">Class B3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classC2.html">Class C2</a></li>
@@ -238,43 +240,59 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_kernels.cuh.html">Program Listing for File kernels.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_main.cu.html">File main.cu</a><input aria-label="Toggle navigation of File main.cu" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.cpp.html">File loader.cpp</a><input aria-label="Toggle navigation of File loader.cpp" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_loader.cpp.html">Program Listing for File loader.cpp</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.h.html">File loader.h</a><input aria-label="Toggle navigation of File loader.h" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_loader.h.html">Program Listing for File loader.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_main.cu.html">File main.cu</a><input aria-label="Toggle navigation of File main.cu" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_main.cu.html">Program Listing for File main.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cu.html">File particles.cu</a><input aria-label="Toggle navigation of File particles.cu" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cu.html">File particles.cu</a><input aria-label="Toggle navigation of File particles.cu" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cu.html">Program Listing for File particles.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cuh.html">File particles.cuh</a><input aria-label="Toggle navigation of File particles.cuh" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cuh.html">File particles.cuh</a><input aria-label="Toggle navigation of File particles.cuh" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cuh.html">Program Listing for File particles.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene.cu.html">Program Listing for File scene.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample.cu.html">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample.cu.html">Program Listing for File sample.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">File scene.cuh</a><input aria-label="Toggle navigation of File scene.cuh" checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene.cuh.html">Program Listing for File scene.cuh</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample.cuh.html">File sample.cuh</a><input aria-label="Toggle navigation of File sample.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample.cuh.html">Program Listing for File sample.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cu.html">File SESPH.cu</a><input aria-label="Toggle navigation of File SESPH.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_scene.cu.html">Program Listing for File scene.cu</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cuh.html">File scene.cuh</a><input aria-label="Toggle navigation of File scene.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_scene.cuh.html">Program Listing for File scene.cuh</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cu.html">File SESPH.cu</a><input aria-label="Toggle navigation of File SESPH.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_SESPH.cu.html">Program Listing for File SESPH.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cuh.html">File SESPH.cuh</a><input aria-label="Toggle navigation of File SESPH.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cuh.html">File SESPH.cuh</a><input aria-label="Toggle navigation of File SESPH.cuh" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_SESPH.cuh.html">Program Listing for File SESPH.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cu.html">File uniformgrid.cu</a><input aria-label="Toggle navigation of File uniformgrid.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cu.html">File uniformgrid.cu</a><input aria-label="Toggle navigation of File uniformgrid.cu" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_uniformgrid.cu.html">Program Listing for File uniformgrid.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cuh.html">File uniformgrid.cuh</a><input aria-label="Toggle navigation of File uniformgrid.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cuh.html">File uniformgrid.cuh</a><input aria-label="Toggle navigation of File uniformgrid.cuh" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_uniformgrid.cuh.html">Program Listing for File uniformgrid.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_vector_helper.cuh.html">File vector_helper.cuh</a><input aria-label="Toggle navigation of File vector_helper.cuh" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_vector_helper.cuh.html">File vector_helper.cuh</a><input aria-label="Toggle navigation of File vector_helper.cuh" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_vector_helper.cuh.html">Program Listing for File vector_helper.cuh</a></li>
 </ul>
 </li>
@@ -300,7 +318,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/file_src_scene.cuh.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/namespace_tinyobj.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -313,53 +331,13 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="file-scene-cuh">
-<span id="file-src-scene-cuh"></span><h1>File scene.cuh<a class="headerlink" href="#file-scene-cuh" title="Link to this heading">¶</a></h1>
-<p>↰ <a class="reference internal" href="dir_src.html#dir-src"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">src</span></code>)</p>
-<section id="definition-src-scene-cuh">
-<h2>Definition (<code class="docutils literal notranslate"><span class="pre">src/scene.cuh</span></code>)<a class="headerlink" href="#definition-src-scene-cuh" title="Link to this heading">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="program_listing_file_src_scene.cuh.html">Program Listing for File scene.cuh</a></li>
-</ul>
-</div>
-</section>
-<section id="includes">
-<h2>Includes<a class="headerlink" href="#includes" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">common.h</span></code> (<a class="reference internal" href="file_src_common.h.html#file-src-common-h"><span class="std std-ref">File common.h</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">concepts</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cuda_gl_interop.h</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">gui.cuh</span></code> (<a class="reference internal" href="file_src_gui.cuh.html#file-src-gui-cuh"><span class="std std-ref">File gui.cuh</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">particles.cuh</span></code> (<a class="reference internal" href="file_src_particles.cuh.html#file-src-particles-cuh"><span class="std std-ref">File particles.cuh</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">vector_helper.cuh</span></code> (<a class="reference internal" href="file_src_vector_helper.cuh.html#file-src-vector-helper-cuh"><span class="std std-ref">File vector_helper.cuh</span></a>)</p></li>
-</ul>
-</section>
-<section id="included-by">
-<h2>Included By<a class="headerlink" href="#included-by" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="file_src_gui.cu.html#file-src-gui-cu"><span class="std std-ref">File gui.cu</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_main.cu.html#file-src-main-cu"><span class="std std-ref">File main.cu</span></a></p></li>
-<li><p><a class="reference internal" href="file_src_scene.cu.html#file-src-scene-cu"><span class="std std-ref">File scene.cu</span></a></p></li>
-</ul>
-</section>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="classScene.html#exhale-class-classscene"><span class="std std-ref">Class Scene</span></a></p></li>
-</ul>
-</section>
-<section id="defines">
-<h2>Defines<a class="headerlink" href="#defines" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="define_scene_8cuh_1a4dcbcbd52c2e5a325521e0079a8d9e76.html#exhale-define-scene-8cuh-1a4dcbcbd52c2e5a325521e0079a8d9e76"><span class="std std-ref">Define SCENE_H_</span></a></p></li>
-</ul>
-</section>
+          <section id="namespace-tinyobj">
+<span id="id1"></span><h1>Namespace tinyobj<a class="headerlink" href="#namespace-tinyobj" title="Link to this heading">¶</a></h1>
 </section>
 
         </article>
@@ -367,26 +345,8 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="program_listing_file_src_scene.cuh.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Program Listing for File scene.cuh</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="program_listing_file_src_scene.cu.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Program Listing for File scene.cu</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -405,31 +365,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">File scene.cuh</a><ul>
-<li><a class="reference internal" href="#definition-src-scene-cuh">Definition (<code class="docutils literal notranslate"><span class="pre">src/scene.cuh</span></code>)</a></li>
-<li><a class="reference internal" href="#includes">Includes</a></li>
-<li><a class="reference internal" href="#included-by">Included By</a></li>
-<li><a class="reference internal" href="#classes">Classes</a></li>
-<li><a class="reference internal" href="#defines">Defines</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

@@ -11,15 +11,41 @@ inline __host__ __device__ float3 v3(
 {
     return make_float3(x, y, z);
 };
+
+/// A shorthand constructor for `float3` using the same float for each of the
+/// three components
 inline __host__ __device__ float3 v3(const float& x)
 {
     return make_float3(x, x, x);
 };
 
+/// @brief Constructor for a `float3` that loads each compoenent from the `i`th
+/// entry provided in the accompanying pointers in order to construct a vector
+/// from quantities stored in SoA format
+/// @param i index of vector to load
+/// @param x pointer to x-components
+/// @param y pointer to y-components
+/// @param z pointer to z-components
+/// @return a single `float3` constructed from three load operations
 inline __host__ __device__ float3 v3(const uint& i, const float* __restrict__ x,
     const float* __restrict__ y, const float* __restrict__ z)
 {
     return make_float3(x[i], y[i], z[i]);
+};
+
+/// @brief Constructor for a `double3` that loads each compoenent from the `i`th
+/// entry provided in the accompanying pointers in order to construct a vector
+/// from quantities stored in SoA format
+/// @param i index of vector to load
+/// @param x pointer to x-components
+/// @param y pointer to y-components
+/// @param z pointer to z-components
+/// @return a single `double3` constructed from three load operations
+inline __host__ __device__ double3 dv3(const uint& i,
+    const double* __restrict__ x, const double* __restrict__ y,
+    const double* __restrict__ z)
+{
+    return make_double3(x[i], y[i], z[i]);
 };
 
 inline __host__ __device__ void store_v3(const float3& vec, const uint& i,
@@ -37,9 +63,19 @@ inline __host__ __device__ float3 operator-(const float3& a, const float3& b)
     return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
 };
 
+inline __host__ __device__ double3 operator-(const double3& a, const double3& b)
+{
+    return make_double3(a.x - b.x, a.y - b.y, a.z - b.z);
+};
+
 inline __host__ __device__ float3 operator+(const float3& a, const float3& b)
 {
     return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
+};
+
+inline __host__ __device__ double3 operator+(const double3& a, const double3& b)
+{
+    return make_double3(a.x + b.x, a.y + b.y, a.z + b.z);
 };
 
 inline __host__ __device__ float3& operator+=(float3& a, const float3& b)
@@ -80,6 +116,19 @@ inline __host__ __device__ float dot(const float3& a, const float3& b)
     return fmaf(a.x, b.x, fmaf(a.y, b.y, (a.z * b.z)));
 };
 
+/// @brief compute the dot product of two vectors
+inline __host__ __device__ double dot(const double3& a, const double3& b)
+{
+    return fma(a.x, b.x, fma(a.y, b.y, (a.z * b.z)));
+};
+
+/// @brief compute the cross product of two vectors
+inline __host__ __device__ double3 cross(const double3& a, const double3& b)
+{
+    return make_double3(
+        a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+};
+
 // division with scalar
 inline __host__ __device__ float3 operator/(const float3& a, const float& b)
 {
@@ -94,6 +143,15 @@ inline __host__ __device__ float3 operator*(const float3& a, const float& b)
 inline __host__ __device__ float3 operator*(const float& a, const float3& b)
 {
     return make_float3(b.x * a, b.y * a, b.z * a);
+};
+
+inline __host__ __device__ double3 operator*(const double3& a, const double& b)
+{
+    return make_double3(a.x * b, a.y * b, a.z * b);
+};
+inline __host__ __device__ double3 operator*(const double& a, const double3& b)
+{
+    return make_double3(b.x * a, b.y * a, b.z * a);
 };
 
 // UNARY ARITHMATIC OPERATORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -123,6 +181,20 @@ inline __host__ __device__ float norm(const float3& a)
     return norm3df(a.x, a.y, a.z);
 #else
     return fsqrt(dot(a, a));
+#endif
+};
+
+/// @brief NOTE: this function might behave differently in `__device__` and
+/// `__host__` code due to alternate implementations depending on intrinsics
+/// availablility!
+///
+/// take the 3D euclidean norm of a vector
+inline __host__ __device__ double norm(const double3& a)
+{
+#ifdef __CUDA_ARCH__
+    return norm3d(a.x, a.y, a.z);
+#else
+    return sqrt(dot(a, a));
 #endif
 };
 

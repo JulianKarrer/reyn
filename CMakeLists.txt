@@ -108,7 +108,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(doctest)
 
 # fetch nanobench
-
 FetchContent_Declare(
     nanobench
     GIT_REPOSITORY https://github.com/martinus/nanobench.git
@@ -116,13 +115,23 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE)
 FetchContent_MakeAvailable(nanobench)
 
+# fetch tinyobjloader
+FetchContent_Declare(
+    tinyobjloader
+    GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git
+    GIT_TAG v1.0.6
+)
+FetchContent_MakeAvailable(tinyobjloader) 
+
 # define executable
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(REYN_SOURCES
     ${SRC_DIR}/main.cu
     ${SRC_DIR}/gui.cu
     ${SRC_DIR}/particles.cu
-    ${SRC_DIR}/scene.cu
+    ${SRC_DIR}/scene/scene.cu
+    ${SRC_DIR}/scene/loader.cpp
+    ${SRC_DIR}/scene/sample.cu
     ${SRC_DIR}/kernels.cu
     ${SRC_DIR}/solvers/SESPH.cu
     ${SRC_DIR}/datastructure/uniformgrid.cu
@@ -132,7 +141,9 @@ set(REYN_HEADERS
     ${SRC_DIR}/buffer.cuh
     ${SRC_DIR}/gui.cuh
     ${SRC_DIR}/particles.cuh
-    ${SRC_DIR}/scene.cuh
+    ${SRC_DIR}/scene/scene.cuh
+    ${SRC_DIR}/scene/loader.h
+    ${SRC_DIR}/scene/sample.cuh
     ${SRC_DIR}/vector_helper.cuh
     ${SRC_DIR}/kernels.cuh
     ${SRC_DIR}/solvers/SESPH.cuh
@@ -180,6 +191,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     doctest::doctest
     nanobench
     Thrust
+    tinyobjloader
 )
 
 # TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,6 +233,7 @@ target_link_libraries(tests PRIVATE
     glad
     glm::glm
     OpenGL::GL
+    tinyobjloader
 )
 
 enable_testing()

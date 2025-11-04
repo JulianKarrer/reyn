@@ -142,7 +142,10 @@ private:
     /// screen. Otherwise, more simulation steps will be performed before the
     /// next GUI update is rendered.
     std::atomic<bool> should_render { false };
+    /// @brief Timer thread used to request a re-render at regular intervals
     std::thread timer;
+    /// @brief Whether to draw all particles or not (i.e. only render UI etc.)
+    bool show_particles { true };
 
     /// @brief a private struct to represent the state of clicking a holding a
     /// mouse button to drag
@@ -266,7 +269,11 @@ private:
     /// this value, to be adjusted intuitively to the maximum value of whatever
     /// quantity should be visualized.
     float colour_scale { 10. };
+    /// @brief Which colour map to use, 0 is the default
     int colour_map_selector { 0 };
+    /// @brief value in \f$[0;100]\f$ that interpolates between diffuse
+    /// lambertian and pure ambient / no shading
+    float shading_strength { 5. };
 
     // CUDA resources
     cudaGraphicsResource* cuda_x_vbo_resource = nullptr;
@@ -293,6 +300,9 @@ private:
 
     ///  Update and manage the ImGui contents
     void imgui_draw();
+
+    /// @brief Set up ImGui style, based on 'Deep Dark Theme' by janekb04
+    void setup_imgui_style();
 
     // main functions for running the gui
     /// @brief Update the GUI, rendering the current particles to screen.

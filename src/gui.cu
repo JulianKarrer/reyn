@@ -1,6 +1,6 @@
 #include "gui.cuh"
 #include "particles.cuh"
-#include "scene.cuh"
+#include "scene/scene.cuh"
 
 // constants
 const char* FONT_PATH { "res/JBM.ttf" };
@@ -56,6 +56,7 @@ const char* FRAGMENT_SHADER = R"GLSL(
     uniform int use_colour; // one if per-particle colours from aCol buffer should be used, 0 otherwise
     uniform float colour_scale; // scale the colour scalar by this factor before mapping
     uniform int colour_map_selector; // the colour map to use, where 0 is the default
+    uniform float shading_strength; // interpolates between using diffuse lambertian shading or not
 
     flat in vec4 centre_vs; // view-space position of the centre of the particle
     in float colour;
@@ -202,7 +203,7 @@ const char* FRAGMENT_SHADER = R"GLSL(
             normalize(vec3(135.,206.,250.)) // default colour
         );
         // FragColor = vec4(albedo * max(.3, diffuse), 1.0);
-        FragColor = vec4(albedo * diffuse, 1.0);
+        FragColor = vec4(mix(albedo, albedo * diffuse, shading_strength), 1.0);
 
         // vec3 light_vs = normalize((view * vec4(normalize(-light_dir), 0.0)).xyz);
         // float lambertian = max(0.0, dot(normal_vs, light_vs));
@@ -301,8 +302,11 @@ void GUI::update_view()
     // https://learnopengl.com/Getting-started/Camera
     // compute camera position and view direction from spherical coordinates,
     // wrapping overflowing values around
-    const float theta_cur { wrap_around(theta + d_theta, 0, M_PI) };
-    const float phi_cur { wrap_around(phi + d_phi, 0, 2 * M_PI) };
+    const float phi_cur { wrap_around(phi + d_phi, 0., 2. * M_PI) };
+    // for theta, clamp instead of wrapping around
+    constexpr float eps { 0.00001 };
+    theta = std::clamp(theta, 0.f, M_PIf);
+    const float theta_cur { std::clamp(theta + d_theta, eps, M_PIf - eps) };
     const float radius { radius_init * _radius_scroll_factor };
     const glm::vec3 camera_position { glm::vec3(
         radius * sinf(theta_cur) * cosf(phi_cur), radius * cosf(theta_cur),
@@ -458,6 +462,9 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
+    // custom imgui theme
+    setup_imgui_style();
+
     // load font
     style.FontSizeBase = 16.0f;
     io->Fonts->AddFontDefault();
@@ -720,43 +727,53 @@ void GUI::update(float h)
     // clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // OpenGL rendering commands
-    glUseProgram(shader_program);
+    if (show_particles) {
+        // OpenGL rendering commands
+        glUseProgram(shader_program);
 
-    // send uniforms
-    glUniformMatrix4fv(glGetUniformLocation(shader_program, "view"), // location
-        1, // count
-        GL_FALSE, // transpose
-        glm::value_ptr(view) // value
-    );
-    glUniformMatrix4fv(glGetUniformLocation(shader_program, "proj"), // location
-        1, // count
-        GL_FALSE, // transpose
-        glm::value_ptr(proj) // value
-    );
-    glUniform2f(glGetUniformLocation(shader_program, "viewport"), // location
-        (float)_window_width, // value 1
-        (float)_window_height // value 2
-    );
-    glUniform1f(glGetUniformLocation(shader_program, "radius"), // location
-        h / 2.f // value
-    );
-    glUniform1i(glGetUniformLocation(shader_program, "use_colour"), // location
-        use_per_particle_colour ? 1 : 0 // value
-    );
-    glUniform1f(
-        glGetUniformLocation(shader_program, "colour_scale"), // location
-        1. / colour_scale // value
-    );
-    glUniform1i(
-        glGetUniformLocation(shader_program, "colour_map_selector"), // location
-        colour_map_selector // value
-    );
+        // send uniforms
+        glUniformMatrix4fv(
+            glGetUniformLocation(shader_program, "view"), // location
+            1, // count
+            GL_FALSE, // transpose
+            glm::value_ptr(view) // value
+        );
+        glUniformMatrix4fv(
+            glGetUniformLocation(shader_program, "proj"), // location
+            1, // count
+            GL_FALSE, // transpose
+            glm::value_ptr(proj) // value
+        );
+        glUniform2f(
+            glGetUniformLocation(shader_program, "viewport"), // location
+            (float)_window_width, // value 1
+            (float)_window_height // value 2
+        );
+        glUniform1f(glGetUniformLocation(shader_program, "radius"), // location
+            h / 2.f // value
+        );
+        glUniform1i(
+            glGetUniformLocation(shader_program, "use_colour"), // location
+            use_per_particle_colour ? 1 : 0 // value
+        );
+        glUniform1f(
+            glGetUniformLocation(shader_program, "colour_scale"), // location
+            1. / colour_scale // value
+        );
+        glUniform1i(glGetUniformLocation(
+                        shader_program, "colour_map_selector"), // location
+            colour_map_selector // value
+        );
+        glUniform1f(glGetUniformLocation(
+                        shader_program, "shading_strength"), // location
+            sat(shading_strength / 100.f) // value
+        );
 
-    glBindVertexArray(vao);
+        glBindVertexArray(vao);
 
-    glDrawArrays(GL_POINTS, 0, N);
-    glBindVertexArray(0);
+        glDrawArrays(GL_POINTS, 0, N);
+        glBindVertexArray(0);
+    }
 
     // poll for window events
     glfwPollEvents();
@@ -792,20 +809,31 @@ void GUI::imgui_draw()
     // use custom font
     ImGui::PushFont(font);
 
+    // ImGui::ShowDemoWindow();
+
     // start of contents ~~~~~
     ImGui::Begin("SETTINGS");
+    if (ImGui::Button("Exit"))
+        exit_requested.store(true);
     ImGui::Text("GUI interval %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
         io->Framerate);
     ImGui::Text("SIM interval %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
-    ImGui::Checkbox("Run GUI and SIM at same rate", &fps_gui_sim_coupled);
-    if (ImGui::Button("Exit"))
-        exit_requested.store(true);
-    if (ImGui::InputFloat("Base Camera Radius", &radius_init, 0.1f, 1.0f))
-        update_view();
-    ImGui::Checkbox("Use per-particle colours", &use_per_particle_colour);
-    ImGui::InputFloat(
-        "Colour mapping maximum value", &colour_scale, 1.f, 5.f, "%.0f");
-    ImGui::Combo("Colour map", &colour_map_selector, "Spectral\0CB-RdYiBu");
+
+    const float slider_width { 0.4f };
+    if (ImGui::CollapsingHeader("Visualization")) {
+        ImGui::Checkbox("run GUI and SIM at same rate", &fps_gui_sim_coupled);
+        ImGui::Checkbox("show Particles", &show_particles);
+        ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * slider_width);
+        if (ImGui::InputFloat("base camera radius", &radius_init, 0.1f, 1.0f))
+            update_view();
+        ImGui::Checkbox("per-particle colours", &use_per_particle_colour);
+        ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * slider_width);
+        ImGui::SliderFloat(
+            "shading strength", &shading_strength, 0.f, 100.f, "%.0f%");
+        ImGui::InputFloat(
+            "colour mapping max", &colour_scale, 1.f, 5.f, "%.0f");
+        ImGui::Combo("colour map", &colour_map_selector, "Spectral\0CB-RdYiBu");
+    }
 
     // end of contents ~~~~~~~
 
@@ -832,4 +860,126 @@ GUI::~GUI()
     glDeleteProgram(shader_program);
     // clean up GLFW
     glfwTerminate();
+}
+
+void GUI::setup_imgui_style()
+{
+    // 'Deep Dark Theme' by janekb04
+    auto& style = ImGui::GetStyle();
+    style.Alpha = 1.0f;
+    style.DisabledAlpha = 0.6f;
+    style.WindowPadding = ImVec2(8.0f, 8.0f);
+    style.WindowRounding = 7.0f;
+    style.WindowBorderSize = 1.0f;
+    style.WindowMinSize = ImVec2(32.0f, 32.0f);
+    style.WindowTitleAlign = ImVec2(0.0f, 0.5f);
+    style.WindowMenuButtonPosition = ImGuiDir_Left;
+    style.ChildRounding = 4.0f;
+    style.ChildBorderSize = 1.0f;
+    style.PopupRounding = 4.0f;
+    style.PopupBorderSize = 1.0f;
+    style.FramePadding = ImVec2(5.0f, 2.0f);
+    style.FrameRounding = 3.0f;
+    style.FrameBorderSize = 1.0f;
+    style.ItemSpacing = ImVec2(6.0f, 6.0f);
+    style.ItemInnerSpacing = ImVec2(6.0f, 6.0f);
+    style.CellPadding = ImVec2(6.0f, 6.0f);
+    style.IndentSpacing = 25.0f;
+    style.ColumnsMinSpacing = 6.0f;
+    style.ScrollbarSize = 15.0f;
+    style.ScrollbarRounding = 9.0f;
+    style.GrabMinSize = 10.0f;
+    style.GrabRounding = 3.0f;
+    style.TabRounding = 4.0f;
+    style.TabBorderSize = 1.0f;
+    style.ColorButtonPosition = ImGuiDir_Right;
+    style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
+    style.SelectableTextAlign = ImVec2(0.0f, 0.0f);
+
+    style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    style.Colors[ImGuiCol_TextDisabled]
+        = ImVec4(0.49803922f, 0.49803922f, 0.49803922f, 1.0f);
+    style.Colors[ImGuiCol_WindowBg]
+        = ImVec4(0.09803922f, 0.09803922f, 0.09803922f, 1.0f);
+    style.Colors[ImGuiCol_ChildBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    style.Colors[ImGuiCol_PopupBg]
+        = ImVec4(0.1882353f, 0.1882353f, 0.1882353f, 0.92f);
+    style.Colors[ImGuiCol_Border]
+        = ImVec4(0.1882353f, 0.1882353f, 0.1882353f, 0.29f);
+    style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.24f);
+    style.Colors[ImGuiCol_FrameBg]
+        = ImVec4(0.047058824f, 0.047058824f, 0.047058824f, 0.54f);
+    style.Colors[ImGuiCol_FrameBgHovered]
+        = ImVec4(0.1882353f, 0.1882353f, 0.1882353f, 0.54f);
+    style.Colors[ImGuiCol_FrameBgActive]
+        = ImVec4(0.2f, 0.21960784f, 0.22745098f, 1.0f);
+    style.Colors[ImGuiCol_TitleBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_TitleBgActive]
+        = ImVec4(0.05882353f, 0.05882353f, 0.05882353f, 1.0f);
+    style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_MenuBarBg]
+        = ImVec4(0.13725491f, 0.13725491f, 0.13725491f, 1.0f);
+    style.Colors[ImGuiCol_ScrollbarBg]
+        = ImVec4(0.047058824f, 0.047058824f, 0.047058824f, 0.54f);
+    style.Colors[ImGuiCol_ScrollbarGrab]
+        = ImVec4(0.3372549f, 0.3372549f, 0.3372549f, 0.54f);
+    style.Colors[ImGuiCol_ScrollbarGrabHovered]
+        = ImVec4(0.4f, 0.4f, 0.4f, 0.54f);
+    style.Colors[ImGuiCol_ScrollbarGrabActive]
+        = ImVec4(0.5568628f, 0.5568628f, 0.5568628f, 0.54f);
+    style.Colors[ImGuiCol_CheckMark]
+        = ImVec4(0.32941177f, 0.6666667f, 0.85882354f, 1.0f);
+    style.Colors[ImGuiCol_SliderGrab]
+        = ImVec4(0.3372549f, 0.3372549f, 0.3372549f, 0.54f);
+    style.Colors[ImGuiCol_SliderGrabActive]
+        = ImVec4(0.5568628f, 0.5568628f, 0.5568628f, 0.54f);
+    style.Colors[ImGuiCol_Button]
+        = ImVec4(0.047058824f, 0.047058824f, 0.047058824f, 0.54f);
+    style.Colors[ImGuiCol_ButtonHovered]
+        = ImVec4(0.1882353f, 0.1882353f, 0.1882353f, 0.54f);
+    style.Colors[ImGuiCol_ButtonActive]
+        = ImVec4(0.2f, 0.21960784f, 0.22745098f, 1.0f);
+    style.Colors[ImGuiCol_Header] = ImVec4(0.0f, 0.0f, 0.0f, 0.52f);
+    style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.0f, 0.0f, 0.0f, 0.36f);
+    style.Colors[ImGuiCol_HeaderActive]
+        = ImVec4(0.2f, 0.21960784f, 0.22745098f, 0.33f);
+    style.Colors[ImGuiCol_Separator]
+        = ImVec4(0.2784314f, 0.2784314f, 0.2784314f, 0.29f);
+    style.Colors[ImGuiCol_SeparatorHovered]
+        = ImVec4(0.4392157f, 0.4392157f, 0.4392157f, 0.29f);
+    style.Colors[ImGuiCol_SeparatorActive]
+        = ImVec4(0.4f, 0.4392157f, 0.46666667f, 1.0f);
+    style.Colors[ImGuiCol_ResizeGrip]
+        = ImVec4(0.2784314f, 0.2784314f, 0.2784314f, 0.29f);
+    style.Colors[ImGuiCol_ResizeGripHovered]
+        = ImVec4(0.4392157f, 0.4392157f, 0.4392157f, 0.29f);
+    style.Colors[ImGuiCol_ResizeGripActive]
+        = ImVec4(0.4f, 0.4392157f, 0.46666667f, 1.0f);
+    style.Colors[ImGuiCol_Tab] = ImVec4(0.0f, 0.0f, 0.0f, 0.52f);
+    style.Colors[ImGuiCol_TabHovered]
+        = ImVec4(0.13725491f, 0.13725491f, 0.13725491f, 1.0f);
+    style.Colors[ImGuiCol_TabActive] = ImVec4(0.2f, 0.2f, 0.2f, 0.36f);
+    style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.0f, 0.0f, 0.0f, 0.52f);
+    style.Colors[ImGuiCol_TabUnfocusedActive]
+        = ImVec4(0.13725491f, 0.13725491f, 0.13725491f, 1.0f);
+    style.Colors[ImGuiCol_PlotLines] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_PlotHistogram] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_PlotHistogramHovered]
+        = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_TableHeaderBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.52f);
+    style.Colors[ImGuiCol_TableBorderStrong] = ImVec4(0.0f, 0.0f, 0.0f, 0.52f);
+    style.Colors[ImGuiCol_TableBorderLight]
+        = ImVec4(0.2784314f, 0.2784314f, 0.2784314f, 0.29f);
+    style.Colors[ImGuiCol_TableRowBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.0f, 1.0f, 1.0f, 0.06f);
+    style.Colors[ImGuiCol_TextSelectedBg]
+        = ImVec4(0.2f, 0.21960784f, 0.22745098f, 1.0f);
+    style.Colors[ImGuiCol_DragDropTarget]
+        = ImVec4(0.32941177f, 0.6666667f, 0.85882354f, 1.0f);
+    style.Colors[ImGuiCol_NavHighlight] = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_NavWindowingHighlight]
+        = ImVec4(1.0f, 0.0f, 0.0f, 0.7f);
+    style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(1.0f, 0.0f, 0.0f, 0.2f);
+    style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.0f, 0.0f, 0.0f, 0.35f);
 }

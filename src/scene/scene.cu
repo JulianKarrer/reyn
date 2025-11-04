@@ -1,4 +1,4 @@
-#include "scene.cuh"
+#include "scene/scene.cuh"
 
 /// @brief Kernel used by one of the Scene constructors to initialize a set of
 /// dynamic particles in a box using CUDA directly to set each position.
@@ -108,6 +108,7 @@ __global__ void _hard_enforce_bounds(const float3 bound_min,
         vz[i] *= -0.5;
     }
 }
+
 void Scene::hard_enforce_bounds(Particles& state) const
 {
     _hard_enforce_bounds<<<BLOCKS(N), BLOCK_SIZE>>>(bound_min, bound_max, N,
