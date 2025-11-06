@@ -86,7 +86,8 @@ __global__ void _uniform_sample_tri_cdf(const uint N, float* __restrict__ xs,
     zs[i] = (float)sampled.z;
 };
 
-BoundarySamples sample_mesh(const Mesh mesh, const float h)
+BoundarySamples sample_mesh(
+    const Mesh mesh, const float h, const double oversampling_factor)
 {
     // move vertex data and faces to the GPU by constructing a
     // `DeviceBuffer` with a single cudaMemcpy underlying each move
@@ -135,7 +136,7 @@ BoundarySamples sample_mesh(const Mesh mesh, const float h)
             "`area` was empty, suggesting a mesh with no faces");
     }
     // compute the number of boundary samples to place
-    const double h_bdy { 0.5 * (double)h };
+    const double h_bdy { (double)h / oversampling_factor };
     const double total_area {
         area[area.size() - 1] // load the last element from the device to host
                               // memory via thrust overload of operator[]

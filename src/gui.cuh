@@ -20,6 +20,7 @@ using namespace std::literals;
 class Particles;
 class Scene;
 class UniformGridBuilder;
+struct BoundarySamples;
 
 enum class Resort : bool;
 template <Resort Resorted> struct UniformGrid;
@@ -78,6 +79,8 @@ public:
     /// @returns pointer to the resized and mapped buffer.
     void resize_mapped_buffers(uint N, Particles& state);
 
+    void set_boundary_to_render(const BoundarySamples* samples);
+
     /// @brief Update the projection matrix representing the current camera
     /// frustum, which depends on the fov, aspect ratio, near and far planes.
     ///
@@ -99,6 +102,9 @@ public:
     float _scroll_speed { 0.05f };
     ///  @brief Current number of particles
     uint N { 1 };
+
+    ///  @brief Current number of boundary particles
+    uint N_bdy { 0 };
 
     // explicitly forbid a copy constructor for safety, since only one GUI
     // instance may ever exist
@@ -125,6 +131,17 @@ private:
     /// it to colour each particle
     bool use_per_particle_colour { true };
 
+    /// @brief whether or not the `set_boundary_to_render` method has been
+    /// successfully called and boundary particles may be rendered
+    bool has_boundary { false };
+    /// @brief whether or not to render boundary particles, if present
+    bool show_boundary { false };
+    /// @brief the RGB colour of the boundary particles
+    float bdy_colour[3] { 0.5, 0.5, 0.5 };
+    /// @brief Relative size of a boundary particle to a fluid particle for
+    /// visualization
+    float bdy_particle_display_size_factor { 0.1 };
+
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
     std::atomic<bool> exit_requested { ATOMIC_VAR_INIT(false) };
@@ -145,7 +162,7 @@ private:
     /// @brief Timer thread used to request a re-render at regular intervals
     std::thread timer;
     /// @brief Whether to draw all particles or not (i.e. only render UI etc.)
-    bool show_particles { true };
+    bool show_fluid { true };
 
     /// @brief a private struct to represent the state of clicking a holding a
     /// mouse button to drag
@@ -225,7 +242,10 @@ private:
     ImFont* font;
 
     // OpenGL resources
-    GLuint shader_program, vao, x_vbo, y_vbo, z_vbo, col_vbo;
+    GLuint col_vbo;
+    GLuint shader_program_fld, vao, x_vbo, y_vbo, z_vbo;
+    GLuint shader_program_bdy, vao_bdy, x_vbo_bdy, y_vbo_bdy, z_vbo_bdy;
+
     float fov { 45.0 };
     glm::mat4 proj;
     /// @brief The view matrix, representing the orientation of the camera in
@@ -282,9 +302,13 @@ private:
     cudaGraphicsResource* cuda_col_vbo_resource = nullptr;
 
     // internal functions for setup and events
-    /// Compile the fragment and vertex shaders required for visalization by
-    /// OpenGL
-    GLuint compile_shader();
+    /// Compile the fragment and vertex shaders required for visualization
+    /// by OpenGL
+    /// @param vertex_shader vertex shader to compile
+    /// @param fragment_shader fragment shader to compile
+    GLuint compile_shaders(
+        const char* vertex_shader, const char* fragment_shader);
+
     /// @brief Process user input events provided by GLFW, in particular cursor
     /// events that enable clicking and dragging to use camera orbital controls.
     void glfw_process_input();

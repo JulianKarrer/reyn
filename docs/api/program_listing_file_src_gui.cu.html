@@ -342,13 +342,14 @@
 <div class="highlight-cuda notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;gui.cuh&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;particles.cuh&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scene/scene.cuh&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scene/sample.cuh&quot;</span>
 
 <span class="c1">// constants</span>
 <span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">FONT_PATH</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;res/JBM.ttf&quot;</span><span class="w"> </span><span class="p">};</span>
 
 <span class="c1">// shaders</span>
 
-<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">VERTEX_SHADER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R</span><span class="s">&quot;GLSL(</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">VERTEX_SHADER_FLUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R</span><span class="s">&quot;GLSL(</span>
 <span class="w">    </span><span class="cp">#version 330 core</span>
 <span class="w">    </span><span class="n">layout</span><span class="w"> </span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
 <span class="w">    </span><span class="n">layout</span><span class="w"> </span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
@@ -384,7 +385,33 @@
 <span class="w">    </span><span class="p">}</span>
 <span class="p">)</span><span class="n">GLSL</span><span class="s">&quot;;</span>
 
-<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">FRAGMENT_SHADER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R</span><span class="s">&quot;GLSL(</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">VERTEX_SHADER_BOUNDARY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R</span><span class="s">&quot;GLSL(</span>
+<span class="w">    </span><span class="cp">#version 330 core</span>
+<span class="w">    </span><span class="n">layout</span><span class="w"> </span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
+<span class="w">    </span><span class="n">layout</span><span class="w"> </span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
+<span class="w">    </span><span class="n">layout</span><span class="w"> </span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">z</span><span class="p">;</span>
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="n">mat4</span><span class="w"> </span><span class="n">view</span><span class="p">;</span><span class="w"> </span><span class="c1">// view matrix</span>
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="n">mat4</span><span class="w"> </span><span class="n">proj</span><span class="p">;</span><span class="w"> </span><span class="c1">// projection matrix</span>
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="n">vec2</span><span class="w"> </span><span class="n">viewport</span><span class="p">;</span><span class="w"> </span><span class="c1">// viewport size</span>
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">radius</span><span class="p">;</span><span class="w"> </span><span class="c1">// particle radius</span>
+
+<span class="w">    </span><span class="n">flat</span><span class="w"> </span><span class="n">out</span><span class="w"> </span><span class="n">vec4</span><span class="w"> </span><span class="n">centre_vs</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// same function as in VERTEX_SHADER_FLUID, except no colour is passed on</span>
+<span class="w">        </span><span class="n">centre_vs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">view</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">vec4</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="w">        </span><span class="n">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">proj</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">centre_vs</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">centre_vs</span><span class="p">.</span><span class="n">z</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dist</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">gl_PointSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">            </span><span class="k">return</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">size_pixels</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">proj</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">viewport</span><span class="p">.</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">dist</span><span class="p">;</span>
+<span class="w">        </span><span class="n">gl_PointSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size_pixels</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">)</span><span class="n">GLSL</span><span class="s">&quot;;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">FRAGMENT_SHADER_FLUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R</span><span class="s">&quot;GLSL(</span>
 <span class="w">    </span><span class="cp">#version 330 core</span>
 
 <span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">radius</span><span class="p">;</span><span class="w"> </span><span class="c1">// particle radius in world space</span>
@@ -539,18 +566,35 @@
 <span class="w">            </span><span class="n">colour_map</span><span class="p">(</span><span class="n">colour</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w">       </span><span class="c1">// if using per-particle colours</span>
 <span class="w">            </span><span class="n">normalize</span><span class="p">(</span><span class="n">vec3</span><span class="p">(</span><span class="mf">135.</span><span class="p">,</span><span class="mf">206.</span><span class="p">,</span><span class="mf">250.</span><span class="p">))</span><span class="w"> </span><span class="c1">// default colour</span>
 <span class="w">        </span><span class="p">);</span>
-<span class="w">        </span><span class="c1">// FragColor = vec4(albedo * max(.3, diffuse), 1.0);</span>
 <span class="w">        </span><span class="n">FragColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec4</span><span class="p">(</span><span class="n">mix</span><span class="p">(</span><span class="n">albedo</span><span class="p">,</span><span class="w"> </span><span class="n">albedo</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">diffuse</span><span class="p">,</span><span class="w"> </span><span class="n">shading_strength</span><span class="p">),</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-<span class="w">        </span><span class="c1">// vec3 light_vs = normalize((view * vec4(normalize(-light_dir), 0.0)).xyz);</span>
-<span class="w">        </span><span class="c1">// float lambertian = max(0.0, dot(normal_vs, light_vs));</span>
-<span class="w">        </span><span class="c1">// vec3 view_dir = normalize(-frag_pos_vs); // camera at origin in view-space</span>
-<span class="w">        </span><span class="c1">// vec3 reflect_dir = reflect(-light_vs, normal_vs);</span>
-<span class="w">        </span><span class="c1">// float spec = pow(max(0.0, dot(view_dir, reflect_dir)), 64.0); // shininess is exponent</span>
-<span class="w">        </span><span class="c1">// vec3 albedo = normalize(vec3(135.,206.,250.));</span>
-<span class="w">        </span><span class="c1">// vec3 ambient = 0.5 * albedo;</span>
-<span class="w">        </span><span class="c1">// vec3 color = ambient + (0.9 * lambertian) * albedo + 0.6 * spec;</span>
-<span class="w">        </span><span class="c1">// FragColor = vec4(color, 1.0);</span>
+<span class="p">)</span><span class="n">GLSL</span><span class="s">&quot;;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">FRAGMENT_SHADER_BOUNDARY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R</span><span class="s">&quot;GLSL(</span>
+<span class="w">    </span><span class="cp">#version 330 core</span>
+
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">radius</span><span class="p">;</span><span class="w"> </span><span class="c1">// particle radius in world space</span>
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="n">mat4</span><span class="w"> </span><span class="n">view</span><span class="p">;</span><span class="w"> </span><span class="c1">// view matrix</span>
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="n">mat4</span><span class="w"> </span><span class="n">proj</span><span class="p">;</span><span class="w"> </span><span class="c1">// projection matrix</span>
+<span class="w">    </span><span class="n">uniform</span><span class="w"> </span><span class="n">vec3</span><span class="w"> </span><span class="n">colour</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">flat</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">vec4</span><span class="w"> </span><span class="n">centre_vs</span><span class="p">;</span><span class="w"> </span><span class="c1">// view-space position of the centre of the particle</span>
+<span class="w">    </span><span class="n">out</span><span class="w"> </span><span class="n">vec4</span><span class="w"> </span><span class="n">FragColor</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// same code as in FRAGMENT_SHADER_FLUID</span>
+<span class="w">        </span><span class="n">vec2</span><span class="w"> </span><span class="n">coord</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gl_PointCoord</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">2.</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">length_squared</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dot</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="w"> </span><span class="n">coord</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">length_squared</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1.</span><span class="p">)</span><span class="w"> </span><span class="n">discard</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">length_squared</span><span class="p">);</span>
+<span class="w">        </span><span class="n">vec3</span><span class="w"> </span><span class="n">normal_vs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vec3</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">);</span>
+<span class="w">        </span><span class="n">vec3</span><span class="w"> </span><span class="n">frag_pos_vs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">centre_vs</span><span class="p">.</span><span class="n">xyz</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">normal_vs</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">radius</span><span class="p">;</span>
+<span class="w">        </span><span class="n">vec4</span><span class="w"> </span><span class="n">frag_pos_cs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">proj</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">vec4</span><span class="p">(</span><span class="n">frag_pos_vs</span><span class="p">,</span><span class="w"> </span><span class="mf">1.</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">z_cs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">frag_pos_cs</span><span class="p">.</span><span class="n">z</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">frag_pos_cs</span><span class="p">.</span><span class="n">w</span><span class="p">;</span>
+<span class="w">        </span><span class="n">gl_FragDepth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z_cs</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">diffuse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">normalize</span><span class="p">(</span><span class="n">normal_vs</span><span class="p">).</span><span class="n">z</span><span class="p">);</span>
+<span class="w">        </span><span class="n">FragColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">diffuse</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">vec4</span><span class="p">(</span><span class="n">colour</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
 <span class="p">)</span><span class="n">GLSL</span><span class="s">&quot;;</span>
@@ -578,16 +622,17 @@
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 
-<span class="n">GLuint</span><span class="w"> </span><span class="nf">GUI::compile_shader</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="n">GLuint</span><span class="w"> </span><span class="nf">GUI::compile_shaders</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">vertex_shader</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">fragment_shader</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// compile the shaders, checking for errors</span>
 <span class="w">    </span><span class="n">GLuint</span><span class="w"> </span><span class="n">vert_shader</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">glCreateShader</span><span class="p">(</span><span class="n">GL_VERTEX_SHADER</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="n">glShaderSource</span><span class="p">(</span><span class="n">vert_shader</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">VERTEX_SHADER</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glShaderSource</span><span class="p">(</span><span class="n">vert_shader</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vertex_shader</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
 <span class="w">    </span><span class="n">glCompileShader</span><span class="p">(</span><span class="n">vert_shader</span><span class="p">);</span>
 <span class="w">    </span><span class="n">_opengl_check_compile</span><span class="p">(</span><span class="n">vert_shader</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Vertex shader compilation failed:&quot;</span><span class="p">);</span>
 
 <span class="w">    </span><span class="n">GLuint</span><span class="w"> </span><span class="n">frag_shader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glCreateShader</span><span class="p">(</span><span class="n">GL_FRAGMENT_SHADER</span><span class="p">);</span>
-<span class="w">    </span><span class="n">glShaderSource</span><span class="p">(</span><span class="n">frag_shader</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">FRAGMENT_SHADER</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glShaderSource</span><span class="p">(</span><span class="n">frag_shader</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fragment_shader</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
 <span class="w">    </span><span class="n">glCompileShader</span><span class="p">(</span><span class="n">frag_shader</span><span class="p">);</span>
 <span class="w">    </span><span class="n">_opengl_check_compile</span><span class="p">(</span><span class="n">frag_shader</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Fragment shader compilation failed:&quot;</span><span class="p">);</span>
 
@@ -807,8 +852,11 @@
 <span class="w">    </span><span class="n">glEnable</span><span class="p">(</span><span class="n">GL_PROGRAM_POINT_SIZE</span><span class="p">);</span><span class="w"> </span><span class="c1">// enable varying, programmable point sizes</span>
 <span class="w">    </span><span class="n">glEnable</span><span class="p">(</span><span class="n">GL_DEPTH_TEST</span><span class="p">);</span><span class="w"> </span><span class="c1">// enable depth testing</span>
 
-<span class="w">    </span><span class="c1">// create shader program</span>
-<span class="w">    </span><span class="n">shader_program</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">compile_shader</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// create shader programs</span>
+<span class="w">    </span><span class="n">shader_program_fld</span>
+<span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">compile_shaders</span><span class="p">(</span><span class="n">VERTEX_SHADER_FLUID</span><span class="p">,</span><span class="w"> </span><span class="n">FRAGMENT_SHADER_FLUID</span><span class="p">);</span>
+<span class="w">    </span><span class="n">shader_program_bdy</span>
+<span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">compile_shaders</span><span class="p">(</span><span class="n">VERTEX_SHADER_BOUNDARY</span><span class="p">,</span><span class="w"> </span><span class="n">FRAGMENT_SHADER_BOUNDARY</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// trigger the initial computation of the view matrix representing the</span>
 <span class="w">    </span><span class="c1">// camera this is recomputed on-demand in the `glfw_process_input` function</span>
@@ -983,6 +1031,90 @@
 
 <span class="kt">void</span><span class="w"> </span><span class="n">GUI</span><span class="o">::</span><span class="n">initialize_buffers</span><span class="p">(</span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">map_buffers</span><span class="p">(</span><span class="n">state</span><span class="p">);</span><span class="w"> </span><span class="p">};</span>
 
+<span class="kt">void</span><span class="w"> </span><span class="nf">GUI::set_boundary_to_render</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BoundarySamples</span><span class="o">*</span><span class="w"> </span><span class="n">samples</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// get boundary sample count</span>
+<span class="w">    </span><span class="n">N_bdy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">samples</span><span class="o">-&gt;</span><span class="n">xs</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// set flags for rendering in `GUI::update` and cleanup in `GUI::~GUI()`</span>
+<span class="w">    </span><span class="n">has_boundary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// same procedure as in create_and_register_buffers:</span>
+
+<span class="w">    </span><span class="c1">// create VBOs</span>
+<span class="w">    </span><span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x_vbo_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">x_vbo_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBufferData</span><span class="p">(</span>
+<span class="w">        </span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">N_bdy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">GL_DYNAMIC_DRAW</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">y_vbo_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">y_vbo_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBufferData</span><span class="p">(</span>
+<span class="w">        </span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">N_bdy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">GL_DYNAMIC_DRAW</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">z_vbo_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">z_vbo_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBufferData</span><span class="p">(</span>
+<span class="w">        </span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">N_bdy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="n">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">GL_DYNAMIC_DRAW</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// register them with cuda</span>
+<span class="w">    </span><span class="n">cudaGraphicsResource</span><span class="o">*</span><span class="w"> </span><span class="n">cuda_x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaGraphicsResource</span><span class="o">*</span><span class="w"> </span><span class="n">cuda_y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="n">cudaGraphicsResource</span><span class="o">*</span><span class="w"> </span><span class="n">cuda_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsGLRegisterBuffer</span><span class="p">(</span>
+<span class="w">        </span><span class="o">&amp;</span><span class="n">cuda_x</span><span class="p">,</span><span class="w"> </span><span class="n">x_vbo_bdy</span><span class="p">,</span><span class="w"> </span><span class="n">cudaGraphicsMapFlagsWriteDiscard</span><span class="p">));</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsGLRegisterBuffer</span><span class="p">(</span>
+<span class="w">        </span><span class="o">&amp;</span><span class="n">cuda_y</span><span class="p">,</span><span class="w"> </span><span class="n">y_vbo_bdy</span><span class="p">,</span><span class="w"> </span><span class="n">cudaGraphicsMapFlagsWriteDiscard</span><span class="p">));</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsGLRegisterBuffer</span><span class="p">(</span>
+<span class="w">        </span><span class="o">&amp;</span><span class="n">cuda_z</span><span class="p">,</span><span class="w"> </span><span class="n">z_vbo_bdy</span><span class="p">,</span><span class="w"> </span><span class="n">cudaGraphicsMapFlagsWriteDiscard</span><span class="p">));</span>
+
+<span class="w">    </span><span class="c1">// create vao and bind positions</span>
+<span class="w">    </span><span class="n">glGenVertexArrays</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vao_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">vao_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">x_vbo_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glEnableVertexAttribArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">y_vbo_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glEnableVertexAttribArray</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">z_vbo_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">)</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glEnableVertexAttribArray</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">glBindVertexArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// map the buffers for the memory transfer from cuda</span>
+<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_num_bytes</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">x_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">y_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">z_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsMapResources</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cuda_x</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsResourceGetMappedPointer</span><span class="p">(</span>
+<span class="w">        </span><span class="p">(</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">x_ptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_num_bytes</span><span class="p">,</span><span class="w"> </span><span class="n">cuda_x</span><span class="p">));</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsMapResources</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cuda_y</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsResourceGetMappedPointer</span><span class="p">(</span>
+<span class="w">        </span><span class="p">(</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">y_ptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_num_bytes</span><span class="p">,</span><span class="w"> </span><span class="n">cuda_y</span><span class="p">));</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsMapResources</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cuda_z</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsResourceGetMappedPointer</span><span class="p">(</span>
+<span class="w">        </span><span class="p">(</span><span class="kt">void</span><span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">z_ptr</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_num_bytes</span><span class="p">,</span><span class="w"> </span><span class="n">cuda_z</span><span class="p">));</span>
+
+<span class="w">    </span><span class="c1">// actual transfer: Memcpy</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">x_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">samples</span><span class="o">-&gt;</span><span class="n">xs</span><span class="p">.</span><span class="n">ptr</span><span class="p">(),</span><span class="w"> </span><span class="n">N_bdy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span>
+<span class="w">        </span><span class="n">cudaMemcpyDeviceToDevice</span><span class="p">))</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">y_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">samples</span><span class="o">-&gt;</span><span class="n">ys</span><span class="p">.</span><span class="n">ptr</span><span class="p">(),</span><span class="w"> </span><span class="n">N_bdy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span>
+<span class="w">        </span><span class="n">cudaMemcpyDeviceToDevice</span><span class="p">))</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaMemcpy</span><span class="p">(</span><span class="n">z_ptr</span><span class="p">,</span><span class="w"> </span><span class="n">samples</span><span class="o">-&gt;</span><span class="n">zs</span><span class="p">.</span><span class="n">ptr</span><span class="p">(),</span><span class="w"> </span><span class="n">N_bdy</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">float</span><span class="p">),</span>
+<span class="w">        </span><span class="n">cudaMemcpyDeviceToDevice</span><span class="p">))</span>
+
+<span class="w">    </span><span class="c1">// unmap buffers again</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsUnmapResources</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cuda_x</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsUnmapResources</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cuda_y</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsUnmapResources</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cuda_z</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+
+<span class="w">    </span><span class="c1">// unregister the resources from cuda</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsUnregisterResource</span><span class="p">(</span><span class="n">cuda_x</span><span class="p">));</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsUnregisterResource</span><span class="p">(</span><span class="n">cuda_y</span><span class="p">));</span>
+<span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsUnregisterResource</span><span class="p">(</span><span class="n">cuda_z</span><span class="p">));</span>
+<span class="p">};</span>
+
 <span class="kt">bool</span><span class="w"> </span><span class="nf">GUI::update_or_exit</span><span class="p">(</span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Scene</span><span class="w"> </span><span class="n">scene</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// declare a static variable for measuring how much time has passed since</span>
@@ -1049,51 +1181,71 @@
 <span class="w">    </span><span class="c1">// clear the screen</span>
 <span class="w">    </span><span class="n">glClear</span><span class="p">(</span><span class="n">GL_COLOR_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">GL_DEPTH_BUFFER_BIT</span><span class="p">);</span>
 
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">show_particles</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">show_fluid</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// OpenGL rendering commands</span>
-<span class="w">        </span><span class="n">glUseProgram</span><span class="p">(</span><span class="n">shader_program</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glUseProgram</span><span class="p">(</span><span class="n">shader_program_fld</span><span class="p">);</span>
 
 <span class="w">        </span><span class="c1">// send uniforms</span>
 <span class="w">        </span><span class="n">glUniformMatrix4fv</span><span class="p">(</span>
-<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;view&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
+<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_fld</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;view&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
 <span class="w">            </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="c1">// count</span>
 <span class="w">            </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="c1">// transpose</span>
 <span class="w">            </span><span class="n">glm</span><span class="o">::</span><span class="n">value_ptr</span><span class="p">(</span><span class="n">view</span><span class="p">)</span><span class="w"> </span><span class="c1">// value</span>
 <span class="w">        </span><span class="p">);</span>
 <span class="w">        </span><span class="n">glUniformMatrix4fv</span><span class="p">(</span>
-<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;proj&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
+<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_fld</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;proj&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
 <span class="w">            </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="c1">// count</span>
 <span class="w">            </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="c1">// transpose</span>
 <span class="w">            </span><span class="n">glm</span><span class="o">::</span><span class="n">value_ptr</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span><span class="w"> </span><span class="c1">// value</span>
 <span class="w">        </span><span class="p">);</span>
 <span class="w">        </span><span class="n">glUniform2f</span><span class="p">(</span>
-<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;viewport&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
+<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_fld</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;viewport&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
 <span class="w">            </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">_window_width</span><span class="p">,</span><span class="w"> </span><span class="c1">// value 1</span>
 <span class="w">            </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">_window_height</span><span class="w"> </span><span class="c1">// value 2</span>
 <span class="w">        </span><span class="p">);</span>
-<span class="w">        </span><span class="n">glUniform1f</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;radius&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
+<span class="w">        </span><span class="n">glUniform1f</span><span class="p">(</span>
+<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_fld</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;radius&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
 <span class="w">            </span><span class="n">h</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">2.f</span><span class="w"> </span><span class="c1">// value</span>
 <span class="w">        </span><span class="p">);</span>
 <span class="w">        </span><span class="n">glUniform1i</span><span class="p">(</span>
-<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;use_colour&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
+<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_fld</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;use_colour&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
 <span class="w">            </span><span class="n">use_per_particle_colour</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="c1">// value</span>
 <span class="w">        </span><span class="p">);</span>
-<span class="w">        </span><span class="n">glUniform1f</span><span class="p">(</span>
-<span class="w">            </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;colour_scale&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
+<span class="w">        </span><span class="n">glUniform1f</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span>
+<span class="w">                        </span><span class="n">shader_program_fld</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;colour_scale&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
 <span class="w">            </span><span class="mf">1.</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">colour_scale</span><span class="w"> </span><span class="c1">// value</span>
 <span class="w">        </span><span class="p">);</span>
-<span class="w">        </span><span class="n">glUniform1i</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span>
-<span class="w">                        </span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;colour_map_selector&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
+<span class="w">        </span><span class="n">glUniform1i</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_fld</span><span class="p">,</span>
+<span class="w">                        </span><span class="s">&quot;colour_map_selector&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
 <span class="w">            </span><span class="n">colour_map_selector</span><span class="w"> </span><span class="c1">// value</span>
 <span class="w">        </span><span class="p">);</span>
 <span class="w">        </span><span class="n">glUniform1f</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span>
-<span class="w">                        </span><span class="n">shader_program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;shading_strength&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
+<span class="w">                        </span><span class="n">shader_program_fld</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;shading_strength&quot;</span><span class="p">),</span><span class="w"> </span><span class="c1">// location</span>
 <span class="w">            </span><span class="n">sat</span><span class="p">(</span><span class="n">shading_strength</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">100.f</span><span class="p">)</span><span class="w"> </span><span class="c1">// value</span>
 <span class="w">        </span><span class="p">);</span>
 
 <span class="w">        </span><span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">vao</span><span class="p">);</span>
 
 <span class="w">        </span><span class="n">glDrawArrays</span><span class="p">(</span><span class="n">GL_POINTS</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glBindVertexArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has_boundary</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">show_boundary</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// same as above but with fewer uniforms</span>
+<span class="w">        </span><span class="n">glUseProgram</span><span class="p">(</span><span class="n">shader_program_bdy</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_bdy</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;view&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">            </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">glm</span><span class="o">::</span><span class="n">value_ptr</span><span class="p">(</span><span class="n">view</span><span class="p">));</span>
+<span class="w">        </span><span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_bdy</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;proj&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">            </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">glm</span><span class="o">::</span><span class="n">value_ptr</span><span class="p">(</span><span class="n">proj</span><span class="p">));</span>
+<span class="w">        </span><span class="n">glUniform2f</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_bdy</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;viewport&quot;</span><span class="p">),</span>
+<span class="w">            </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">_window_width</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">_window_height</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glUniform1f</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_bdy</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;radius&quot;</span><span class="p">),</span>
+<span class="w">            </span><span class="n">h</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">2.f</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">bdy_particle_display_size_factor</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glUniform3f</span><span class="p">(</span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">shader_program_bdy</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;colour&quot;</span><span class="p">),</span>
+<span class="w">            </span><span class="n">bdy_colour</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">bdy_colour</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">bdy_colour</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+
+<span class="w">        </span><span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">vao_bdy</span><span class="p">);</span>
+
+<span class="w">        </span><span class="n">glDrawArrays</span><span class="p">(</span><span class="n">GL_POINTS</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">N_bdy</span><span class="p">);</span>
 <span class="w">        </span><span class="n">glBindVertexArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
@@ -1144,7 +1296,8 @@
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">slider_width</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.4f</span><span class="w"> </span><span class="p">};</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ImGui</span><span class="o">::</span><span class="n">CollapsingHeader</span><span class="p">(</span><span class="s">&quot;Visualization&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Checkbox</span><span class="p">(</span><span class="s">&quot;run GUI and SIM at same rate&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fps_gui_sim_coupled</span><span class="p">);</span>
-<span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Checkbox</span><span class="p">(</span><span class="s">&quot;show Particles&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">show_particles</span><span class="p">);</span>
+<span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Checkbox</span><span class="p">(</span><span class="s">&quot;show fluid particles&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">show_fluid</span><span class="p">);</span>
+<span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Checkbox</span><span class="p">(</span><span class="s">&quot;show boundary particles&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">show_boundary</span><span class="p">);</span>
 <span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">PushItemWidth</span><span class="p">(</span><span class="n">ImGui</span><span class="o">::</span><span class="n">GetContentRegionAvail</span><span class="p">().</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">slider_width</span><span class="p">);</span>
 <span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ImGui</span><span class="o">::</span><span class="n">InputFloat</span><span class="p">(</span><span class="s">&quot;base camera radius&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">radius_init</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">))</span>
 <span class="w">            </span><span class="n">update_view</span><span class="p">();</span>
@@ -1155,6 +1308,9 @@
 <span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">InputFloat</span><span class="p">(</span>
 <span class="w">            </span><span class="s">&quot;colour mapping max&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">colour_scale</span><span class="p">,</span><span class="w"> </span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%.0f&quot;</span><span class="p">);</span>
 <span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">Combo</span><span class="p">(</span><span class="s">&quot;colour map&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">colour_map_selector</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Spectral</span><span class="se">\0</span><span class="s">CB-RdYiBu&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">SliderFloat</span><span class="p">(</span>
+<span class="w">            </span><span class="s">&quot;boundary size&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">bdy_particle_display_size_factor</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">);</span>
+<span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">ColorEdit3</span><span class="p">(</span><span class="s">&quot;boundary colour&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bdy_colour</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
 <span class="w">    </span><span class="c1">// end of contents ~~~~~~~</span>
@@ -1178,8 +1334,16 @@
 <span class="w">    </span><span class="c1">// unmap, unregister VBOs from CUDA and delete them</span>
 <span class="w">    </span><span class="n">unmap_buffers</span><span class="p">();</span>
 <span class="w">    </span><span class="n">destroy_and_deregister_buffers</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// only destroy boundary buffers if need be</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">has_boundary</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">glDeleteBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x_vbo_bdy</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glDeleteBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">y_vbo_bdy</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glDeleteBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">z_vbo_bdy</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glDeleteVertexArrays</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vao_bdy</span><span class="p">);</span>
+<span class="w">        </span><span class="n">glDeleteProgram</span><span class="p">(</span><span class="n">shader_program_bdy</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="c1">// clearn up OpenGL</span>
-<span class="w">    </span><span class="n">glDeleteProgram</span><span class="p">(</span><span class="n">shader_program</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glDeleteProgram</span><span class="p">(</span><span class="n">shader_program_fld</span><span class="p">);</span>
 <span class="w">    </span><span class="c1">// clean up GLFW</span>
 <span class="w">    </span><span class="n">glfwTerminate</span><span class="p">();</span>
 <span class="p">}</span>

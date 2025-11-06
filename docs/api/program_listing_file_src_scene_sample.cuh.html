@@ -352,7 +352,8 @@
 <span class="w">    </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">zs</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="n">BoundarySamples</span><span class="w"> </span><span class="nf">sample_mesh</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">h</span><span class="p">);</span>
+<span class="n">BoundarySamples</span><span class="w"> </span><span class="nf">sample_mesh</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="w"> </span><span class="n">mesh</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">oversampling_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span>
 
 <span class="cp">#endif </span><span class="c1">// SCENE_SAMPLE_CUH_</span>
 </pre></div>

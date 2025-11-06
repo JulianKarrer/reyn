@@ -1,14 +1,16 @@
 #include "gui.cuh"
 #include "particles.cuh"
 #include "scene/scene.cuh"
+#include "scene/sample.cuh"
 
 // constants
 const char* FONT_PATH { "res/JBM.ttf" };
 
 // shaders
 
-/// Vertex shader for creating billboard spheres from glPoints
-const char* VERTEX_SHADER = R"GLSL(
+/// Vertex shader for creating billboard spheres from glPoints, used for
+/// visualizing the fluid
+const char* VERTEX_SHADER_FLUID = R"GLSL(
     #version 330 core
     layout (location = 0) in float x;
     layout (location = 1) in float y;
@@ -44,10 +46,38 @@ const char* VERTEX_SHADER = R"GLSL(
     }
 )GLSL";
 
+/// Vertex shader for creating billboard spheres from glPoints, used for
+/// visualizing the boundary
+const char* VERTEX_SHADER_BOUNDARY = R"GLSL(
+    #version 330 core
+    layout (location = 0) in float x;
+    layout (location = 1) in float y;
+    layout (location = 2) in float z;
+    uniform mat4 view; // view matrix
+    uniform mat4 proj; // projection matrix
+    uniform vec2 viewport; // viewport size
+    uniform float radius; // particle radius
+
+    flat out vec4 centre_vs;
+
+    void main() {
+        // same function as in VERTEX_SHADER_FLUID, except no colour is passed on
+        centre_vs = view * vec4(x,y,z, 1.0);
+        gl_Position = proj * centre_vs;
+        float dist = -centre_vs.z;
+        if (dist <= 0.0) {
+            gl_PointSize = 0.0;
+            return;
+        }
+        float size_pixels = (proj[1][1] * radius * viewport.y) / dist;
+        gl_PointSize = size_pixels;
+    }
+)GLSL";
+
 /// Fragment shader inspired by Simon Green's 2010 GDC presentation
 /// for creating billboard spheres from glPoints
 /// https://developer.download.nvidia.com/presentations/2010/gdc/Direct3D_Effects.pdf
-const char* FRAGMENT_SHADER = R"GLSL(
+const char* FRAGMENT_SHADER_FLUID = R"GLSL(
     #version 330 core
 
     uniform float radius; // particle radius in world space
@@ -202,18 +232,38 @@ const char* FRAGMENT_SHADER = R"GLSL(
             colour_map(colour) :       // if using per-particle colours
             normalize(vec3(135.,206.,250.)) // default colour
         );
-        // FragColor = vec4(albedo * max(.3, diffuse), 1.0);
         FragColor = vec4(mix(albedo, albedo * diffuse, shading_strength), 1.0);
+    }
 
-        // vec3 light_vs = normalize((view * vec4(normalize(-light_dir), 0.0)).xyz);
-        // float lambertian = max(0.0, dot(normal_vs, light_vs));
-        // vec3 view_dir = normalize(-frag_pos_vs); // camera at origin in view-space
-        // vec3 reflect_dir = reflect(-light_vs, normal_vs);
-        // float spec = pow(max(0.0, dot(view_dir, reflect_dir)), 64.0); // shininess is exponent
-        // vec3 albedo = normalize(vec3(135.,206.,250.));
-        // vec3 ambient = 0.5 * albedo;
-        // vec3 color = ambient + (0.9 * lambertian) * albedo + 0.6 * spec;
-        // FragColor = vec4(color, 1.0);
+)GLSL";
+
+/// Fragment shader similar to `FRAGMENT_SHADER_FLUID` but with simpler shading,
+/// less uniforms and a single colour, used for visualization of the boundary
+/// particles
+const char* FRAGMENT_SHADER_BOUNDARY = R"GLSL(
+    #version 330 core
+
+    uniform float radius; // particle radius in world space
+    uniform mat4 view; // view matrix
+    uniform mat4 proj; // projection matrix
+    uniform vec3 colour; 
+
+    flat in vec4 centre_vs; // view-space position of the centre of the particle
+    out vec4 FragColor;
+
+    void main() {
+        // same code as in FRAGMENT_SHADER_FLUID
+        vec2 coord = gl_PointCoord * 2. - 1.;
+        float length_squared = dot(coord, coord);
+        if (length_squared > 1.) discard;
+        float z = sqrt(1. - length_squared);
+        vec3 normal_vs = vec3(coord, z);
+        vec3 frag_pos_vs = centre_vs.xyz + normal_vs * radius;
+        vec4 frag_pos_cs = proj * vec4(frag_pos_vs, 1.);
+        float z_cs = frag_pos_cs.z / frag_pos_cs.w;
+        gl_FragDepth = z_cs * 0.5 + 0.5;
+        float diffuse = max(0.0, normalize(normal_vs).z);
+        FragColor = diffuse * vec4(colour, 1.0);
     }
 
 )GLSL";
@@ -251,16 +301,17 @@ static void _opengl_check_link(GLuint program, const char* message)
     }
 }
 
-GLuint GUI::compile_shader(void)
+GLuint GUI::compile_shaders(
+    const char* vertex_shader, const char* fragment_shader)
 {
     // compile the shaders, checking for errors
     GLuint vert_shader { glCreateShader(GL_VERTEX_SHADER) };
-    glShaderSource(vert_shader, 1, &VERTEX_SHADER, NULL);
+    glShaderSource(vert_shader, 1, &vertex_shader, NULL);
     glCompileShader(vert_shader);
     _opengl_check_compile(vert_shader, "Vertex shader compilation failed:");
 
     GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(frag_shader, 1, &FRAGMENT_SHADER, NULL);
+    glShaderSource(frag_shader, 1, &fragment_shader, NULL);
     glCompileShader(frag_shader);
     _opengl_check_compile(frag_shader, "Fragment shader compilation failed:");
 
@@ -485,8 +536,11 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
     glEnable(GL_PROGRAM_POINT_SIZE); // enable varying, programmable point sizes
     glEnable(GL_DEPTH_TEST); // enable depth testing
 
-    // create shader program
-    shader_program = compile_shader();
+    // create shader programs
+    shader_program_fld
+        = compile_shaders(VERTEX_SHADER_FLUID, FRAGMENT_SHADER_FLUID);
+    shader_program_bdy
+        = compile_shaders(VERTEX_SHADER_BOUNDARY, FRAGMENT_SHADER_BOUNDARY);
 
     // trigger the initial computation of the view matrix representing the
     // camera this is recomputed on-demand in the `glfw_process_input` function
@@ -661,6 +715,90 @@ void GUI::resize_mapped_buffers(uint N_new, Particles& state)
 
 void GUI::initialize_buffers(Particles& state) { map_buffers(state); };
 
+void GUI::set_boundary_to_render(const BoundarySamples* samples)
+{
+    // get boundary sample count
+    N_bdy = samples->xs.size();
+    // set flags for rendering in `GUI::update` and cleanup in `GUI::~GUI()`
+    has_boundary = true;
+
+    // same procedure as in create_and_register_buffers:
+
+    // create VBOs
+    glGenBuffers(1, &x_vbo_bdy);
+    glBindBuffer(GL_ARRAY_BUFFER, x_vbo_bdy);
+    glBufferData(
+        GL_ARRAY_BUFFER, N_bdy * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &y_vbo_bdy);
+    glBindBuffer(GL_ARRAY_BUFFER, y_vbo_bdy);
+    glBufferData(
+        GL_ARRAY_BUFFER, N_bdy * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &z_vbo_bdy);
+    glBindBuffer(GL_ARRAY_BUFFER, z_vbo_bdy);
+    glBufferData(
+        GL_ARRAY_BUFFER, N_bdy * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+
+    // register them with cuda
+    cudaGraphicsResource* cuda_x = nullptr;
+    cudaGraphicsResource* cuda_y = nullptr;
+    cudaGraphicsResource* cuda_z = nullptr;
+    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
+        &cuda_x, x_vbo_bdy, cudaGraphicsMapFlagsWriteDiscard));
+    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
+        &cuda_y, y_vbo_bdy, cudaGraphicsMapFlagsWriteDiscard));
+    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
+        &cuda_z, z_vbo_bdy, cudaGraphicsMapFlagsWriteDiscard));
+
+    // create vao and bind positions
+    glGenVertexArrays(1, &vao_bdy);
+    glBindVertexArray(vao_bdy);
+    glBindBuffer(GL_ARRAY_BUFFER, x_vbo_bdy);
+    glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, y_vbo_bdy);
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, z_vbo_bdy);
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+
+    // map the buffers for the memory transfer from cuda
+    size_t _num_bytes;
+    float* x_ptr = nullptr;
+    float* y_ptr = nullptr;
+    float* z_ptr = nullptr;
+
+    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_x, 0));
+    CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
+        (void**)&x_ptr, &_num_bytes, cuda_x));
+    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_y, 0));
+    CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
+        (void**)&y_ptr, &_num_bytes, cuda_y));
+    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_z, 0));
+    CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
+        (void**)&z_ptr, &_num_bytes, cuda_z));
+
+    // actual transfer: Memcpy
+    CUDA_CHECK(cudaMemcpy(x_ptr, samples->xs.ptr(), N_bdy * sizeof(float),
+        cudaMemcpyDeviceToDevice))
+    CUDA_CHECK(cudaMemcpy(y_ptr, samples->ys.ptr(), N_bdy * sizeof(float),
+        cudaMemcpyDeviceToDevice))
+    CUDA_CHECK(cudaMemcpy(z_ptr, samples->zs.ptr(), N_bdy * sizeof(float),
+        cudaMemcpyDeviceToDevice))
+
+    // unmap buffers again
+    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_x, 0))
+    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_y, 0))
+    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_z, 0))
+
+    // unregister the resources from cuda
+    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_x));
+    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_y));
+    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_z));
+};
+
 bool GUI::update_or_exit(Particles& state, const Scene scene)
 {
     // declare a static variable for measuring how much time has passed since
@@ -727,51 +865,71 @@ void GUI::update(float h)
     // clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (show_particles) {
+    if (show_fluid) {
         // OpenGL rendering commands
-        glUseProgram(shader_program);
+        glUseProgram(shader_program_fld);
 
         // send uniforms
         glUniformMatrix4fv(
-            glGetUniformLocation(shader_program, "view"), // location
+            glGetUniformLocation(shader_program_fld, "view"), // location
             1, // count
             GL_FALSE, // transpose
             glm::value_ptr(view) // value
         );
         glUniformMatrix4fv(
-            glGetUniformLocation(shader_program, "proj"), // location
+            glGetUniformLocation(shader_program_fld, "proj"), // location
             1, // count
             GL_FALSE, // transpose
             glm::value_ptr(proj) // value
         );
         glUniform2f(
-            glGetUniformLocation(shader_program, "viewport"), // location
+            glGetUniformLocation(shader_program_fld, "viewport"), // location
             (float)_window_width, // value 1
             (float)_window_height // value 2
         );
-        glUniform1f(glGetUniformLocation(shader_program, "radius"), // location
+        glUniform1f(
+            glGetUniformLocation(shader_program_fld, "radius"), // location
             h / 2.f // value
         );
         glUniform1i(
-            glGetUniformLocation(shader_program, "use_colour"), // location
+            glGetUniformLocation(shader_program_fld, "use_colour"), // location
             use_per_particle_colour ? 1 : 0 // value
         );
-        glUniform1f(
-            glGetUniformLocation(shader_program, "colour_scale"), // location
+        glUniform1f(glGetUniformLocation(
+                        shader_program_fld, "colour_scale"), // location
             1. / colour_scale // value
         );
-        glUniform1i(glGetUniformLocation(
-                        shader_program, "colour_map_selector"), // location
+        glUniform1i(glGetUniformLocation(shader_program_fld,
+                        "colour_map_selector"), // location
             colour_map_selector // value
         );
         glUniform1f(glGetUniformLocation(
-                        shader_program, "shading_strength"), // location
+                        shader_program_fld, "shading_strength"), // location
             sat(shading_strength / 100.f) // value
         );
 
         glBindVertexArray(vao);
 
         glDrawArrays(GL_POINTS, 0, N);
+        glBindVertexArray(0);
+    }
+    if (has_boundary && show_boundary) {
+        // same as above but with fewer uniforms
+        glUseProgram(shader_program_bdy);
+        glUniformMatrix4fv(glGetUniformLocation(shader_program_bdy, "view"), 1,
+            GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(shader_program_bdy, "proj"), 1,
+            GL_FALSE, glm::value_ptr(proj));
+        glUniform2f(glGetUniformLocation(shader_program_bdy, "viewport"),
+            (float)_window_width, (float)_window_height);
+        glUniform1f(glGetUniformLocation(shader_program_bdy, "radius"),
+            h / 2.f * bdy_particle_display_size_factor);
+        glUniform3f(glGetUniformLocation(shader_program_bdy, "colour"),
+            bdy_colour[0], bdy_colour[1], bdy_colour[2]);
+
+        glBindVertexArray(vao_bdy);
+
+        glDrawArrays(GL_POINTS, 0, N_bdy);
         glBindVertexArray(0);
     }
 
@@ -822,7 +980,8 @@ void GUI::imgui_draw()
     const float slider_width { 0.4f };
     if (ImGui::CollapsingHeader("Visualization")) {
         ImGui::Checkbox("run GUI and SIM at same rate", &fps_gui_sim_coupled);
-        ImGui::Checkbox("show Particles", &show_particles);
+        ImGui::Checkbox("show fluid particles", &show_fluid);
+        ImGui::Checkbox("show boundary particles", &show_boundary);
         ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * slider_width);
         if (ImGui::InputFloat("base camera radius", &radius_init, 0.1f, 1.0f))
             update_view();
@@ -833,6 +992,9 @@ void GUI::imgui_draw()
         ImGui::InputFloat(
             "colour mapping max", &colour_scale, 1.f, 5.f, "%.0f");
         ImGui::Combo("colour map", &colour_map_selector, "Spectral\0CB-RdYiBu");
+        ImGui::SliderFloat(
+            "boundary size", &bdy_particle_display_size_factor, 0.0f, 1.0f);
+        ImGui::ColorEdit3("boundary colour", bdy_colour);
     }
 
     // end of contents ~~~~~~~
@@ -856,8 +1018,16 @@ GUI::~GUI()
     // unmap, unregister VBOs from CUDA and delete them
     unmap_buffers();
     destroy_and_deregister_buffers();
+    // only destroy boundary buffers if need be
+    if (has_boundary) {
+        glDeleteBuffers(1, &x_vbo_bdy);
+        glDeleteBuffers(1, &y_vbo_bdy);
+        glDeleteBuffers(1, &z_vbo_bdy);
+        glDeleteVertexArrays(1, &vao_bdy);
+        glDeleteProgram(shader_program_bdy);
+    }
     // clearn up OpenGL
-    glDeleteProgram(shader_program);
+    glDeleteProgram(shader_program_fld);
     // clean up GLFW
     glfwTerminate();
 }

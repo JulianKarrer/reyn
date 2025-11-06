@@ -38,10 +38,12 @@ int main()
         std::cout << std::format("mesh loaded, {} faces with {} vertices",
             mesh.face_count(), mesh.vertex_count())
                   << std::endl;
-        auto boundary_bufs { sample_mesh(mesh, scene.h) };
+        const BoundarySamples boundary_samples { sample_mesh(
+            mesh, scene.h, 2.0) };
         std::cout << std::format("mesh sampled, generated {} boundary points",
-            boundary_bufs.xs.size())
+            boundary_samples.xs.size())
                   << std::endl;
+        gui.set_boundary_to_render(&boundary_samples);
 
         // MAIN LOOP
         std::cout << "fully initialized" << std::endl;
