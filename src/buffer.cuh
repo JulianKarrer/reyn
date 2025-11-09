@@ -29,7 +29,7 @@ public:
     /// @param N number of elements to store in the buffer
     DeviceBuffer(size_t N)
         : buf(N)
-        , ext({ .active = false, .raw = nullptr, .size = 0 }) {};
+        , ext({ false, nullptr, 0 }) {};
 
     /// @brief Create a device-side buffer using a `thrust::device_vector` of
     /// the datatype specified by the template parameter `T` able to hold `N`
@@ -38,7 +38,7 @@ public:
     /// @param init value to initialize all entries to
     DeviceBuffer(size_t N, T init)
         : buf(N, init)
-        , ext({ .active = false, .raw = nullptr, .size = 0 }) {};
+        , ext({ false, nullptr, 0 }) {};
 
     /// @brief Create a device-side buffer using a `thrust::device_vector` of
     /// the datatype specified by the template parameter `T` from the beginning
@@ -51,13 +51,13 @@ public:
     DeviceBuffer(const std::vector<T>::const_iterator begin,
         const std::vector<T>::const_iterator end)
         : buf(begin, end)
-        , ext({ .active = false, .raw = nullptr, .size = 0 }) {};
+        , ext({ false, nullptr, 0 }) {};
 
     /// @brief Extend some functionality of the `DeviceBuffer` to CUDA
     /// arrays managed externally, e.g. through OpenGL interop with VBOs -
     /// in particular, `get` and `resize` should work.
     DeviceBuffer(GUI* _gui)
-        : ext({ .active = true, .raw = nullptr, .size = _gui->N }) {};
+        : ext({ true, nullptr, _gui->N }) {};
 
     size_t size() const
     {
@@ -213,9 +213,7 @@ public:
     DeviceBuffer& operator=(const DeviceBuffer&) = delete;
     /// allow moving
     DeviceBuffer(DeviceBuffer&& other)
-        : ext({ .active = other.ext.active,
-              .raw = other.ext.raw,
-              .size = other.ext.size })
+        : ext({ other.ext.active, other.ext.raw, other.ext.size })
         , buf(other.buf) {};
 };
 

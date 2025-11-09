@@ -1,4 +1,8 @@
 #include "gui.cuh"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include <chrono>
+using namespace std::literals;
 #include "particles.cuh"
 #include "scene/scene.cuh"
 #include "scene/sample.cuh"
@@ -246,7 +250,7 @@ const char* FRAGMENT_SHADER_BOUNDARY = R"GLSL(
     uniform float radius; // particle radius in world space
     uniform mat4 view; // view matrix
     uniform mat4 proj; // projection matrix
-    uniform vec3 colour; 
+    uniform vec4 colour; 
 
     flat in vec4 centre_vs; // view-space position of the centre of the particle
     out vec4 FragColor;
@@ -263,7 +267,7 @@ const char* FRAGMENT_SHADER_BOUNDARY = R"GLSL(
         float z_cs = frag_pos_cs.z / frag_pos_cs.w;
         gl_FragDepth = z_cs * 0.5 + 0.5;
         float diffuse = max(0.0, normalize(normal_vs).z);
-        FragColor = diffuse * vec4(colour, 1.0);
+        FragColor = diffuse * colour;
     }
 
 )GLSL";
@@ -781,12 +785,18 @@ void GUI::set_boundary_to_render(const BoundarySamples* samples)
         (void**)&z_ptr, &_num_bytes, cuda_z));
 
     // actual transfer: Memcpy
-    CUDA_CHECK(cudaMemcpy(x_ptr, samples->xs.ptr(), N_bdy * sizeof(float),
-        cudaMemcpyDeviceToDevice))
-    CUDA_CHECK(cudaMemcpy(y_ptr, samples->ys.ptr(), N_bdy * sizeof(float),
-        cudaMemcpyDeviceToDevice))
-    CUDA_CHECK(cudaMemcpy(z_ptr, samples->zs.ptr(), N_bdy * sizeof(float),
-        cudaMemcpyDeviceToDevice))
+    // use multiple streams to overlap these three copies
+    cudaStream_t cuda_stream_x, cuda_stream_y, cuda_stream_z;
+    CUDA_CHECK(cudaStreamCreate(&cuda_stream_x));
+    CUDA_CHECK(cudaStreamCreate(&cuda_stream_y));
+    CUDA_CHECK(cudaStreamCreate(&cuda_stream_z));
+    CUDA_CHECK(cudaMemcpyAsync(x_ptr, samples->xs.ptr(), N_bdy * sizeof(float),
+        cudaMemcpyDeviceToDevice, cuda_stream_x))
+    CUDA_CHECK(cudaMemcpyAsync(y_ptr, samples->ys.ptr(), N_bdy * sizeof(float),
+        cudaMemcpyDeviceToDevice, cuda_stream_y))
+    CUDA_CHECK(cudaMemcpyAsync(z_ptr, samples->zs.ptr(), N_bdy * sizeof(float),
+        cudaMemcpyDeviceToDevice, cuda_stream_z))
+    CUDA_CHECK(cudaDeviceSynchronize()); // synchronize the streams here
 
     // unmap buffers again
     CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_x, 0))
@@ -924,8 +934,8 @@ void GUI::update(float h)
             (float)_window_width, (float)_window_height);
         glUniform1f(glGetUniformLocation(shader_program_bdy, "radius"),
             h / 2.f * bdy_particle_display_size_factor);
-        glUniform3f(glGetUniformLocation(shader_program_bdy, "colour"),
-            bdy_colour[0], bdy_colour[1], bdy_colour[2]);
+        glUniform4f(glGetUniformLocation(shader_program_bdy, "colour"),
+            bdy_colour[0], bdy_colour[1], bdy_colour[2], bdy_colour[3]);
 
         glBindVertexArray(vao_bdy);
 
@@ -978,7 +988,8 @@ void GUI::imgui_draw()
     ImGui::Text("SIM interval %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
 
     const float slider_width { 0.4f };
-    if (ImGui::CollapsingHeader("Visualization")) {
+    if (ImGui::CollapsingHeader(
+            "Visualization", ImGuiTreeNodeFlags_DefaultOpen)) {
         ImGui::Checkbox("run GUI and SIM at same rate", &fps_gui_sim_coupled);
         ImGui::Checkbox("show fluid particles", &show_fluid);
         ImGui::Checkbox("show boundary particles", &show_boundary);
@@ -994,7 +1005,7 @@ void GUI::imgui_draw()
         ImGui::Combo("colour map", &colour_map_selector, "Spectral\0CB-RdYiBu");
         ImGui::SliderFloat(
             "boundary size", &bdy_particle_display_size_factor, 0.0f, 1.0f);
-        ImGui::ColorEdit3("boundary colour", bdy_colour);
+        ImGui::ColorEdit4("boundary colour", bdy_colour);
     }
 
     // end of contents ~~~~~~~

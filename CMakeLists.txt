@@ -1,6 +1,6 @@
 # use recent CMAKE version and define project name and languages
-cmake_minimum_required(VERSION 3.6)
-project(reyn LANGUAGES CUDA CXX C ) # C is required for glad
+cmake_minimum_required(VERSION 3.18)
+project(reyn LANGUAGES CUDA CXX C) # C is required for glad
 
 # options when building: benchmark mode
 option(BENCH "define the BENCH preprocessor macro for the `test` target to increase ankerl::nanobench minEpoch count and the size of the test scene" OFF)
@@ -14,20 +14,17 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 set(CMAKE_BUILD_TYPE_RELEASE "Release" CACHE STRING "Release build type")
-set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --use_fast_math -Xcompiler -O3")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -march=native")
-# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -march=native -flto")
 set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto")
 
 # use the scccache compiler wrapper for caching to speed up compilation
 find_program(SCCACHE_PROGRAM sccache)
-if (SCCACHE_PROGRAM)
+if(SCCACHE_PROGRAM)
     set(CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
     set(CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
     message(STATUS "Sccache found: ${SCCACHE_PROGRAM}")
-else ()
+else()
     message(STATUS "Sccache not found")
-endif ()
+endif()
 
 # set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -60,25 +57,25 @@ find_package(OpenGL REQUIRED)
 
 # fetch ImGUI
 FetchContent_Populate(imgui
-  URL https://github.com/ocornut/imgui/archive/docking.zip
-  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imgui
+    URL https://github.com/ocornut/imgui/archive/docking.zip
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imgui
 )
 
 add_library(imgui_glfw STATIC
-  build/_deps/imgui/imgui.cpp
-  build/_deps/imgui/imgui_draw.cpp
-  build/_deps/imgui/imgui_demo.cpp
-  build/_deps/imgui/imgui_tables.cpp
-  build/_deps/imgui/imgui_widgets.cpp
+    build/_deps/imgui/imgui.cpp
+    build/_deps/imgui/imgui_draw.cpp
+    build/_deps/imgui/imgui_demo.cpp
+    build/_deps/imgui/imgui_tables.cpp
+    build/_deps/imgui/imgui_widgets.cpp
 
-  build/_deps/imgui/backends/imgui_impl_glfw.cpp
-  build/_deps/imgui/backends/imgui_impl_opengl3.cpp
+    build/_deps/imgui/backends/imgui_impl_glfw.cpp
+    build/_deps/imgui/backends/imgui_impl_opengl3.cpp
 )
 
 target_include_directories(imgui_glfw
-PUBLIC
-  ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui
-  ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui/backends
+    PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui
+    ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui/backends
 )
 
 target_link_libraries(imgui_glfw PUBLIC glfw)
@@ -88,9 +85,9 @@ target_link_libraries(imgui_glfw PUBLIC ${X11_LIBRARIES})
 
 # fetch GLM
 FetchContent_Declare(
-	glm
-	GIT_REPOSITORY	https://github.com/g-truc/glm.git
-	GIT_TAG 	bf71a834948186f4097caa076cd2663c69a10e1e #refs/tags/1.0.1
+    glm
+    GIT_REPOSITORY https://github.com/g-truc/glm.git
+    GIT_TAG bf71a834948186f4097caa076cd2663c69a10e1e #refs/tags/1.0.1
 )
 
 FetchContent_MakeAvailable(glm)
@@ -121,7 +118,7 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git
     GIT_TAG v1.0.6
 )
-FetchContent_MakeAvailable(tinyobjloader) 
+FetchContent_MakeAvailable(tinyobjloader)
 
 # define executable
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -131,11 +128,12 @@ set(REYN_SOURCES
     ${SRC_DIR}/particles.cu
     ${SRC_DIR}/scene/scene.cu
     ${SRC_DIR}/scene/loader.cpp
+    ${SRC_DIR}/scene/pcdwriter.cu
     ${SRC_DIR}/scene/sample.cu
     ${SRC_DIR}/kernels.cu
     ${SRC_DIR}/solvers/SESPH.cu
     ${SRC_DIR}/datastructure/uniformgrid.cu
-    )
+)
 set(REYN_HEADERS
     ${SRC_DIR}/common.h
     ${SRC_DIR}/buffer.cuh
@@ -144,11 +142,12 @@ set(REYN_HEADERS
     ${SRC_DIR}/scene/scene.cuh
     ${SRC_DIR}/scene/loader.h
     ${SRC_DIR}/scene/sample.cuh
+    ${SRC_DIR}/scene/pcdwriter.cuh
     ${SRC_DIR}/vector_helper.cuh
     ${SRC_DIR}/kernels.cuh
     ${SRC_DIR}/solvers/SESPH.cuh
     ${SRC_DIR}/datastructure/uniformgrid.cuh
-    )
+)
 add_executable(${PROJECT_NAME}
     ${REYN_SOURCES}
     ${REYN_HEADERS}
@@ -166,7 +165,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CUDA_SEPARABLE_COMPILATION ON
     CUDA_RUNTIME_LIBRARY Shared
 )
-target_include_directories(${PROJECT_NAME} PRIVATE 
+target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
 
@@ -176,15 +175,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart)
 
 # pass flags to cuda
 # e.g. extended lambda for __device__ lambdas when mapping over neighbouring particles
-target_compile_options(reyn PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
-    --extended-lambda
->)
 
 # link libraries (GLFW, OpenGL, ...)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PUBLIC 
+target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
-    imgui_glfw 
+    imgui_glfw
     glad
     glm::glm
     OpenGL::GL
@@ -193,6 +189,16 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     Thrust
     tinyobjloader
 )
+
+# set compile flags
+target_compile_options(${PROJECT_NAME} PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>: --use_fast_math --extended-lambda>
+    $<$<COMPILE_LANGUAGE:CXX>: -Ofast -march=native>
+)
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+    --extended-lambda
+    >)
+
 
 # TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 file(GLOB_RECURSE USER_TEST_SOURCES "${CMAKE_SOURCE_DIR}/test/*.cpp" "${CMAKE_SOURCE_DIR}/test/*.cu")
@@ -216,7 +222,7 @@ target_compile_definitions(tests PRIVATE $<$<BOOL:${BENCH}>:BENCH>)
 
 target_compile_options(tests PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
     --extended-lambda
->)
+    >)
 
 target_include_directories(tests PRIVATE
     ${SRC_DIR}
@@ -244,6 +250,6 @@ add_test(NAME unit_tests COMMAND tests)
 foreach(tgt ${PROJECT_NAME} tests)
     if(TARGET ${tgt})
         target_compile_options(${tgt} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-diag-suppress=3012>)
-        target_compile_options(${tgt} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wno-volatile> )
+        target_compile_options(${tgt} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-Wno-volatile>)
     endif()
 endforeach()

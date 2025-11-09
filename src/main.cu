@@ -38,8 +38,7 @@ int main()
         std::cout << std::format("mesh loaded, {} faces with {} vertices",
             mesh.face_count(), mesh.vertex_count())
                   << std::endl;
-        const BoundarySamples boundary_samples { sample_mesh(
-            mesh, scene.h, 2.0) };
+        const BoundarySamples boundary_samples { sample_mesh(mesh, scene.h) };
         std::cout << std::format("mesh sampled, generated {} boundary points",
             boundary_samples.xs.size())
                   << std::endl;

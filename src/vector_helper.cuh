@@ -56,6 +56,22 @@ inline __host__ __device__ void store_v3(const float3& vec, const uint& i,
     z[i] = vec.z;
 };
 
+/// @brief Constructor for a `float3` that performs conversion from double to
+/// float and loads each component from the `i`th entry provided in the
+/// accompanying pointers in order to construct a vector from quantities stored
+/// in SoA format
+/// @param i index of vector to load
+/// @param x pointer to x-components (double)
+/// @param y pointer to y-components (double)
+/// @param z pointer to z-components (double)
+/// @return a single `float3` constructed from three load operations
+inline __host__ __device__ float3 v3(const uint& i,
+    const double* __restrict__ x, const double* __restrict__ y,
+    const double* __restrict__ z)
+{
+    return make_float3((float)x[i], (float)y[i], (float)z[i]);
+};
+
 // BINARY ARITHMATIC OPERATORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 inline __host__ __device__ float3 operator-(const float3& a, const float3& b)
@@ -83,6 +99,13 @@ inline __host__ __device__ float3& operator+=(float3& a, const float3& b)
     a.x += b.x;
     a.y += b.y;
     a.z += b.z;
+    return a;
+}
+
+inline __host__ __device__ float2& operator+=(float2& a, const float2& b)
+{
+    a.x += b.x;
+    a.y += b.y;
     return a;
 }
 
@@ -129,6 +152,13 @@ inline __host__ __device__ double3 cross(const double3& a, const double3& b)
         a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
 };
 
+/// @brief compute the cross product of two vectors
+inline __host__ __device__ float3 cross(const float3& a, const float3& b)
+{
+    return make_float3(
+        a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+};
+
 // division with scalar
 inline __host__ __device__ float3 operator/(const float3& a, const float& b)
 {
@@ -143,6 +173,15 @@ inline __host__ __device__ float3 operator*(const float3& a, const float& b)
 inline __host__ __device__ float3 operator*(const float& a, const float3& b)
 {
     return make_float3(b.x * a, b.y * a, b.z * a);
+};
+
+inline __host__ __device__ float2 operator*(const float2& a, const float& b)
+{
+    return make_float2(a.x * b, a.y * b);
+};
+inline __host__ __device__ float2 operator*(const float& a, const float2& b)
+{
+    return make_float2(b.x * a, b.y * a);
 };
 
 inline __host__ __device__ double3 operator*(const double3& a, const double& b)
@@ -160,7 +199,7 @@ inline __host__ __device__ double3 operator*(const double& a, const double3& b)
 /// `__host__` code due to alternate implementations depending on intrinsics
 /// availablility!
 ///
-/// saturate a float, i.e. clamp it to a [0.f ; 1.f] range (inclusive)
+/// saturate a `float`, i.e. clamp it to a [0.f ; 1.f] range (inclusive)
 inline __host__ __device__ float sat(const float& a)
 {
 #ifdef __CUDA_ARCH__
@@ -168,6 +207,17 @@ inline __host__ __device__ float sat(const float& a)
 #else
     return fmin(fmax(a, 0.f), 1.f);
 #endif
+};
+
+/// @brief NOTE: this function might behave differently in `__device__` and
+/// `__host__` code due to alternate implementations depending on intrinsics
+/// availablility!
+///
+/// saturate a `float2`, i.e. clamp each component to a [0.f ; 1.f] range
+/// (inclusive)
+inline __host__ __device__ float2 sat(const float2& a)
+{
+    return make_float2(sat(a.x), sat(a.y));
 };
 
 /// @brief NOTE: this function might behave differently in `__device__` and
@@ -216,6 +266,14 @@ inline __host__ __device__ int3 floor(const float3& a)
 inline __host__ __device__ float3 floorf(const float3& a)
 {
     return v3(floorf(a.x), floorf(a.y), floorf(a.z));
+};
+
+/// @brief Unary minus operation on `float3`
+/// @param a vector to negate
+/// @return a negated vector, with flipped sign in each component
+inline __host__ __device__ float3 operator-(const float3& a)
+{
+    return make_float3(-a.x, -a.y, -a.z);
 };
 
 // BINARY PREDICATES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -2,17 +2,12 @@
 #define GUI_H_
 
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <cuda_gl_interop.h>
-#include "common.h"
-#include <chrono>
-using namespace std::literals;
 #include <thread>
 #include <atomic>
 
@@ -135,12 +130,12 @@ private:
     /// successfully called and boundary particles may be rendered
     bool has_boundary { false };
     /// @brief whether or not to render boundary particles, if present
-    bool show_boundary { false };
+    bool show_boundary { true };
     /// @brief the RGB colour of the boundary particles
-    float bdy_colour[3] { 0.5, 0.5, 0.5 };
+    float bdy_colour[4] { 0.5, 0.5, 0.5, 0.5 };
     /// @brief Relative size of a boundary particle to a fluid particle for
     /// visualization
-    float bdy_particle_display_size_factor { 0.1 };
+    float bdy_particle_display_size_factor { 0.5 };
 
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
