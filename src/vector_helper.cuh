@@ -234,6 +234,18 @@ inline __host__ __device__ float norm(const float3& a)
 #endif
 };
 
+/// @brief Compute the element-wise minimum
+inline __host__ __device__ float3 min(const float3& a, const float3& b)
+{
+    return make_float3(fmin(a.x, b.x), fmin(a.y, b.y), fmin(a.z, b.z));
+}
+
+/// @brief Compute the element-wise maximum
+inline __host__ __device__ float3 max(const float3& a, const float3& b)
+{
+    return make_float3(fmax(a.x, b.x), fmax(a.y, b.y), fmax(a.z, b.z));
+}
+
 /// @brief NOTE: this function might behave differently in `__device__` and
 /// `__host__` code due to alternate implementations depending on intrinsics
 /// availablility!

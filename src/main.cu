@@ -30,9 +30,13 @@ int main()
         UniformGridBuilder uniform_grid(
             scene.bound_min, scene.bound_max, 2. * scene.h);
         std::cout << "grid initialized" << std::endl;
-        // single tmp buffer shared for every operation
-        DeviceBuffer<float> tmp(1);
-        SESPH<B3, Resort::yes> solver(W, N, tmp, 0.005f, scene.h);
+        // tmp buffers to share across operations
+        DeviceBuffer<float> tmp1(1);
+        DeviceBuffer<float> tmp2(1);
+        DeviceBuffer<float> tmp3(1);
+        DeviceBuffer<float> tmp4(1);
+        SESPH<B3, Resort::yes> solver(
+            W, N, 0.001f, scene.h, tmp1, tmp2, tmp3, tmp4);
         std::cout << "solver initialized" << std::endl;
 
         const Mesh mesh = load_mesh_from_obj("scenes/cube.obj");
@@ -49,8 +53,9 @@ int main()
         std::cout << "fully initialized" << std::endl;
         while (gui.update_or_exit(state, scene)) {
             // update the acceleration datastructure
+
             const auto grid { uniform_grid.construct_and_reorder(
-                2. * scene.h, tmp, state) };
+                2. * scene.h, tmp1, state) };
 
             // then invoke the fluid solver
             solver.step(state, grid, dt);

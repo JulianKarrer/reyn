@@ -64,19 +64,20 @@ __global__ void _counting_sort(const uint N, const float* __restrict__ xx,
 
 UniformGridBuilder::UniformGridBuilder(const float3 bound_min,
     const float3 bound_max,
-    const float cell_size)
+    const float search_radius)
     : // save the cell size of the uniform grid
-    _cell_size(cell_size)
+    _cell_size(search_radius / 2.f)
     ,
     // the lower bound is offset by a safety margin to make sure all queries
     // in the bounds yield valid indices
-    _bound_min(bound_min - v3(cell_size))
+    _bound_min(bound_min - v3(search_radius * 2.))
     ,
     // after setting bounds and cells size and BEFORE (!) initializing buffers
     // compute their size: compute the number of grid cells along each spatial
     // dimension add one cell size along each axis to account for margins of
     // half a cell
-    nxyz(ceil_div(bound_max - _bound_min + v3(2. * cell_size), cell_size))
+    nxyz(ceil_div(
+        (bound_max + v3(search_radius * 2.)) - _bound_min, search_radius / 2.f))
     ,
     // initialize counts to zero
     counts(nxyz.x * nxyz.y * nxyz.z, 0)
@@ -295,8 +296,8 @@ TEST_CASE("Test Uniform Grid")
     const uint N { side_length * side_length * side_length };
     const float h { 1.1 };
     const float box_size { h * (float)side_length };
-    const float cell_size { 2. * h };
-    const float r_c_2 { cell_size * cell_size };
+    const float search_radius { 2. * h };
+    const float r_c_2 { search_radius * search_radius };
 
     /// create a seeded pseudorandom vector of float3 uniformly randomly
     /// distributed in [0; box_size]^3 on the host side
@@ -322,9 +323,9 @@ TEST_CASE("Test Uniform Grid")
 
     // create the uniform grid
     UniformGridBuilder uni_grid { UniformGridBuilder(
-        v3(-h * 2.), v3(box_size + h * 2.), h) };
+        v3(0.), v3(box_size), search_radius) };
     // build the device-side usable POD
-    const UniformGrid grid { uni_grid.construct(2. * h, xx, xy, xz) };
+    const UniformGrid grid { uni_grid.construct(search_radius, xx, xy, xz) };
 
     // allocate buffers for the results
     DeviceBuffer<uint> d_res_count(N, 0);

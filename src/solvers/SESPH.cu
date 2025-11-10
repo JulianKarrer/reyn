@@ -22,11 +22,12 @@ __global__ void _compute_densities(const float* __restrict__ xx,
 }
 
 template <IsKernel K, Resort R>
-__global__ void _compute_accelerations_and_integrate(float* __restrict__ xx,
+__global__ void _compute_accelerations(float* __restrict__ xx,
     float* __restrict__ xy, float* __restrict__ xz, float* __restrict__ vx,
-    float* __restrict__ vy, float* __restrict__ vz, const float* __restrict__ m,
+    float* __restrict__ vy, float* __restrict__ vz, float* __restrict__ ax,
+    float* __restrict__ ay, float* __restrict__ az, const float* __restrict__ m,
     const float* rho, const uint N, const K W, const float k, const float rho_0,
-    const float dt, const float nu, const float h, const UniformGrid<R> grid)
+    const float nu, const float h, const UniformGrid<R> grid)
 {
     // compute index and ensure safety at bounds
     const auto i { blockIdx.x * blockDim.x + threadIdx.x };
@@ -60,7 +61,22 @@ __global__ void _compute_accelerations_and_integrate(float* __restrict__ xx,
                 - (m_j * (p_i / (rho_i * rho_i) + p_j / (rho_j * rho_j)) * dW));
         },
         v3(0., -9.81, 0.)) };
+    // store the final acceleration
+    store_v3(a_i, i, ax, ay, az);
+}
 
+__global__ void _integrate(float* __restrict__ xx, float* __restrict__ xy,
+    float* __restrict__ xz, float* __restrict__ vx, float* __restrict__ vy,
+    float* __restrict__ vz, float* __restrict__ ax, float* __restrict__ ay,
+    float* __restrict__ az, const uint N, const float dt)
+{
+    const auto i { blockIdx.x * blockDim.x + threadIdx.x };
+    if (i >= N)
+        return;
+    // load relevant values to memory
+    const float3 a_i { v3(i, ax, ay, az) };
+    const float3 v_i { v3(i, vx, vy, vz) };
+    const float3 x_i { v3(i, xx, xy, xz) };
     // use semi-implicit Euler integration to update velocities and positions
     const float3 v_i_new { v_i + dt * a_i };
     store_v3(v_i_new, i, vx, vy, vz);
@@ -75,17 +91,24 @@ void SESPH<K, R>::step(
     _compute_densities<K><<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(),
         state.xy.ptr(), state.xz.ptr(), state.m.ptr(), rho.ptr(), N, W, grid);
     CUDA_CHECK(cudaGetLastError());
-    // and lastly, compute accelerations using these density values
+    // compute accelerations using these density values
     // note that pressure need not be pre-computed and stored since the kernel
     // is memory-bound, rather compute them on the fly from density at neighbour
     // j also note that viscosity and gravity can be computed on the fly in the
     // inner loop since they require only known velocities and the constant g,
     // so that ∇W_{ij} need only be evaluated once and can be reused for
     // pressure- and non-pressure accelerations
-    _compute_accelerations_and_integrate<K>
-        <<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(), state.xy.ptr(),
-            state.xz.ptr(), state.vx.ptr(), state.vy.ptr(), state.vz.ptr(),
-            state.m.ptr(), rho.ptr(), N, W, k, rho_0, dt, nu, h, grid);
+    _compute_accelerations<K><<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(),
+        state.xy.ptr(), state.xz.ptr(), state.vx.ptr(), state.vy.ptr(),
+        state.vz.ptr(), ax.ptr(), ay.ptr(), az.ptr(), state.m.ptr(), rho.ptr(),
+        N, W, k, rho_0, nu, h, grid);
+    CUDA_CHECK(cudaGetLastError());
+    // integration needs to happen in a seperate step, since reading and writing
+    // positions and velocites without global synchronization would elad to race
+    // conditions
+    _integrate<<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(), state.xy.ptr(),
+        state.xz.ptr(), state.vx.ptr(), state.vy.ptr(), state.vz.ptr(),
+        ax.ptr(), ay.ptr(), az.ptr(), N, dt);
     CUDA_CHECK(cudaGetLastError());
 };
 

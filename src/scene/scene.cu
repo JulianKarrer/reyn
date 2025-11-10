@@ -74,39 +74,14 @@ __global__ void _hard_enforce_bounds(const float3 bound_min,
     auto i { blockIdx.x * blockDim.x + threadIdx.x };
     if (i >= N)
         return;
-    // if the point is within the bounding volume, exit early.
     const float3 x_i { v3(i, xx, xy, xz) };
-    if (bound_min.x <= x_i.x && x_i.x <= bound_max.x && bound_min.y <= x_i.y
-        && x_i.y <= bound_max.y && bound_min.z <= x_i.z && x_i.z <= bound_max.z)
-        return;
-    // if execution reaches this point, find out what violation occured and fix
-    // it
-    if (x_i.x < bound_min.x) {
-        xx[i] = bound_min.x;
-        vx[i] *= -0.5;
+    // if at the boundary, mirror velocity and damp it
+    if (x_i <= bound_min || bound_max <= x_i) {
+        const float3 v_i { v3(i, vx, vy, vz) };
+        store_v3(-1e-3 * v_i, i, vx, vy, vz);
     }
-    if (x_i.x > bound_max.x) {
-        xx[i] = bound_max.x;
-        vx[i] *= -0.5;
-    }
-    // same for y
-    if (x_i.y < bound_min.y) {
-        xy[i] = bound_min.y;
-        vy[i] *= -0.5;
-    }
-    if (x_i.y > bound_max.y) {
-        xy[i] = bound_max.y;
-        vy[i] *= -0.5;
-    }
-    // same for z
-    if (x_i.z < bound_min.z) {
-        xz[i] = bound_min.z;
-        vz[i] *= -0.5;
-    }
-    if (x_i.z > bound_max.z) {
-        xz[i] = bound_max.z;
-        vz[i] *= -0.5;
-    }
+    // always clamp positions to the bounds
+    store_v3(max(min(x_i, bound_max), bound_min), i, xx, xy, xz);
 }
 
 void Scene::hard_enforce_bounds(Particles& state) const

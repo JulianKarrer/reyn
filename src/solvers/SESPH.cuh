@@ -18,8 +18,14 @@ public:
     uint N;
     /// @brief kinematic viscosity, with units of [L^2/T]
     float nu;
-    /// @brief scalar buffer
+    /// @brief density buffer
     DeviceBuffer<float>& rho;
+    /// @brief acceleration buffer (x-component)
+    DeviceBuffer<float>& ax;
+    /// @brief acceleration buffer (y-component)
+    DeviceBuffer<float>& ay;
+    /// @brief acceleration buffer (z-component)
+    DeviceBuffer<float>& az;
     /// @brief Stiffness coefficient for the state equation
     float k { 50. };
     /// @brief Gravitational acceleration
@@ -27,15 +33,23 @@ public:
     /// @brief rest density
     float rho_0 { 1. };
 
-    SESPH(K _W, uint _N, DeviceBuffer<float>& _rho, float _nu, const float _h)
+    SESPH(K _W, uint _N, float _nu, const float _h, DeviceBuffer<float>& _rho,
+        DeviceBuffer<float>& _ax, DeviceBuffer<float>& _ay,
+        DeviceBuffer<float>& _az)
         : W(_W)
         , N(_N)
         , nu(_nu)
         , h(_h)
         , rho(_rho)
+        , ax(_ax)
+        , ay(_ay)
+        , az(_az)
     {
         // ensure that the buffer can hold all densitites
         rho.resize(_N);
+        ax.resize(_N);
+        ay.resize(_N);
+        az.resize(_N);
     };
     ~SESPH() {};
 

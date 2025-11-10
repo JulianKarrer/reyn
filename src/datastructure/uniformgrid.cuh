@@ -240,9 +240,9 @@ public:
     /// of some given cell size.
     /// @param bound_min the lower bound of the AABB containing query points
     /// @param bound_max the upper bound of the AABB containing query points
-    /// @param cell_size the cell size of the uniform grid
-    UniformGridBuilder(
-        const float3 bound_min, const float3 bound_max, const float cell_size);
+    /// @param search_radius the search radius to expect
+    UniformGridBuilder(const float3 bound_min, const float3 bound_max,
+        const float search_radius);
 
     /// @brief Construct the uniform grid for the given buffer of query points,
     /// returning a POD structure that may be used on the device for querying
