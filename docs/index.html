@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Benchmarks" href="benchmarks/index.html">
+    <link href="_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Neighbour Search Benchmarks" href="benchmarks/index.html">
         <link rel="prefetch" href="_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -195,7 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Neighbour Search Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api/library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -260,12 +261,12 @@
 <li class="toctree-l3"><a class="reference internal" href="api/program_listing_file_src_particles.cuh.html">Program Listing for File particles.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/file_src_scene_pcdwriter.cu.html">File pcdwriter.cu</a><input aria-label="Toggle navigation of File pcdwriter.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="api/program_listing_file_src_scene_pcdwriter.cu.html">Program Listing for File pcdwriter.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/program_listing_file_src_scene_ply_io.cu.html">Program Listing for File ply_io.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/file_src_scene_pcdwriter.cuh.html">File pcdwriter.cuh</a><input aria-label="Toggle navigation of File pcdwriter.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="api/program_listing_file_src_scene_pcdwriter.cuh.html">Program Listing for File pcdwriter.cuh</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="api/file_src_scene_sample.cu.html">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -384,11 +385,17 @@
 <h1>C++ Documentation<a class="headerlink" href="#c-documentation" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Benchmarks</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks/index.html">Neighbour Search Benchmarks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="benchmarks/index.html#variations">Variations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="benchmarks/index.html#query-overview">Query Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="benchmarks/index.html#construction-overview">Construction Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="benchmarks/index.html#details">Details</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="samplings/index.html">Relaxed Boundary Sampling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="samplings/index.html#uniform-sampling">Uniform Sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samplings/index.html#relaxed-sampling">Relaxed Sampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="samplings/index.html#side-by-side-comparison">Side by Side Comparison</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/library_root.html">C++ Documentation</a><ul>
@@ -411,7 +418,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Benchmarks</div>
+                <div class="title">Neighbour Search Benchmarks</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

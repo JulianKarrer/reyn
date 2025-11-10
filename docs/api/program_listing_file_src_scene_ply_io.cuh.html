@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="File pcdwriter.cuh" href="file_src_scene_pcdwriter.cuh.html"><link rel="prev" title="File pcdwriter.cu" href="file_src_scene_pcdwriter.cu.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="File sample.cu" href="file_src_scene_sample.cu.html"><link rel="prev" title="File ply_io.cuh" href="file_src_scene_ply_io.cuh.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Program Listing for File pcdwriter.cu - REYN documentation</title>
+        <title>Program Listing for File ply_io.cuh - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -195,7 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -260,12 +261,12 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cuh.html">Program Listing for File particles.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="file_src_scene_pcdwriter.cu.html">File pcdwriter.cu</a><input aria-label="Toggle navigation of File pcdwriter.cu" checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Program Listing for File pcdwriter.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cu.html">Program Listing for File ply_io.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_pcdwriter.cuh.html">File pcdwriter.cuh</a><input aria-label="Toggle navigation of File pcdwriter.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_pcdwriter.cuh.html">Program Listing for File pcdwriter.cuh</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample.cu.html">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -326,7 +327,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/program_listing_file_src_scene_pcdwriter.cu.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/program_listing_file_src_scene_ply_io.cuh.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -344,10 +345,19 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="program-listing-for-file-pcdwriter-cu">
-<span id="program-listing-file-src-scene-pcdwriter-cu"></span><h1>Program Listing for File pcdwriter.cu<a class="headerlink" href="#program-listing-for-file-pcdwriter-cu" title="Link to this heading">¶</a></h1>
-<p>↰ <a class="reference internal" href="file_src_scene_pcdwriter.cu.html#file-src-scene-pcdwriter-cu"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">src/scene/pcdwriter.cu</span></code>)</p>
-<div class="highlight-cuda notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scene/pcdwriter.cuh&quot;</span>
+          <section id="program-listing-for-file-ply-io-cuh">
+<span id="program-listing-file-src-scene-ply-io-cuh"></span><h1>Program Listing for File ply_io.cuh<a class="headerlink" href="#program-listing-for-file-ply-io-cuh" title="Link to this heading">¶</a></h1>
+<p>↰ <a class="reference internal" href="file_src_scene_ply_io.cuh.html#file-src-scene-ply-io-cuh"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">src/scene/ply_io.cuh</span></code>)</p>
+<div class="highlight-cuda notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifndef SCENE_PLYIO_CPP_</span>
+<span class="cp">#define SCENE_PLYIO_CPP_</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;buffer.cuh&quot;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">save_to_ply</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ys</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">zs</span><span class="p">);</span>
+
+<span class="cp">#endif </span><span class="c1">// SCENE_PLYIO_CPP_</span>
 </pre></div>
 </div>
 </section>
@@ -357,23 +367,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="file_src_scene_pcdwriter.cuh.html">
+          <a class="next-page" href="file_src_scene_sample.cu.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">File pcdwriter.cuh</div>
+                <div class="title">File sample.cu</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="file_src_scene_pcdwriter.cu.html">
+          <a class="prev-page" href="file_src_scene_ply_io.cuh.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">File pcdwriter.cu</div>
+                <div class="title">File ply_io.cuh</div>
                 
               </div>
             </a>

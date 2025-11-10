@@ -7,6 +7,7 @@
 #include "vector_helper.cuh"
 #include "scene/loader.h"
 #include "scene/sample.cuh"
+#include "scene/ply_io.cuh"
 
 int main()
 {

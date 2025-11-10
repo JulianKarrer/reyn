@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="C++ Documentation" href="../api/library_root.html"><link rel="prev" title="FEATURES" href="../index.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Relaxed Boundary Sampling" href="../samplings/index.html"><link rel="prev" title="FEATURES" href="../index.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Benchmarks - REYN documentation</title>
+        <title>Neighbour Search Benchmarks - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -195,7 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Benchmarks</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Neighbour Search Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -260,12 +261,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_particles.cuh.html">Program Listing for File particles.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_pcdwriter.cu.html">File pcdwriter.cu</a><input aria-label="Toggle navigation of File pcdwriter.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_scene_pcdwriter.cu.html">Program Listing for File pcdwriter.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_scene_ply_io.cu.html">Program Listing for File ply_io.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_pcdwriter.cuh.html">File pcdwriter.cuh</a><input aria-label="Toggle navigation of File pcdwriter.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_scene_pcdwriter.cuh.html">Program Listing for File pcdwriter.cuh</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_sample.cu.html">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -344,8 +345,8 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section class="tex2jax_ignore mathjax_ignore" id="benchmarks">
-<h1>Benchmarks<a class="headerlink" href="#benchmarks" title="Link to this heading">¶</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="neighbour-search-benchmarks">
+<h1>Neighbour Search Benchmarks<a class="headerlink" href="#neighbour-search-benchmarks" title="Link to this heading">¶</a></h1>
 <p>Auto-generated summary of <code class="docutils literal notranslate"><span class="pre">nanobench</span></code> results for the spatial acceleration datastructure that implements the Uniform grid described by <a href="https://ramakarl.com/pdfs/2014_Hoetzlein_FastFixedRadius_Neighbors.pdf" target="_blank">[Hoetlzlein 2014]</a> that uses a single prefix sum and atomic increments and decrements to construct a sorted particle buffer in <span class="math notranslate nohighlight">\(\mathcal{O}(N)\)</span>, but has memory requirements that scale in the volume of the entire scene, not just the portion filled with fluid.</p>
 <p>This benchmark is used to make changes to the datastructure and memory layout measurable and be able to test changes such as the switch to a strict AoS layout, or to measure small optimization opportunities such as culling of neighbours due to conservative but quick heuristics (AABB checks etc.), use of intrinsics, branchless programming for less warp divergence, use of local and shared memory etc.</p>
 <p>The test scene is a <span class="math notranslate nohighlight">\(100^3\)</span> cube of particles on a regular grid with a half-jitter (uniformly randomly offset by half the grid spacing) and grid construction with reordering is given 4 extra arrays to resort in the order of the space-filling curve to emulate resorting of masses and each component of velocity during actual simulations and make to comparison fair. The test-kernel computes <span class="math notranslate nohighlight">\(\sum_{j\in\mathcal{N}_i} W(x_{ij}) x_{i,x} x_{j,x}\)</span> for each particle <span class="math notranslate nohighlight">\(i\)</span>.</p>
@@ -401,15 +402,15 @@
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
-<td class="text-right"><p><span style="color:#80EF80">+31.61%</span></p></td>
-<td class="text-right"><p>682.4μs</p></td>
-<td><p>4.01%</p></td>
+<td class="text-right"><p><span style="color:#80EF80">+20.83%</span></p></td>
+<td class="text-right"><p>790.0μs</p></td>
+<td><p>0.63%</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
-<td class="text-right"><p><span style="color:#80EF80">+28.83%</span></p></td>
-<td class="text-right"><p>15646.2μs</p></td>
-<td><p>0.21%</p></td>
+<td class="text-right"><p><span style="color:#80EF80">+20.63%</span></p></td>
+<td class="text-right"><p>17449.3μs</p></td>
+<td><p>0.05%</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AABB_Check</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
@@ -506,35 +507,35 @@
 <td class="text-right"><p>207.0μs</p></td>
 <td><p>2.37%</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
-<td class="text-center"><p>❌</p></td>
-<td class="text-right"><p><span style="color:#FF746C">-26.96%</span></p></td>
-<td class="text-right"><p>223.7μs</p></td>
-<td><p>2.11%</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">125Branchless</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Branchless</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
 <td class="text-right"><p><span style="color:#FF746C">-36.49%</span></p></td>
 <td class="text-right"><p>240.5μs</p></td>
 <td><p>3.46%</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
 <td class="text-right"><p><span style="color:#FF746C">-38.03%</span></p></td>
 <td class="text-right"><p>272.2μs</p></td>
 <td><p>5.57%</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
-<td class="text-right"><p><span style="color:#FF746C">-42.75%</span></p></td>
-<td class="text-right"><p>281.5μs</p></td>
-<td><p>12.65%</p></td>
+<td class="text-right"><p><span style="color:#FF746C">-45.13%</span></p></td>
+<td class="text-right"><p>286.2μs</p></td>
+<td><p>4.24%</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Cells</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">125Cells</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
 <td class="text-right"><p><span style="color:#FF746C">-52.67%</span></p></td>
 <td class="text-right"><p>269.0μs</p></td>
 <td><p>6.53%</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-right"><p><span style="color:#FF746C">-72.25%</span></p></td>
+<td class="text-right"><p>303.5μs</p></td>
+<td><p>4.60%</p></td>
 </tr>
 </tbody>
 </table>
@@ -650,27 +651,27 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Construction (No Reordering)</p></td>
-<td class="text-right"><p>223.7μs</p></td>
+<td class="text-right"><p>303.5μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>2.11%</p></td>
+<td class="text-right"><p>4.60%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Query (No Reordering)</p></td>
-<td class="text-right"><p>15646.2μs</p></td>
+<td class="text-right"><p>17449.3μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>0.21%</p></td>
+<td class="text-right"><p>0.05%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Construction (Reordering)</p></td>
-<td class="text-right"><p>281.5μs</p></td>
+<td class="text-right"><p>286.2μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>12.65%</p></td>
+<td class="text-right"><p>4.24%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Query (Reordering)</p></td>
-<td class="text-right"><p>682.4μs</p></td>
+<td class="text-right"><p>790.0μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>4.01%</p></td>
+<td class="text-right"><p>0.63%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Construction (No Reordering)</p></td>
@@ -708,12 +709,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../api/library_root.html">
+          <a class="next-page" href="../samplings/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">C++ Documentation</div>
+                <div class="title">Relaxed Boundary Sampling</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -758,7 +759,7 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Benchmarks</a><ul>
+<li><a class="reference internal" href="#">Neighbour Search Benchmarks</a><ul>
 <li><a class="reference internal" href="#variations">Variations</a></li>
 <li><a class="reference internal" href="#query-overview">Query Overview</a></li>
 <li><a class="reference internal" href="#construction-overview">Construction Overview</a></li>

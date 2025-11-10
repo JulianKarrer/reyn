@@ -1,4 +1,0 @@
-#ifndef SCENE_PCDWRITER_CPP_
-#define SCENE_PCDWRITER_CPP_
-
-#endif // SCENE_PCDWRITER_CPP_

@@ -195,7 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -260,12 +261,12 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cuh.html">Program Listing for File particles.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_pcdwriter.cu.html">File pcdwriter.cu</a><input aria-label="Toggle navigation of File pcdwriter.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_pcdwriter.cu.html">Program Listing for File pcdwriter.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cu.html">Program Listing for File ply_io.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_pcdwriter.cuh.html">File pcdwriter.cuh</a><input aria-label="Toggle navigation of File pcdwriter.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_pcdwriter.cuh.html">Program Listing for File pcdwriter.cuh</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="file_src_scene_sample.cu.html">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
@@ -349,15 +350,19 @@
 <p>↰ <a class="reference internal" href="file_src_scene_sample.cu.html#file-src-scene-sample-cu"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">src/scene/sample.cu</span></code>)</p>
 <div class="highlight-cuda notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;sample.cuh&quot;</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thrust/transform_scan.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thrust/execution_policy.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thrust/extrema.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;curand.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;curand_kernel.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;doctest/doctest.h&quot;</span>
+
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;vector_helper.cuh&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thrust/extrema.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;kernels.cuh&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;common.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scene/ply_io.cuh&quot;</span>
 
 <span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">Resort</span><span class="w"> </span><span class="n">R</span><span class="o">&gt;</span>
 <span class="kr">__global__</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">_compute_number_densities</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">uint</span><span class="w"> </span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">B3</span><span class="w"> </span><span class="n">W</span><span class="p">,</span>
@@ -728,11 +733,39 @@
 
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">uint</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">relaxation_iters</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">sample_relaxation</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="n">grid_builder</span><span class="p">,</span><span class="w"> </span><span class="n">vxs</span><span class="p">,</span><span class="w"> </span><span class="n">vys</span><span class="p">,</span><span class="w"> </span><span class="n">vzs</span><span class="p">,</span><span class="w"> </span><span class="n">faces</span><span class="p">,</span>
-<span class="w">                </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">h_bdy</span><span class="p">,</span><span class="w"> </span><span class="n">tri_ids</span><span class="p">,</span><span class="w"> </span><span class="n">num_den</span><span class="p">,</span><span class="w"> </span><span class="mf">50.</span><span class="p">);</span>
+<span class="w">                </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">h_bdy</span><span class="p">,</span><span class="w"> </span><span class="n">tri_ids</span><span class="p">,</span><span class="w"> </span><span class="n">num_den</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">res</span><span class="p">;</span>
 <span class="p">};</span>
+
+<span class="n">TEST_CASE</span><span class="p">(</span><span class="s">&quot;Write Boundary Mesh Sampling for docs&quot;</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="cp">#ifdef BENCH</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">h_bdy</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">0.025</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="w"> </span><span class="n">dragon</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_mesh_from_obj</span><span class="p">(</span><span class="s">&quot;scenes/dragon.obj&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="w"> </span><span class="n">cube</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">load_mesh_from_obj</span><span class="p">(</span><span class="s">&quot;scenes/cube.obj&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// create and save the uniform sampling with spacing h</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BoundarySamples</span><span class="w"> </span><span class="n">uniform_dragon</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sample_mesh</span><span class="p">(</span><span class="n">dragon</span><span class="p">,</span><span class="w"> </span><span class="n">h_bdy</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">save_to_ply</span><span class="p">(</span><span class="s">&quot;builddocs/_staticc/dragon_uniform.ply&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">uniform_dragon</span><span class="p">.</span><span class="n">xs</span><span class="p">,</span>
+<span class="w">        </span><span class="n">uniform_dragon</span><span class="p">.</span><span class="n">ys</span><span class="p">,</span><span class="w"> </span><span class="n">uniform_dragon</span><span class="p">.</span><span class="n">zs</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BoundarySamples</span><span class="w"> </span><span class="n">uniform_cube</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sample_mesh</span><span class="p">(</span><span class="n">cube</span><span class="p">,</span><span class="w"> </span><span class="n">h_bdy</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">save_to_ply</span><span class="p">(</span><span class="s">&quot;builddocs/_staticc/cube_uniform.ply&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">uniform_cube</span><span class="p">.</span><span class="n">xs</span><span class="p">,</span>
+<span class="w">        </span><span class="n">uniform_cube</span><span class="p">.</span><span class="n">ys</span><span class="p">,</span><span class="w"> </span><span class="n">uniform_cube</span><span class="p">.</span><span class="n">zs</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// create and save a 100 iterations relaxed sampling with spacing h</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BoundarySamples</span><span class="w"> </span><span class="n">relaxed_dragon</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sample_mesh</span><span class="p">(</span>
+<span class="w">        </span><span class="n">dragon</span><span class="p">,</span><span class="w"> </span><span class="n">h_bdy</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">save_to_ply</span><span class="p">(</span><span class="s">&quot;builddocs/_staticc/dragon_relaxed.ply&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">relaxed_dragon</span><span class="p">.</span><span class="n">xs</span><span class="p">,</span>
+<span class="w">        </span><span class="n">relaxed_dragon</span><span class="p">.</span><span class="n">ys</span><span class="p">,</span><span class="w"> </span><span class="n">relaxed_dragon</span><span class="p">.</span><span class="n">zs</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BoundarySamples</span><span class="w"> </span><span class="n">relaxed_cube</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sample_mesh</span><span class="p">(</span><span class="n">cube</span><span class="p">,</span><span class="w"> </span><span class="n">h_bdy</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">save_to_ply</span><span class="p">(</span><span class="s">&quot;builddocs/_staticc/cube_relaxed.ply&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">relaxed_cube</span><span class="p">.</span><span class="n">xs</span><span class="p">,</span>
+<span class="w">        </span><span class="n">relaxed_cube</span><span class="p">.</span><span class="n">ys</span><span class="p">,</span><span class="w"> </span><span class="n">relaxed_cube</span><span class="p">.</span><span class="n">zs</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>

@@ -1,14 +1,18 @@
 #include "sample.cuh"
 
-#include <utility>
 #include <thrust/transform_scan.h>
 #include <thrust/execution_policy.h>
+#include <thrust/extrema.h>
 #include <curand.h>
 #include <curand_kernel.h>
+#include <utility>
+
+#include "doctest/doctest.h"
+
 #include "vector_helper.cuh"
-#include <thrust/extrema.h>
 #include "kernels.cuh"
 #include "common.h"
+#include "scene/ply_io.cuh"
 
 /// @brief Compute the number density of the given positions with a `B3` kernel
 /// at \f$2h\f$ support radius
@@ -38,7 +42,6 @@ __global__ void _compute_number_densities(const uint N, const B3 W,
 /// @brief Compute the closest point oin a triangle to a given query point
 ///
 /// Algorithm from "Real-Time Collision Detection" by Christer Ericson
-/// https://www.r-5.org/files/books/computers/algo-list/realtime-3d/Christer_Ericson-Real-Time_Collision_Detection-EN.pdf
 /// @param
 /// @return
 
@@ -405,8 +408,36 @@ BoundarySamples sample_mesh(const Mesh mesh, const float h,
 
         for (uint i { 0 }; i < relaxation_iters; ++i) {
             sample_relaxation(res, grid_builder, vxs, vys, vzs, faces,
-                (float)h_bdy, tri_ids, num_den, 50.);
+                (float)h_bdy, tri_ids, num_den, 0.5);
         }
     }
     return res;
 };
+
+TEST_CASE("Write Boundary Mesh Sampling for docs")
+{
+#ifdef BENCH
+    const float h_bdy { 0.025 };
+    const Mesh dragon = load_mesh_from_obj("scenes/dragon.obj");
+    const Mesh cube = load_mesh_from_obj("scenes/cube.obj");
+
+    // create and save the uniform sampling with spacing h
+    const BoundarySamples uniform_dragon { sample_mesh(dragon, h_bdy, 1.0, 0) };
+    save_to_ply("builddocs/_staticc/dragon_uniform.ply", uniform_dragon.xs,
+        uniform_dragon.ys, uniform_dragon.zs);
+
+    const BoundarySamples uniform_cube { sample_mesh(cube, h_bdy, 1.0, 0) };
+    save_to_ply("builddocs/_staticc/cube_uniform.ply", uniform_cube.xs,
+        uniform_cube.ys, uniform_cube.zs);
+
+    // create and save a 100 iterations relaxed sampling with spacing h
+    const BoundarySamples relaxed_dragon { sample_mesh(
+        dragon, h_bdy, 1.0, 100) };
+    save_to_ply("builddocs/_staticc/dragon_relaxed.ply", relaxed_dragon.xs,
+        relaxed_dragon.ys, relaxed_dragon.zs);
+
+    const BoundarySamples relaxed_cube { sample_mesh(cube, h_bdy, 1.0, 100) };
+    save_to_ply("builddocs/_staticc/cube_relaxed.ply", relaxed_cube.xs,
+        relaxed_cube.ys, relaxed_cube.zs);
+#endif
+}

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Program Listing for File sample.cu" href="program_listing_file_src_scene_sample.cu.html"><link rel="prev" title="Program Listing for File pcdwriter.cuh" href="program_listing_file_src_scene_pcdwriter.cuh.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Program Listing for File sample.cu" href="program_listing_file_src_scene_sample.cu.html"><link rel="prev" title="Program Listing for File ply_io.cuh" href="program_listing_file_src_scene_ply_io.cuh.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -195,7 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -260,12 +261,12 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cuh.html">Program Listing for File particles.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_pcdwriter.cu.html">File pcdwriter.cu</a><input aria-label="Toggle navigation of File pcdwriter.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_pcdwriter.cu.html">Program Listing for File pcdwriter.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cu.html">Program Listing for File ply_io.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_pcdwriter.cuh.html">File pcdwriter.cuh</a><input aria-label="Toggle navigation of File pcdwriter.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_pcdwriter.cuh.html">Program Listing for File pcdwriter.cuh</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -361,8 +362,10 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">common.h</span></code> (<a class="reference internal" href="file_src_common.h.html#file-src-common-h"><span class="std std-ref">File common.h</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">curand.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">curand_kernel.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doctest/doctest.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">kernels.cuh</span></code> (<a class="reference internal" href="file_src_kernels.cuh.html#file-src-kernels-cuh"><span class="std std-ref">File kernels.cuh</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sample.cuh</span></code> (<a class="reference internal" href="file_src_scene_sample.cuh.html#file-src-scene-sample-cuh"><span class="std std-ref">File sample.cuh</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scene/ply_io.cuh</span></code> (<a class="reference internal" href="file_src_scene_ply_io.cuh.html#file-src-scene-ply-io-cuh"><span class="std std-ref">File ply_io.cuh</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">thrust/execution_policy.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">thrust/extrema.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">thrust/transform_scan.h</span></code></p></li>
@@ -381,6 +384,7 @@
 <li><p><a class="reference internal" href="function_sample_8cu_1ae06f11a85038d418fef1220c4b141cf5.html#exhale-function-sample-8cu-1ae06f11a85038d418fef1220c4b141cf5"><span class="std std-ref">Function _uniform_sample_tri_cdf</span></a></p></li>
 <li><p><a class="reference internal" href="function_sample_8cu_1aa0ec1df74b7bb655e4163d1d43431979.html#exhale-function-sample-8cu-1aa0ec1df74b7bb655e4163d1d43431979"><span class="std std-ref">Function sample_mesh(const Mesh, const float, const double, const int)</span></a></p></li>
 <li><p><a class="reference internal" href="function_sample_8cu_1a8cb7b442d28698f8f14797d05fcf671d.html#exhale-function-sample-8cu-1a8cb7b442d28698f8f14797d05fcf671d"><span class="std std-ref">Function sample_relaxation(BoundarySamples&amp;, UniformGridBuilder&amp;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;uint3&gt;, float, thrust::device_vector&lt;int&gt;, thrust::device_vector&lt;float&gt;&amp;, const float)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample_8cu_1a557509e72ffbd52f287d149216a5bb70.html#exhale-function-sample-8cu-1a557509e72ffbd52f287d149216a5bb70"><span class="std std-ref">Function TEST_CASE(“Write Boundary Mesh Sampling for docs”)</span></a></p></li>
 </ul>
 </section>
 </section>
@@ -399,14 +403,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="program_listing_file_src_scene_pcdwriter.cuh.html">
+          <a class="prev-page" href="program_listing_file_src_scene_ply_io.cuh.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Program Listing for File pcdwriter.cuh</div>
+                <div class="title">Program Listing for File ply_io.cuh</div>
                 
               </div>
             </a>
