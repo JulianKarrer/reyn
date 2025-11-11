@@ -2,17 +2,17 @@
 
 #include <thrust/transform_scan.h>
 #include <thrust/execution_policy.h>
-#include <thrust/extrema.h>
 #include <curand.h>
 #include <curand_kernel.h>
 #include <utility>
-
-#include "doctest/doctest.h"
 
 #include "vector_helper.cuh"
 #include "kernels.cuh"
 #include "common.h"
 #include "scene/ply_io.cuh"
+
+#include "doctest/doctest.h"
+#include <fstream>
 
 /// @brief Compute the number density of the given positions with a `B3` kernel
 /// at \f$2h\f$ support radius
@@ -110,7 +110,7 @@ __global__ void _relax_sampling(const uint N, const B3 W,
     float* __restrict__ ys, float* __restrict__ zs, double* __restrict__ vxs,
     double* __restrict__ vys, double* __restrict__ vzs,
     uint3* __restrict__ faces, int* __restrict__ tri_ids, float h_bdy,
-    float* __restrict__ num_den, const float relaxation_factor)
+    float* __restrict__ num_den, const float k, const float rho_0_sq_inv)
 {
     // compute index of current boundary sample
     const auto i { blockIdx.x * blockDim.x + threadIdx.x };
@@ -126,20 +126,13 @@ __global__ void _relax_sampling(const uint N, const B3 W,
 
     // compute an updated position by slightly moving away from regions of
     // higher number density
-    // rho_0 is not exactly the "rest density", especially since the suraface is
-    // 2D embedded in a 3D space, but just a rough volume scale so the floating
-    // point values are in more scale independent range, closer to one
-    const float rho_0_inv
-        = (h_bdy * h_bdy * h_bdy); // mass one over expected volume, inverted
-    const float rho_i_inv = 1.f / num_den[i];
-    const float3 dx_i { -relaxation_factor
+    const float term_i { rho_0_sq_inv * num_den[i] };
+    const float3 dx_i { -k * h_bdy * h_bdy
         * grid.ff_nbrs(xs, ys, zs, i,
-            [&W, &num_den, rho_i_inv, rho_0_inv] __device__(
+            [&W, &num_den, rho_0_sq_inv, term_i] __device__(
                 auto i, auto j, const float3 x_ij, auto _x_ij_l2) {
-                // symmetric formula, like for pressure accelerations but with
-                // rho = p
-                return (rho_0_inv * rho_i_inv + rho_0_inv * 1. / num_den[j])
-                    * W.nabla(x_ij);
+                // symmetric formula
+                return (term_i + rho_0_sq_inv * num_den[j]) * W.nabla(x_ij);
             }) };
     const float3 new_x_i { v3(i, xs, ys, zs) + dx_i };
 
@@ -151,14 +144,38 @@ __global__ void _relax_sampling(const uint N, const B3 W,
     store_v3(projected_new_x_i, i, xs, ys, zs);
 };
 
+/// @brief Compute the number density for a hexagonal sampling in a plane with
+/// search radius \f$2 h_{bdy}\f$ for the given kernel function
+/// @tparam K
+/// @param h_bdy particle spacing
+/// @param W kernel function
+/// @return rest number density for the optimal spacing
+template <IsKernel K>
+static float _hex_plane_rest_density(const float h_bdy, const K W)
+{
+    // q axis is horizontal with length h_bdy
+    const float3 q_axis { h_bdy * v3(1., 0., 0.) };
+    // r axis is 60deg counterclockwise from q axis, same length
+    // sin(60deg) = √3 / 2
+    // cos(60deg) =  1 / 2
+    const float3 r_axis { h_bdy * v3(.5, sqrt(3) * .5, 0.) };
+    // these two span a lattice where every combination of q,r in the range
+    // gives a unique point
+    float rho_0 { 0. };
+    for (int q { -2 }; q <= 2; ++q)
+        for (int r { -2 }; r <= 2; ++r) {
+            rho_0 += W(q * q_axis + r * r_axis);
+        }
+    return rho_0;
+};
+
 void sample_relaxation(BoundarySamples& samples,
     UniformGridBuilder& grid_builder, thrust::device_vector<double> vxs,
     thrust::device_vector<double> vys, thrust::device_vector<double> vzs,
     thrust::device_vector<uint3> faces, float h_bdy,
     thrust::device_vector<int> tri_ids, thrust::device_vector<float>& num_den,
-    const float relaxation_factor)
+    const float relaxation_stiffness)
 {
-    std::cout << "relaxing boundary particles" << std::endl;
     // build an acceleration datastructure to quickly find neighbours of
     // boundary samples. Don't use resorting, since that would obscur the
     // mapping to faces, which are needed to find the vertices associated with
@@ -172,7 +189,10 @@ void sample_relaxation(BoundarySamples& samples,
     // triangle it may move in and clamped to the edges of that triangle
     const uint N { (uint)samples.xs.size() };
 
-    CUDA_CHECK(cudaDeviceSynchronize());
+    // compute the resting number density for perfect hexagonal sampling of the
+    // plane, given the kernel function and smoothing radius
+    const float rho_0 { _hex_plane_rest_density(h_bdy, W) };
+    const float rho_0_sq_inv { 1.f / (rho_0 * rho_0) };
 
     _compute_number_densities<Resort::no><<<BLOCKS(N), BLOCK_SIZE>>>(N, W, grid,
         samples.xs.ptr(), samples.ys.ptr(), samples.zs.ptr(),
@@ -185,22 +205,8 @@ void sample_relaxation(BoundarySamples& samples,
         thrust::raw_pointer_cast(vzs.data()),
         thrust::raw_pointer_cast(faces.data()),
         thrust::raw_pointer_cast(tri_ids.data()), h_bdy,
-        thrust::raw_pointer_cast(num_den.data()), relaxation_factor);
-};
-
-std::pair<float3, float3> _get_bounds(const thrust::device_vector<float>& xs,
-    const thrust::device_vector<float>& ys,
-    const thrust::device_vector<float>& zs)
-{
-    auto min_x = thrust::min_element(xs.begin(), xs.end());
-    auto min_y = thrust::min_element(ys.begin(), ys.end());
-    auto min_z = thrust::min_element(zs.begin(), zs.end());
-    auto max_x = thrust::max_element(xs.begin(), xs.end());
-    auto max_y = thrust::max_element(ys.begin(), ys.end());
-    auto max_z = thrust::max_element(zs.begin(), zs.end());
-    float3 min { v3(min_x[0], min_y[0], min_z[0]) };
-    float3 max { v3(max_x[0], max_y[0], max_z[0]) };
-    return { min, max };
+        thrust::raw_pointer_cast(num_den.data()), relaxation_stiffness,
+        rho_0_sq_inv);
 };
 
 __global__ void _init_curand(const uint N,
@@ -287,7 +293,8 @@ __global__ void _uniform_sample_tri_cdf(const uint N, float* __restrict__ xs,
 };
 
 BoundarySamples sample_mesh(const Mesh mesh, const float h,
-    const double oversampling_factor, const int relaxation_iters)
+    const double oversampling_factor, std::ostream* debug_stream,
+    const int relaxation_iters, const float relaxation_stiffness)
 {
     // move vertex data and faces to the GPU by constructing a
     // `DeviceBuffer` with a single cudaMemcpy underlying each move
@@ -341,7 +348,11 @@ BoundarySamples sample_mesh(const Mesh mesh, const float h,
         area[area.size() - 1] // load the last element from the device to host
                               // memory via thrust overload of operator[]
     };
-    const uint bdy_count { (uint)(ceil(total_area / (h_bdy * h_bdy))) };
+    // assume hexagonal dense packing of 2-manifold when calculating the desired
+    // number of particles in terms of total area and desired spacing
+    const float bdy_particle_area { 1.5f * sqrtf(3.f) * (float)h_bdy
+        * (float)h_bdy };
+    const uint bdy_count { (uint)(ceil(total_area / bdy_particle_area)) };
     const double bin_size { total_area / (double)(bdy_count) };
 
     std::cout << std::format(
@@ -390,12 +401,8 @@ BoundarySamples sample_mesh(const Mesh mesh, const float h,
     // random sampling
     if (relaxation_iters > 0) {
         // get the bounds of the particles
-        auto [min_bound, max_bound]
-            = _get_bounds(res.xs.get(), res.ys.get(), res.zs.get());
-        std::cout << std::format("bounds: min {} {} {} - max {} {} {}",
-            min_bound.x, min_bound.y, min_bound.z, max_bound.x, max_bound.y,
-            max_bound.z)
-                  << std::endl;
+        const float3 min_bound { v3(res.xs.min(), res.ys.min(), res.zs.min()) };
+        const float3 max_bound { v3(res.xs.max(), res.ys.max(), res.zs.max()) };
         // relax the sampling to decrease discrepancy
         float h_relax_radius { (float)h_bdy * 2.f };
         // in gridbuilder, use larger safety margin of 5h but reuse the
@@ -404,11 +411,17 @@ BoundarySamples sample_mesh(const Mesh mesh, const float h,
             min_bound - v3(5.f * (float)h_bdy),
             max_bound + v3(5.f * (float)h_bdy), 2.f * (float)h_bdy) };
         // allocate a buffer to hold number densities
-        thrust::device_vector<float> num_den(bdy_count);
-
+        DeviceBuffer<float> num_den(bdy_count);
         for (uint i { 0 }; i < relaxation_iters; ++i) {
             sample_relaxation(res, grid_builder, vxs, vys, vzs, faces,
-                (float)h_bdy, tri_ids, num_den, 0.5);
+                (float)h_bdy, tri_ids, num_den.get(), relaxation_stiffness);
+
+            // if requested, output debug information
+            if (debug_stream) {
+                (*debug_stream)
+                    << i + 1 << "," << num_den.max() / num_den.min() << ","
+                    << num_den.sum() / ((float)bdy_count) << std::endl;
+            }
         }
     }
     return res;
@@ -422,22 +435,59 @@ TEST_CASE("Write Boundary Mesh Sampling for docs")
     const Mesh cube = load_mesh_from_obj("scenes/cube.obj");
 
     // create and save the uniform sampling with spacing h
-    const BoundarySamples uniform_dragon { sample_mesh(dragon, h_bdy, 1.0, 0) };
+    const BoundarySamples uniform_dragon { sample_mesh(
+        dragon, h_bdy, 1.0, nullptr, 0) };
     save_to_ply("builddocs/_staticc/dragon_uniform.ply", uniform_dragon.xs,
         uniform_dragon.ys, uniform_dragon.zs);
 
-    const BoundarySamples uniform_cube { sample_mesh(cube, h_bdy, 1.0, 0) };
+    const BoundarySamples uniform_cube { sample_mesh(
+        cube, h_bdy, 1.0, nullptr, 0) };
     save_to_ply("builddocs/_staticc/cube_uniform.ply", uniform_cube.xs,
         uniform_cube.ys, uniform_cube.zs);
 
     // create and save a 100 iterations relaxed sampling with spacing h
     const BoundarySamples relaxed_dragon { sample_mesh(
-        dragon, h_bdy, 1.0, 100) };
+        dragon, h_bdy, 1.0, nullptr, 100) };
     save_to_ply("builddocs/_staticc/dragon_relaxed.ply", relaxed_dragon.xs,
         relaxed_dragon.ys, relaxed_dragon.zs);
 
-    const BoundarySamples relaxed_cube { sample_mesh(cube, h_bdy, 1.0, 100) };
+    const BoundarySamples relaxed_cube { sample_mesh(
+        cube, h_bdy, 1.0, nullptr, 100) };
     save_to_ply("builddocs/_staticc/cube_relaxed.ply", relaxed_cube.xs,
         relaxed_cube.ys, relaxed_cube.zs);
+#endif
+}
+
+TEST_CASE("Observe Influence of Stiffness on Convergence")
+{
+#ifdef BENCH
+    // create a JSON description of the measurements performed
+    std::ofstream description("builddocs/_staticc/relaxconv/description.json");
+    description << "{\"traces\": [";
+
+    const Mesh cube = load_mesh_from_obj("scenes/cube.obj");
+
+    const float hs[] { 5e-3, 5e-2, 5e-1 };
+    const float ks[] { 0.01, 0.1, 0.5, 1., 1.5, 2.0 };
+    const int iterations { 20 };
+    uint i { 0 };
+
+    for (const float h_bdy : hs)
+        for (const float k : ks) {
+            i += 1;
+            const auto filename { std::format("{}-{}.csv", k, h_bdy) };
+            std::ofstream out("builddocs/_staticc/relaxconv/" + filename);
+            const BoundarySamples sampling { sample_mesh(
+                cube, h_bdy, 2.0, &out, iterations, k) };
+            description << "{\"k\":" << k << ",\"h_bdy\":" << h_bdy
+                        << ",\"filename\":\"" << filename
+                        << "\", \"count\":" << sampling.xs.size() << "}";
+            // prevent trailing commas in JSON by tracking the number of traces
+            // to produce
+            if (i * sizeof(float) * sizeof(float) < sizeof(hs) * sizeof(ks)) {
+                description << ",";
+            };
+        }
+    description << "]}";
 #endif
 }

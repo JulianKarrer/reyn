@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="C++ Documentation" href="../api/library_root.html"><link rel="prev" title="Neighbour Search Benchmarks" href="../benchmarks/index.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Neighbour Search Benchmarks" href="../benchmarks/index.html"><link rel="prev" title="FEATURES" href="../index.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -195,8 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Relaxed Boundary Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -357,27 +357,35 @@
 </ul>
 <p><span class="math notranslate nohighlight">\(\mathcal{O}(N)\)</span>, all steps except for loading the mesh into memory are perfectly parallelizable and minimum possible memory is required, since only the exact number of desired boundary particle positions must be held in memory (unlike some Poisson sampling methods etc.). <code class="docutils literal notranslate"><span class="pre">curand</span></code> can be used for efficient PRNG.</p>
 <p>The sampling is robust for any mesh resolution and geometry, but may have undesirably high discrepancy and require significant oversampling compared to fluid spacing <span class="math notranslate nohighlight">\(h\)</span> to achieve literally watertight results.</p>
-<p>At the cost of just 4 extra bytes per boundary particle for remembering the face that each particle was sampled on, the sampling can be relaxed:</p>
+<section id="relaxing-the-sampling-to-blue-noise">
+<h2>Relaxing the Sampling to Blue Noise<a class="headerlink" href="#relaxing-the-sampling-to-blue-noise" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Idea: View boundary particles as a weakly compressible fluid constrained to the mesh surface, use equation of state solver to minimize 3D number density deviations iteratively and then project back onto triangle (this method allows reusing implemented SPH datastructures)</p></li>
+<li><p>Idea: use SPH number density as a cost function, use SPH gradient to minimize it by gradient descent, calculating a 3D particle shift, then project the shifted position back onto the triangular mesh. Iterate to convergence. This method allows using implemented SPH datastructures.</p></li>
 </ul>
 <p>Algorithm:</p>
 <ul class="simple">
 <li><p>Build datastructure for fixed radius neighbourhood query</p></li>
 <li><p>Compute number density <span class="math notranslate nohighlight">\(\hat{\rho}_i = \sum_{j\in\mathcal{N}_i} W(\vec{x}_{ij})\)</span> (like density but with <span class="math notranslate nohighlight">\(\forall i: m_i=1\)</span>)</p></li>
-<li><p>Use symmetric gradient formula to find negative density gradient <span class="math notranslate nohighlight">\(-\nabla\hat{\rho}_i = -\sum_{j\in\mathcal{N}_i} \left( \frac{1}{\hat{\rho}_i} + \frac{1}{\hat{\rho}_j}\right) \nabla W\left(\vec{x}_{ij}\right)\)</span></p></li>
-<li><p>Implement particle shift <span class="math notranslate nohighlight">\(\Delta \vec{x}_i\)</span> using some stiffness coefficient <span class="math notranslate nohighlight">\(k\)</span> that should be a function of constant, dimensionless parameters and the desired spacing: <span class="math notranslate nohighlight">\(\Delta \vec{x}_i = - k(h_{bdy}) \cdot \nabla\hat{\rho}_i\)</span> with <span class="math notranslate nohighlight">\(k: h_{bdy} \mapsto \mathbb{R}\)</span></p></li>
+<li><p>Use symmetric gradient formula to shift particles in direction of negative number density gradient <span class="math notranslate nohighlight">\(-\nabla\hat{\rho}_i = - k \cdot h_{bdy}^2 \sum_{j\in\mathcal{N}_i} \left( \frac{\hat{\rho}_i}{\hat{\rho}_0^2} + \frac{\hat{\rho}_j}{\hat{\rho}_0^2}\right) \nabla W\left(\vec{x}_{ij}\right)\)</span></p>
+<ul>
+<li><p>The coefficient <span class="math notranslate nohighlight">\(h_{bdy}^2\)</span> makes this invariant to scene size and sampling scale</p></li>
+<li><p>A reference number density <span class="math notranslate nohighlight">\(\hat{\rho}_0\)</span> for a normal, 3D SPH kernel function with a hexagonally close packed sampling on the plane with spacing <span class="math notranslate nohighlight">\(h_{bdy}\)</span> can be computed for smoothing length <span class="math notranslate nohighlight">\(2h_{bdy}\)</span> as: <span class="math notranslate nohighlight">\(\hat{\rho}_0(W,h_{bdy}) = \sum_{q=-2}^2 \sum_{r=-2}^2 W(q \cdot \vec{q}_b + r\cdot \vec{r}_b)\)</span> with lattice vectors: <span class="math notranslate nohighlight">\(\vec{q}_b = h_{bdy} \begin{bmatrix}1\\0\\0\end{bmatrix}\)</span> and <span class="math notranslate nohighlight">\(\vec{r}_b = h_{bdy} \begin{bmatrix}0.5\\0.5\sqrt{3}\\0\end{bmatrix}\)</span></p></li>
+</ul>
+</li>
+<li><p>Relaxation Coefficient <span class="math notranslate nohighlight">\(k=1\)</span> appears close to optimal across all length scales, see plots below</p></li>
 <li><p>Project shifted particle to closest point on triangle it was sampled on (see “Real-Time Collision Detection” by Christer Ericson)</p></li>
 <li><p>Repeat for a few iterations (on the order of 10, a couple of milliseconds of runtime for millions of particles on consumer GPU)</p></li>
 </ul>
 <p>Caveats:</p>
 <ul class="simple">
-<li><p>For reasonable choice of <span class="math notranslate nohighlight">\(k\)</span>, quality improvement is lower-bound by initial, uniform random sampling in cases where mesh resolution greatly exceeds the boundary particle sampling resolution if particles remain on their respective triangles. The issue is circumvented by downsampling input meshes, which is completely unproblematic since the spatial resolution of the simulation upwards bounds the level of detail anyways.</p></li>
+<li><p>For reasonable choice of <span class="math notranslate nohighlight">\(k\)</span>, quality improvement is lower-bound by initial, uniform random sampling.</p></li>
+<li><p>In cases where mesh resolution greatly exceeds the fluid resolution, projecting to respective triangles limits freedom of movement across the mesh. The issue can be circumvented by downsampling input meshes, which is unproblematic since the spatial resolution of the simulation upwards bounds the level of detail anyways. Alternatively, create datastructure for “nearest point on any triangle of this mesh” queries to generalize the algorithm to completely arbitrary meshes.</p></li>
 <li><p>Race conditions on write for particle shifts are not prevented via seperate write buffer (with memory cost) but seen as a perk (Gauss-Seidel &gt; Jacobi).</p></li>
 <li><p>Minimizing 3D, euclidean number density instead of maximizing geodesic distance on mesh is also not only faster but in this case might be desired.</p></li>
 </ul>
 <p>Appears to be a very cheap and effective way to get blue noise samplings with minimal memory cost, as shown for the Stanford dragon model (20.1k samples) with many small triangles and non-convex features and test cube (38.4k samples) with large, flat areas in the following.</p>
-<p>These models were auto-generated by REYN and exported using the script that constructed this website. Larger scenes with millions of samples were tested, but are less suitable for showcasing on the web.</p>
+<p>The following point clouds and graphs were auto-generated by REYN and exported using the script that constructed this website. Larger scenes with millions of samples were tested, but are less suitable for showcasing on the web.</p>
+</section>
 <section id="uniform-sampling">
 <h2>Uniform Sampling<a class="headerlink" href="#uniform-sampling" title="Link to this heading">¶</a></h2>
 <p>Click and drag on any 3D viewer to adjust orbital controls, scroll to zoom.</p>
@@ -393,6 +401,11 @@
     <div class="sidebyside statfixed" id="cube_uniform" style="border-right: while 2px solid;"></div>
     <div class="sidebyside statfixed" id="cube_relaxed"></div>
 </div>
+</section>
+<section id="convergence-and-relaxation-coefficient">
+<h2>Convergence and Relaxation Coefficient<a class="headerlink" href="#convergence-and-relaxation-coefficient" title="Link to this heading">¶</a></h2>
+<p>Convergence can be tracked by the ratio of highest to lowest number density across all boundary particles: <span class="math notranslate nohighlight">\(1\)</span> is perfect, uniform sampling can be closer to <span class="math notranslate nohighlight">\(10\times\)</span>. Relaxation coefficient <span class="math notranslate nohighlight">\(k=1\)</span> robustly and quickly converges, hence is set as default in implementation. The <span class="math notranslate nohighlight">\(2\times 2\)</span> cube scene serves as input for the following measurements.</p>
+<div id="plots"></div>
 <!-- three js scripts from here on  -->
 <script id="vshader" type="x-shader/x-vertex">
     precision highp float;
@@ -543,6 +556,37 @@
         stats = new Stats();
         document.getElementById(plyname).appendChild(stats.dom);
     }
+</script>
+<!-- plotting  -->
+<script src="../_static/plotly-2.26.0.min.js"></script>
+<style>
+    .plot-container {
+        filter: invert(90%) hue-rotate(180deg);
+    }
+</style>
+<script type="module">
+    const prefix = "../_static/relaxconv/";
+    const desc = await fetch(prefix + "description.json").then(r => r.json());
+    const byH = {};
+    for (const t of desc.traces) (byH[t.h_bdy] ??= []).push(t);
+    for (const [h, arr] of Object.entries(byH)) {
+        const div = document.createElement("div");
+        div.style.width = "100%";
+        div.style.height = "500px";
+        document.getElementById("plots").appendChild(div);
+        const title = `${arr[0].count} Particles, Boundary Particle Spacing = ${h}`;
+        const traces = await Promise.all(arr.map(async t => {
+            const txt = await fetch(prefix + t.filename).then(r => r.text());
+            const lines = txt.trim().split(/\n/).map(l => l.split(/,|\s+/).map(Number));
+            return { x: lines.map(l => l[0]), y: lines.map(l => l[1]), name: `k=${t.k}`, mode: 'lines' };
+        }));
+        Plotly.newPlot(div, traces, {
+            template: 'plotly_dark',
+            title, height: 500,
+            xaxis: { title: 'Number of Iterations' },
+            yaxis: { title: 'Ratio Maximum/Minimum Number Density' }
+        });
+    }
 </script></section>
 </section>
 
@@ -551,23 +595,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../api/library_root.html">
+          <a class="next-page" href="../benchmarks/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">C++ Documentation</div>
+                <div class="title">Neighbour Search Benchmarks</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../benchmarks/index.html">
+          <a class="prev-page" href="../index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Neighbour Search Benchmarks</div>
+                <div class="title">Home</div>
                 
               </div>
             </a>
@@ -602,9 +646,11 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Relaxed Boundary Sampling</a><ul>
+<li><a class="reference internal" href="#relaxing-the-sampling-to-blue-noise">Relaxing the Sampling to Blue Noise</a></li>
 <li><a class="reference internal" href="#uniform-sampling">Uniform Sampling</a></li>
 <li><a class="reference internal" href="#relaxed-sampling">Relaxed Sampling</a></li>
 <li><a class="reference internal" href="#side-by-side-comparison">Side by Side Comparison</a></li>
+<li><a class="reference internal" href="#convergence-and-relaxation-coefficient">Convergence and Relaxation Coefficient</a></li>
 </ul>
 </li>
 </ul>

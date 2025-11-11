@@ -195,8 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -363,11 +363,11 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">curand.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">curand_kernel.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">doctest/doctest.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fstream</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">kernels.cuh</span></code> (<a class="reference internal" href="file_src_kernels.cuh.html#file-src-kernels-cuh"><span class="std std-ref">File kernels.cuh</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sample.cuh</span></code> (<a class="reference internal" href="file_src_scene_sample.cuh.html#file-src-scene-sample-cuh"><span class="std std-ref">File sample.cuh</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">scene/ply_io.cuh</span></code> (<a class="reference internal" href="file_src_scene_ply_io.cuh.html#file-src-scene-ply-io-cuh"><span class="std std-ref">File ply_io.cuh</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">thrust/execution_policy.h</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">thrust/extrema.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">thrust/transform_scan.h</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">utility</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">vector_helper.cuh</span></code> (<a class="reference internal" href="file_src_vector_helper.cuh.html#file-src-vector-helper-cuh"><span class="std std-ref">File vector_helper.cuh</span></a>)</p></li>
@@ -378,12 +378,13 @@
 <ul class="simple">
 <li><p><a class="reference internal" href="function_sample_8cu_1ae23227607397e2633aa09f46d00fa912.html#exhale-function-sample-8cu-1ae23227607397e2633aa09f46d00fa912"><span class="std std-ref">Function _closest_point_on_triangle</span></a></p></li>
 <li><p><a class="reference internal" href="function_sample_8cu_1ab5fc8f15e0fdd1f256b56a160a0d2a8a.html#exhale-function-sample-8cu-1ab5fc8f15e0fdd1f256b56a160a0d2a8a"><span class="std std-ref">Template Function _compute_number_densities</span></a></p></li>
-<li><p><a class="reference internal" href="function_sample_8cu_1abccbdceba97457d7ff8212d83e0644b0.html#exhale-function-sample-8cu-1abccbdceba97457d7ff8212d83e0644b0"><span class="std std-ref">Function _get_bounds</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample_8cu_1a54d7274dadb2e36374dc7f9e63535542.html#exhale-function-sample-8cu-1a54d7274dadb2e36374dc7f9e63535542"><span class="std std-ref">Template Function _hex_plane_rest_density</span></a></p></li>
 <li><p><a class="reference internal" href="function_sample_8cu_1a507600d73f28e7d1efdd6bb978c6fc52.html#exhale-function-sample-8cu-1a507600d73f28e7d1efdd6bb978c6fc52"><span class="std std-ref">Function _init_curand</span></a></p></li>
-<li><p><a class="reference internal" href="function_sample_8cu_1a1525ff3af0b3c6b9cf7ac626ac09ac17.html#exhale-function-sample-8cu-1a1525ff3af0b3c6b9cf7ac626ac09ac17"><span class="std std-ref">Function _relax_sampling</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample_8cu_1a1fee8eadb40ef273f2f36088d95246c6.html#exhale-function-sample-8cu-1a1fee8eadb40ef273f2f36088d95246c6"><span class="std std-ref">Function _relax_sampling</span></a></p></li>
 <li><p><a class="reference internal" href="function_sample_8cu_1ae06f11a85038d418fef1220c4b141cf5.html#exhale-function-sample-8cu-1ae06f11a85038d418fef1220c4b141cf5"><span class="std std-ref">Function _uniform_sample_tri_cdf</span></a></p></li>
-<li><p><a class="reference internal" href="function_sample_8cu_1aa0ec1df74b7bb655e4163d1d43431979.html#exhale-function-sample-8cu-1aa0ec1df74b7bb655e4163d1d43431979"><span class="std std-ref">Function sample_mesh(const Mesh, const float, const double, const int)</span></a></p></li>
-<li><p><a class="reference internal" href="function_sample_8cu_1a8cb7b442d28698f8f14797d05fcf671d.html#exhale-function-sample-8cu-1a8cb7b442d28698f8f14797d05fcf671d"><span class="std std-ref">Function sample_relaxation(BoundarySamples&amp;, UniformGridBuilder&amp;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;uint3&gt;, float, thrust::device_vector&lt;int&gt;, thrust::device_vector&lt;float&gt;&amp;, const float)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample_8cu_1a5c36508d47b453c08b5a7b9b70d4f2c9.html#exhale-function-sample-8cu-1a5c36508d47b453c08b5a7b9b70d4f2c9"><span class="std std-ref">Function sample_mesh(const Mesh, const float, const double, std::ostream *, const int, const float)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample_8cu_1af9c2948771cc0d3ef919cf8d0e9aa48a.html#exhale-function-sample-8cu-1af9c2948771cc0d3ef919cf8d0e9aa48a"><span class="std std-ref">Function sample_relaxation(BoundarySamples&amp;, UniformGridBuilder&amp;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;uint3&gt;, float, thrust::device_vector&lt;int&gt;, thrust::device_vector&lt;float&gt;&amp;, const float)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample_8cu_1a3cb2eee9673428d349fe5f10c08a9cae.html#exhale-function-sample-8cu-1a3cb2eee9673428d349fe5f10c08a9cae"><span class="std std-ref">Function TEST_CASE(“Observe Influence of Stiffness on Convergence”)</span></a></p></li>
 <li><p><a class="reference internal" href="function_sample_8cu_1a557509e72ffbd52f287d149216a5bb70.html#exhale-function-sample-8cu-1a557509e72ffbd52f287d149216a5bb70"><span class="std std-ref">Function TEST_CASE(“Write Boundary Mesh Sampling for docs”)</span></a></p></li>
 </ul>
 </section>

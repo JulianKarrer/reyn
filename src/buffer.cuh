@@ -3,6 +3,7 @@
 
 #include <thrust/device_vector.h>
 #include <thrust/gather.h>
+#include <thrust/extrema.h>
 #include "gui.cuh"
 
 /// @brief A convenience wrapper for device buffers with RAII handling of alloc
@@ -204,6 +205,36 @@ public:
             thrust::gather(sorted.get().begin(), sorted.get().end(),
                 this->get().begin(), tmp.get().begin());
             tmp.get().swap(this->get());
+        }
+    }
+
+    T min() const
+    {
+        if (ext.active) {
+            throw std::runtime_error("min operation is not supported on "
+                                     "externally managed DeviceBuffer");
+        } else {
+            return thrust::min_element(get().begin(), get().end())[0];
+        }
+    }
+
+    T max() const
+    {
+        if (ext.active) {
+            throw std::runtime_error("max operation is not supported on "
+                                     "externally managed DeviceBuffer");
+        } else {
+            return thrust::max_element(get().begin(), get().end())[0];
+        }
+    }
+
+    T sum() const
+    {
+        if (ext.active) {
+            throw std::runtime_error("sum operation is not supported on "
+                                     "externally managed DeviceBuffer");
+        } else {
+            return thrust::reduce(get().begin(), get().end());
         }
     }
 

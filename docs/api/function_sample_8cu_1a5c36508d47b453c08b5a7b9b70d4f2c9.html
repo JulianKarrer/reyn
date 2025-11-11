@@ -7,7 +7,7 @@
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Function sample_mesh(const Mesh, const float, const double, const int) - REYN documentation</title>
+        <title>Function sample_mesh(const Mesh, const float, const double, std::ostream *, const int, const float) - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -195,8 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -327,7 +327,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_sample_8cuh_1af2a660aa7edb246188dabb7862f74673.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_sample_8cu_1a5c36508d47b453c08b5a7b9b70d4f2c9.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -345,20 +345,20 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="function-sample-mesh-const-mesh-const-float-const-double-const-int">
-<span id="exhale-function-sample-8cuh-1af2a660aa7edb246188dabb7862f74673"></span><h1>Function sample_mesh(const Mesh, const float, const double, const int)<a class="headerlink" href="#function-sample-mesh-const-mesh-const-float-const-double-const-int" title="Link to this heading">¶</a></h1>
+          <section id="function-sample-mesh-const-mesh-const-float-const-double-std-ostream-const-int-const-float">
+<span id="exhale-function-sample-8cu-1a5c36508d47b453c08b5a7b9b70d4f2c9"></span><h1>Function sample_mesh(const Mesh, const float, const double, std::ostream *, const int, const float)<a class="headerlink" href="#function-sample-mesh-const-mesh-const-float-const-double-std-ostream-const-int-const-float" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_scene_sample.cuh.html#file-src-scene-sample-cuh"><span class="std std-ref">File sample.cuh</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_scene_sample.cu.html#file-src-scene-sample-cu"><span class="std std-ref">File sample.cu</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve function “sample_mesh” with arguments (const Mesh, const float, const double, const int) in doxygen xml output for project “REYN” from directory: /home/julian/Code/reyn/builddocs/doxygen-output/xml.
+<p>doxygenfunction: Unable to resolve function “sample_mesh” with arguments (const Mesh, const float, const double, std::ostream*, const int, const float) in doxygen xml output for project “REYN” from directory: /home/julian/Code/reyn/builddocs/doxygen-output/xml.
 Potential matches:
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">BoundarySamples</span> <span class="n">sample_mesh</span><span class="p">(</span><span class="n">const</span> <span class="n">Mesh</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="n">double</span> <span class="n">oversampling_factor</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">const</span> <span class="nb">int</span> <span class="n">relaxation_iters</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">BoundarySamples</span> <span class="n">sample_mesh</span><span class="p">(</span><span class="n">const</span> <span class="n">Mesh</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="n">double</span> <span class="n">oversampling_factor</span><span class="p">,</span> <span class="n">const</span> <span class="nb">int</span> <span class="n">relaxation_iters</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">BoundarySamples</span> <span class="n">sample_mesh</span><span class="p">(</span><span class="n">const</span> <span class="n">Mesh</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="n">double</span> <span class="n">oversampling_factor</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">std</span><span class="p">::</span><span class="n">ostream</span> <span class="o">*</span><span class="n">debug_stream</span> <span class="o">=</span> <span class="n">nullptr</span><span class="p">,</span> <span class="n">const</span> <span class="nb">int</span> <span class="n">relaxation_iters</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">relaxation_stiffness</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">BoundarySamples</span> <span class="n">sample_mesh</span><span class="p">(</span><span class="n">const</span> <span class="n">Mesh</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="n">double</span> <span class="n">oversampling_factor</span><span class="p">,</span> <span class="n">std</span><span class="p">::</span><span class="n">ostream</span> <span class="o">*</span><span class="n">debug_stream</span><span class="p">,</span> <span class="n">const</span> <span class="nb">int</span> <span class="n">relaxation_iters</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">relaxation_stiffness</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -402,7 +402,7 @@ Potential matches:
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Function sample_mesh(const Mesh, const float, const double, const int)</a><ul>
+<li><a class="reference internal" href="#">Function sample_mesh(const Mesh, const float, const double, std::ostream *, const int, const float)</a><ul>
 <li><a class="reference internal" href="#function-documentation">Function Documentation</a></li>
 </ul>
 </li>

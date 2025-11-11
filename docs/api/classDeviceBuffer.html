@@ -195,8 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -528,6 +528,21 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK12DeviceBuffer3minEv">
+<span id="_CPPv3NK12DeviceBuffer3minEv"></span><span id="_CPPv2NK12DeviceBuffer3minEv"></span><span id="DeviceBuffer::minC"></span><span class="target" id="classDeviceBuffer_1a58a0dd430796e20ebdb436fcacec0959"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">min</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK12DeviceBuffer3minEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK12DeviceBuffer3maxEv">
+<span id="_CPPv3NK12DeviceBuffer3maxEv"></span><span id="_CPPv2NK12DeviceBuffer3maxEv"></span><span id="DeviceBuffer::maxC"></span><span class="target" id="classDeviceBuffer_1a187573a6911fea6af3ead5816444c183"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK12DeviceBuffer3maxEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK12DeviceBuffer3sumEv">
+<span id="_CPPv3NK12DeviceBuffer3sumEv"></span><span id="_CPPv2NK12DeviceBuffer3sumEv"></span><span id="DeviceBuffer::sumC"></span><span class="target" id="classDeviceBuffer_1af0146c2954e9223fe161711ab2388721"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sum</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK12DeviceBuffer3sumEv" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N12DeviceBuffer12DeviceBufferERK12DeviceBuffer">
 <span id="_CPPv3N12DeviceBuffer12DeviceBufferERK12DeviceBuffer"></span><span id="_CPPv2N12DeviceBuffer12DeviceBufferERK12DeviceBuffer"></span><span id="DeviceBuffer::DeviceBuffer__DeviceBufferCR"></span><span class="target" id="classDeviceBuffer_1a087612187ef03179fbbf498c29a324cd"></span><span class="sig-name descname"><span class="n"><span class="pre">DeviceBuffer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N12DeviceBuffer12DeviceBufferERK12DeviceBuffer" title="DeviceBuffer::DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N12DeviceBuffer12DeviceBufferERK12DeviceBuffer" title="Link to this definition">¶</a><br /></dt>
 <dd><p>prevent copying </p>
@@ -627,6 +642,9 @@
 <li><a class="reference internal" href="#_CPPv4N12DeviceBuffer14update_raw_ptrEP1T6size_t"><code class="docutils literal notranslate"><span class="pre">update_raw_ptr()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4NK12DeviceBuffer21is_externally_managedEv"><code class="docutils literal notranslate"><span class="pre">is_externally_managed()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N12DeviceBuffer7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">reorder()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK12DeviceBuffer3minEv"><code class="docutils literal notranslate"><span class="pre">min()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK12DeviceBuffer3maxEv"><code class="docutils literal notranslate"><span class="pre">max()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK12DeviceBuffer3sumEv"><code class="docutils literal notranslate"><span class="pre">sum()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N12DeviceBuffer12DeviceBufferERK12DeviceBuffer"><code class="docutils literal notranslate"><span class="pre">DeviceBuffer()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N12DeviceBufferaSERK12DeviceBuffer"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N12DeviceBuffer12DeviceBufferERR12DeviceBuffer"><code class="docutils literal notranslate"><span class="pre">DeviceBuffer()</span></code></a></li>

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Relaxed Boundary Sampling" href="../samplings/index.html"><link rel="prev" title="FEATURES" href="../index.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="C++ Documentation" href="../api/library_root.html"><link rel="prev" title="Relaxed Boundary Sampling" href="../samplings/index.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -195,8 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -359,7 +359,7 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">Current</span></code>: the most recent version - used by the implementation at the time of generation of this site</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">AABB_Check</span></code>: load each component of <span class="math notranslate nohighlight">\(x_j\)</span> seperately, checking if <span class="math notranslate nohighlight">\((x_{i,x} - x_{j,x})^2 \leq r^2\)</span> for search radius <span class="math notranslate nohighlight">\(r\)</span> before loading <span class="math notranslate nohighlight">\(x_{j,y}, x_{j,z}\)</span> etc. from global memory</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code>: increase cell size of uniform grid to twice the search radius, so only <span class="math notranslate nohighlight">\(2^d = 8\)</span> cells instead of <span class="math notranslate nohighlight">\(3^d = 27\)</span> cells in <span class="math notranslate nohighlight">\(d=3\)</span> dimensions must be checked, but each cell contains more candidate positions. Checks the integer and fractional component of <span class="math notranslate nohighlight">\(\frac{x}{r}\)</span> to find the octant of the cell that the query point is in, only checking cells adjacent to that octant.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">125Cells</span></code>: opposite of the previous strategy, cell size is half the search radius, with fewer positions per cell to query but there are <span class="math notranslate nohighlight">\(5^d = 125\)</span> cells to check. <a href="https://dual.sphysics.org/2ndusersworkshop/Dominguez_DualSPHysics_Workshop_2015_Keynote_Optimisation_and_SPH_Tricks.pdf" target="_blank">[Reportedly]</a> can improve query runtime performance at the cost of increased memory usage.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">125Cells</span></code>: opposite of the previous strategy, cell size is half the search radius, with fewer positions per cell to query but there are <span class="math notranslate nohighlight">\(5^d = 125\)</span> cells to check. <a href="https://dual.sphysics.org/2ndusersworkshop/Dominguez_DualSPHysics_Workshop_2015_Keynote_Optimisation_and_SPH_Tricks.pdf" target="_blank">[Reportedly]</a> can improve query runtime performance at the cost of increased memory usage. If no more than one particle per cell is to be expected, then subsequent threads will traverse the sorted list from subsequent initial indices to subsequent final indices, yielding perfect colalescing in the best case.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Branchless</span></code>: use a conditional of the form <code class="docutils literal notranslate"><span class="pre">acc</span> <span class="pre">+=</span> <span class="pre">x_ij_l2</span> <span class="pre">&lt;=</span> <span class="pre">r_c_2</span> <span class="pre">?</span> <span class="pre">map(...)</span> <span class="pre">:</span> <span class="pre">0</span></code> instead of an <code class="docutils literal notranslate"><span class="pre">if</span></code>-condition for pruning out-of range neighbour candidates in hopes of decreasing warp divergence. The compiler might be expected do something equivalent automatically, so this is not expected to have much impact.</p></li>
 </ul>
 </section>
@@ -390,9 +390,9 @@
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
-<td class="text-right"><p><span style="color:#80EF80">+34.78%</span></p></td>
-<td class="text-right"><p>650.8μs</p></td>
-<td><p>1.05%</p></td>
+<td class="text-right"><p><span style="color:#80EF80">+35.89%</span></p></td>
+<td class="text-right"><p>639.7μs</p></td>
+<td><p>0.13%</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Branchless</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
@@ -408,9 +408,9 @@
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
-<td class="text-right"><p><span style="color:#80EF80">+29.57%</span></p></td>
-<td class="text-right"><p>15484.4μs</p></td>
-<td><p>0.04%</p></td>
+<td class="text-right"><p><span style="color:#80EF80">+31.44%</span></p></td>
+<td class="text-right"><p>15073.9μs</p></td>
+<td><p>0.05%</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AABB_Check</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
@@ -465,35 +465,35 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
-<td class="text-center"><p>✅</p></td>
-<td class="text-right"><p><span style="color:#FFEE8C">+0.81%</span></p></td>
-<td class="text-right"><p>195.6μs</p></td>
-<td><p>0.85%</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
 <td class="text-right"><p><span style="color:#FFEE8C">+0.11%</span></p></td>
 <td class="text-right"><p>176.0μs</p></td>
 <td><p>0.53%</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Initial_Version</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Initial_Version</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
 <td class="text-right"><p><span style="color:#FFEE8C">+0.00%</span></p></td>
 <td class="text-right"><p>176.2μs</p></td>
 <td><p>2.64%</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Initial_Version</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Initial_Version</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
 <td class="text-right"><p><span style="color:#FFEE8C">+0.00%</span></p></td>
 <td class="text-right"><p>197.2μs</p></td>
 <td><p>3.28%</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">125Branchless</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Branchless</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
 <td class="text-right"><p><span style="color:#FFEE8C">-0.30%</span></p></td>
 <td class="text-right"><p>197.8μs</p></td>
 <td><p>0.24%</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-right"><p><span style="color:#FFEE8C">-2.33%</span></p></td>
+<td class="text-right"><p>201.8μs</p></td>
+<td><p>1.55%</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Cells</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
@@ -515,9 +515,9 @@
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
-<td class="text-right"><p><span style="color:#FF746C">-29.06%</span></p></td>
-<td class="text-right"><p>227.4μs</p></td>
-<td><p>3.92%</p></td>
+<td class="text-right"><p><span style="color:#FF746C">-26.84%</span></p></td>
+<td class="text-right"><p>223.5μs</p></td>
+<td><p>1.94%</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Branchless</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
@@ -651,27 +651,27 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Construction (No Reordering)</p></td>
-<td class="text-right"><p>227.4μs</p></td>
+<td class="text-right"><p>223.5μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>3.92%</p></td>
+<td class="text-right"><p>1.94%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Query (No Reordering)</p></td>
-<td class="text-right"><p>15484.4μs</p></td>
+<td class="text-right"><p>15073.9μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>0.04%</p></td>
+<td class="text-right"><p>0.05%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Construction (Reordering)</p></td>
-<td class="text-right"><p>195.6μs</p></td>
+<td class="text-right"><p>201.8μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>0.85%</p></td>
+<td class="text-right"><p>1.55%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Query (Reordering)</p></td>
-<td class="text-right"><p>650.8μs</p></td>
+<td class="text-right"><p>639.7μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>1.05%</p></td>
+<td class="text-right"><p>0.13%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Construction (No Reordering)</p></td>
@@ -709,23 +709,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../samplings/index.html">
+          <a class="next-page" href="../api/library_root.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Relaxed Boundary Sampling</div>
+                <div class="title">C++ Documentation</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../index.html">
+          <a class="prev-page" href="../samplings/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Relaxed Boundary Sampling</div>
                 
               </div>
             </a>

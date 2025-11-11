@@ -195,8 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -365,19 +365,30 @@
 <span class="w">    </span><span class="n">uint</span><span class="w"> </span><span class="n">N</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">nu</span><span class="p">;</span>
 <span class="w">    </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">rho</span><span class="p">;</span>
+<span class="w">    </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ax</span><span class="p">;</span>
+<span class="w">    </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ay</span><span class="p">;</span>
+<span class="w">    </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">az</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">50.</span><span class="w"> </span><span class="p">};</span>
 <span class="w">    </span><span class="kt">float3</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">v3</span><span class="p">(</span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">-9.81f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
 <span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">rho_0</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mf">1.</span><span class="w"> </span><span class="p">};</span>
 
-<span class="w">    </span><span class="n">SESPH</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">_W</span><span class="p">,</span><span class="w"> </span><span class="n">uint</span><span class="w"> </span><span class="n">_N</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">_rho</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">_nu</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">_h</span><span class="p">)</span>
+<span class="w">    </span><span class="n">SESPH</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">_W</span><span class="p">,</span><span class="w"> </span><span class="n">uint</span><span class="w"> </span><span class="n">_N</span><span class="p">,</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">_nu</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">_h</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">_rho</span><span class="p">,</span>
+<span class="w">        </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">_ax</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">_ay</span><span class="p">,</span>
+<span class="w">        </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">_az</span><span class="p">)</span>
 <span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">W</span><span class="p">(</span><span class="n">_W</span><span class="p">)</span>
 <span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">(</span><span class="n">_N</span><span class="p">)</span>
 <span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">nu</span><span class="p">(</span><span class="n">_nu</span><span class="p">)</span>
 <span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">(</span><span class="n">_h</span><span class="p">)</span>
 <span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">rho</span><span class="p">(</span><span class="n">_rho</span><span class="p">)</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">ax</span><span class="p">(</span><span class="n">_ax</span><span class="p">)</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">ay</span><span class="p">(</span><span class="n">_ay</span><span class="p">)</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">az</span><span class="p">(</span><span class="n">_az</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// ensure that the buffer can hold all densitites</span>
 <span class="w">        </span><span class="n">rho</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">_N</span><span class="p">);</span>
+<span class="w">        </span><span class="n">ax</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">_N</span><span class="p">);</span>
+<span class="w">        </span><span class="n">ay</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">_N</span><span class="p">);</span>
+<span class="w">        </span><span class="n">az</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">_N</span><span class="p">);</span>
 <span class="w">    </span><span class="p">};</span>
 <span class="w">    </span><span class="o">~</span><span class="n">SESPH</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
 

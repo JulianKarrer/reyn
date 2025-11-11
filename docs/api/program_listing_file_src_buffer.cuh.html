@@ -195,8 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -353,6 +353,7 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thrust/device_vector.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thrust/gather.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thrust/extrema.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;gui.cuh&quot;</span>
 
 <span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">typename</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="w"> </span><span class="p">{</span>
@@ -493,6 +494,36 @@
 <span class="w">            </span><span class="n">thrust</span><span class="o">::</span><span class="n">gather</span><span class="p">(</span><span class="n">sorted</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">sorted</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">end</span><span class="p">(),</span>
 <span class="w">                </span><span class="n">this</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">().</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">tmp</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">begin</span><span class="p">());</span>
 <span class="w">            </span><span class="n">tmp</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">swap</span><span class="p">(</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">get</span><span class="p">());</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="nf">min</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;min operation is not supported on &quot;</span>
+<span class="w">                                     </span><span class="s">&quot;externally managed DeviceBuffer&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">thrust</span><span class="o">::</span><span class="n">min_element</span><span class="p">(</span><span class="n">get</span><span class="p">().</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">get</span><span class="p">().</span><span class="n">end</span><span class="p">())[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="nf">max</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;max operation is not supported on &quot;</span>
+<span class="w">                                     </span><span class="s">&quot;externally managed DeviceBuffer&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">thrust</span><span class="o">::</span><span class="n">max_element</span><span class="p">(</span><span class="n">get</span><span class="p">().</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">get</span><span class="p">().</span><span class="n">end</span><span class="p">())[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="nf">sum</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ext</span><span class="p">.</span><span class="n">active</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="s">&quot;sum operation is not supported on &quot;</span>
+<span class="w">                                     </span><span class="s">&quot;externally managed DeviceBuffer&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">thrust</span><span class="o">::</span><span class="n">reduce</span><span class="p">(</span><span class="n">get</span><span class="p">().</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">get</span><span class="p">().</span><span class="n">end</span><span class="p">());</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 

@@ -195,8 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -506,8 +506,8 @@
 <span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">xy</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">xz</span><span class="p">);</span>
 
 <span class="n">public</span><span class="o">:</span>
-<span class="w">    </span><span class="n">UniformGridBuilder</span><span class="p">(</span>
-<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">bound_min</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">bound_max</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">cell_size</span><span class="p">);</span>
+<span class="w">    </span><span class="n">UniformGridBuilder</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">bound_min</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">bound_max</span><span class="p">,</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">search_radius</span><span class="p">);</span>
 
 <span class="w">    </span><span class="n">UniformGrid</span><span class="o">&lt;</span><span class="n">Resort</span><span class="o">::</span><span class="n">no</span><span class="o">&gt;</span><span class="w"> </span><span class="n">construct</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">search_radius</span><span class="p">,</span>
 <span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">xx</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">xy</span><span class="p">,</span>

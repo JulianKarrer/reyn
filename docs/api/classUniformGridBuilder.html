@@ -195,8 +195,8 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -363,14 +363,14 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N18UniformGridBuilder18UniformGridBuilderEK6float3K6float3Kf">
-<span id="_CPPv3N18UniformGridBuilder18UniformGridBuilderEK6float3K6float3Kf"></span><span id="_CPPv2N18UniformGridBuilder18UniformGridBuilderEK6float3K6float3Kf"></span><span id="UniformGridBuilder::UniformGridBuilder__float3C.float3C.floatC"></span><span class="target" id="classUniformGridBuilder_1a0b819fbcc8e486b31706bf50626c79b0"></span><span class="sig-name descname"><span class="n"><span class="pre">UniformGridBuilder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bound_min</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bound_max</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N18UniformGridBuilder18UniformGridBuilderEK6float3K6float3Kf" title="Link to this definition">¶</a><br /></dt>
+<span id="_CPPv3N18UniformGridBuilder18UniformGridBuilderEK6float3K6float3Kf"></span><span id="_CPPv2N18UniformGridBuilder18UniformGridBuilderEK6float3K6float3Kf"></span><span id="UniformGridBuilder::UniformGridBuilder__float3C.float3C.floatC"></span><span class="target" id="classUniformGridBuilder_1a399578707db9dea9d3b70de5cb8e6919"></span><span class="sig-name descname"><span class="n"><span class="pre">UniformGridBuilder</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bound_min</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bound_max</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">search_radius</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N18UniformGridBuilder18UniformGridBuilderEK6float3K6float3Kf" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Construct a uniform grid to efficiently query the neighbourhood within some search radius of particles that MUST be contained in the range between <code class="docutils literal notranslate"><span class="pre">bound_min</span></code> and <code class="docutils literal notranslate"><span class="pre">bound_max</span></code> along each axis, using a grid of some given cell size. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>bound_min</strong> – the lower bound of the AABB containing query points </p></li>
 <li><p><strong>bound_max</strong> – the upper bound of the AABB containing query points </p></li>
-<li><p><strong>cell_size</strong> – the cell size of the uniform grid </p></li>
+<li><p><strong>search_radius</strong> – the search radius to expect </p></li>
 </ul>
 </dd>
 </dl>
