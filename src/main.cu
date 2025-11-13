@@ -8,6 +8,7 @@
 #include "scene/loader.h"
 #include "scene/sample_boundary.cuh"
 #include "scene/ply_io.cuh"
+#include "timestep/cfl.cuh"
 
 int main()
 {
@@ -20,9 +21,8 @@ int main()
         // Particles state(10000, 1.);
         std::cout << "state initialized" << std::endl;
 
-        const float dt { 0.0001 };
         const Scene scene(
-            1000000, v3(-.9), v3(0.), v3(-1.5), v3(1.5), 1., state);
+            1000000, v3(-.9), v3(0.), v3(-1.1), v3(1.1), 1., state);
         std::cout << "scene initialized, h=" << scene.h << std::endl;
         const B3 W(2.f * scene.h);
         const uint N { scene.N };
@@ -54,6 +54,10 @@ int main()
         // MAIN LOOP
         std::cout << "fully initialized" << std::endl;
         while (gui.update_or_exit(state, scene, &tmp1)) {
+            const float dt { cfl_time_step(
+                0.2, scene.h, state, v3(0., -9.81, 0.)) };
+            std::cout << "Δt: " << dt << std::endl;
+
             // update the acceleration datastructure
             const auto grid { uniform_grid.construct_and_reorder(
                 2. * scene.h, tmp1, state) };

@@ -144,6 +144,9 @@ private:
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
     std::atomic<bool> exit_requested { ATOMIC_VAR_INIT(false) };
+    /// @brief Whether or not the simulation should be paused, stalling in the
+    /// GUI update instead
+    bool stopped { true };
     /// @brief Whether the GUI should run at the maximum frame rate,
     /// unthrottled. This is generally not recommended for computationally
     /// undemanding scenes since the simulation and rendering will essentially

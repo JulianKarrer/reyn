@@ -31,7 +31,7 @@ struct BoundarySamples {
     DeviceBuffer<uint> prefix;
     UniformGrid<Resort::yes> grid;
     /// @brief Get a `__device__`-friendly POD structure containing relevant
-    /// pointers to posiitons and masses as well as a datastructure for
+    /// pointers to positions and masses as well as a datastructure for
     /// neighbour queries
     /// @return a POD to use in CUDA kernels
     Boundary get() const

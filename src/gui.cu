@@ -875,6 +875,12 @@ bool GUI::update_or_exit(
     // processing inputs and handling interaction with UI elements
     update(scene.h);
 
+    // repeat the update while the simulation is stopped
+    while (stopped) {
+        std::this_thread::sleep_for(1s / 60.);
+        update(scene.h);
+    }
+
     // before returning, remap the positions buffers and reflect that change in
     // the particle state in case the pointer has changed
     map_buffers(state);
@@ -964,8 +970,11 @@ void GUI::update(float h)
 
     // poll for window events
     glfwPollEvents();
-    if (glfwWindowShouldClose(window))
+    if (glfwWindowShouldClose(window)) {
         exit_requested.store(true);
+        // make sure the exit is processed if stalling for a stopped simulation
+        stopped = false;
+    }
 
     // update ImGUI
     imgui_draw();
@@ -1002,6 +1011,7 @@ void GUI::imgui_draw()
     ImGui::Begin("SETTINGS");
     if (ImGui::Button("Exit"))
         exit_requested.store(true);
+    ImGui::Checkbox("Simulation Stopped", &stopped);
     ImGui::Text("GUI interval %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
         io->Framerate);
     ImGui::Text("SIM interval %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);

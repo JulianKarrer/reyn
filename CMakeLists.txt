@@ -133,6 +133,7 @@ set(REYN_SOURCES
     ${SRC_DIR}/kernels.cu
     ${SRC_DIR}/solvers/SESPH.cu
     ${SRC_DIR}/datastructure/uniformgrid.cu
+    ${SRC_DIR}/timestep/cfl.cu
 )
 set(REYN_HEADERS
     ${SRC_DIR}/common.h
@@ -147,6 +148,7 @@ set(REYN_HEADERS
     ${SRC_DIR}/kernels.cuh
     ${SRC_DIR}/solvers/SESPH.cuh
     ${SRC_DIR}/datastructure/uniformgrid.cuh
+    ${SRC_DIR}/timestep/cfl.cuh
 )
 add_executable(${PROJECT_NAME}
     ${REYN_SOURCES}

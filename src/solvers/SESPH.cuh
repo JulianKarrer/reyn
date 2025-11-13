@@ -28,7 +28,7 @@ public:
     /// @brief acceleration buffer (z-component)
     DeviceBuffer<float>& az;
     /// @brief Stiffness coefficient for the state equation
-    float k { 20000. };
+    float k { 1000. };
     /// @brief Gravitational acceleration
     float3 g { v3(0.f, -9.81f, 0.f) };
     /// @brief rest density
