@@ -5,7 +5,7 @@
 using namespace std::literals;
 #include "particles.cuh"
 #include "scene/scene.cuh"
-#include "scene/sample.cuh"
+#include "scene/sample_boundary.cuh"
 
 // constants
 const char* FONT_PATH { "res/JBM.ttf" };
@@ -809,7 +809,8 @@ void GUI::set_boundary_to_render(const BoundarySamples* samples)
     CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_z));
 };
 
-bool GUI::update_or_exit(Particles& state, const Scene scene)
+bool GUI::update_or_exit(
+    Particles& state, const Scene scene, DeviceBuffer<float>* rho)
 {
     // declare a static variable for measuring how much time has passed since
     // the last re-render
@@ -835,15 +836,33 @@ bool GUI::update_or_exit(Particles& state, const Scene scene)
     // first, fill the colour buffer
     if (use_per_particle_colour) {
         float* col_buf = map_colour_buffer();
+        const size_t N_fld { state.xx.size() };
         // display velocities
-        auto vx { state.vx.ptr() };
-        auto vy { state.vy.ptr() };
-        auto vz { state.vz.ptr() };
-        thrust::transform(thrust::counting_iterator<size_t>(0),
-            thrust::counting_iterator<size_t>(state.vx.size()),
-            thrust::device_pointer_cast(col_buf),
-            [vx, vy, vz] __device__(
-                size_t i) { return norm(v3(vx[i], vy[i], vz[i])); });
+        switch (attribute_visualized) {
+        case 0: {
+            // visualize densities
+            if (rho) {
+                auto rho_raw { rho->ptr() };
+                thrust::transform(thrust::counting_iterator<size_t>(0),
+                    thrust::counting_iterator<size_t>(N_fld),
+                    thrust::device_pointer_cast(col_buf),
+                    [rho_raw] __device__(size_t i) { return rho_raw[i]; });
+            }
+            break;
+        }
+        default: {
+            // visualize velocities
+            auto vx { state.vx.ptr() };
+            auto vy { state.vy.ptr() };
+            auto vz { state.vz.ptr() };
+            thrust::transform(thrust::counting_iterator<size_t>(0),
+                thrust::counting_iterator<size_t>(N_fld),
+                thrust::device_pointer_cast(col_buf),
+                [vx, vy, vz] __device__(
+                    size_t i) { return norm(v3(vx[i], vy[i], vz[i])); });
+            break;
+        };
+        };
 
         unmap_colour_buffer();
     }
@@ -1003,6 +1022,8 @@ void GUI::imgui_draw()
         ImGui::InputFloat(
             "colour mapping max", &colour_scale, 1.f, 5.f, "%.0f");
         ImGui::Combo("colour map", &colour_map_selector, "Spectral\0CB-RdYiBu");
+        ImGui::Combo(
+            "attribute visualized", &attribute_visualized, "Density\0Velocity");
         ImGui::SliderFloat(
             "boundary size", &bdy_particle_display_size_factor, 0.0f, 1.0f);
         ImGui::ColorEdit4("boundary colour", bdy_colour);

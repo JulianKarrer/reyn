@@ -6,7 +6,7 @@
 #include "datastructure/uniformgrid.cuh"
 #include "vector_helper.cuh"
 #include "scene/loader.h"
-#include "scene/sample.cuh"
+#include "scene/sample_boundary.cuh"
 #include "scene/ply_io.cuh"
 
 int main()
@@ -20,8 +20,9 @@ int main()
         // Particles state(10000, 1.);
         std::cout << "state initialized" << std::endl;
 
-        const float dt { 0.0008 };
-        const Scene scene(1000000, v3(-1.), v3(0.), v3(-1), v3(1.), 1., state);
+        const float dt { 0.0001 };
+        const Scene scene(
+            1000000, v3(-.9), v3(0.), v3(-1.5), v3(1.5), 1., state);
         std::cout << "scene initialized, h=" << scene.h << std::endl;
         const B3 W(2.f * scene.h);
         const uint N { scene.N };
@@ -36,30 +37,29 @@ int main()
         DeviceBuffer<float> tmp3(1);
         DeviceBuffer<float> tmp4(1);
         SESPH<B3, Resort::yes> solver(
-            W, N, 0.001f, scene.h, tmp1, tmp2, tmp3, tmp4);
+            W, N, 0.001f, scene.h, scene.rho_0, tmp1, tmp2, tmp3, tmp4);
         std::cout << "solver initialized" << std::endl;
 
         const Mesh mesh = load_mesh_from_obj("scenes/cube.obj");
         std::cout << std::format("mesh loaded, {} faces with {} vertices",
             mesh.face_count(), mesh.vertex_count())
                   << std::endl;
-        const BoundarySamples boundary_samples { sample_mesh(
-            mesh, scene.h, 2.0, &std::cout) };
-        std::cout << std::format("mesh sampled, generated {} boundary points",
-            boundary_samples.xs.size())
+        const BoundarySamples bdy { sample_mesh(
+            mesh, scene.h, scene.rho_0, 4.0) };
+        std::cout << std::format(
+            "mesh sampled, generated {} boundary points", bdy.xs.size())
                   << std::endl;
-        gui.set_boundary_to_render(&boundary_samples);
+        gui.set_boundary_to_render(&bdy);
 
         // MAIN LOOP
         std::cout << "fully initialized" << std::endl;
-        while (gui.update_or_exit(state, scene)) {
+        while (gui.update_or_exit(state, scene, &tmp1)) {
             // update the acceleration datastructure
-
             const auto grid { uniform_grid.construct_and_reorder(
                 2. * scene.h, tmp1, state) };
 
             // then invoke the fluid solver
-            solver.step(state, grid, dt);
+            solver.step(state, grid, bdy, dt);
 
             // enforce boundary conditions by clamping since the grid relies
             // on scene bounds being strict for memory safety

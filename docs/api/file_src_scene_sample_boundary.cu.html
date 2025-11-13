@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Program Listing for File sample_boundary.cu" href="program_listing_file_src_scene_sample_boundary.cu.html"><link rel="prev" title="Program Listing for File ply_io.cuh" href="program_listing_file_src_scene_ply_io.cuh.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Function operator+(const float3&amp;, const float3&amp;) - REYN documentation</title>
+        <title>File sample_boundary.cu - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -194,10 +194,10 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
@@ -270,7 +270,7 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cu.html">Program Listing for File sample_boundary.cu</a></li>
 </ul>
 </li>
@@ -328,7 +328,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_vector__helper_8cuh_1a54bff3e067eac774b5bf1d661a407f3a.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/file_src_scene_sample_boundary.cu.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -346,18 +346,50 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="function-operator-const-float3-const-float3">
-<span id="exhale-function-vector-helper-8cuh-1a54bff3e067eac774b5bf1d661a407f3a"></span><h1>Function operator+(const float3&amp;, const float3&amp;)<a class="headerlink" href="#function-operator-const-float3-const-float3" title="Link to this heading">¶</a></h1>
-<ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_vector_helper.cuh.html#file-src-vector-helper-cuh"><span class="std std-ref">File vector_helper.cuh</span></a></p></li>
+          <section id="file-sample-boundary-cu">
+<span id="file-src-scene-sample-boundary-cu"></span><h1>File sample_boundary.cu<a class="headerlink" href="#file-sample-boundary-cu" title="Link to this heading">¶</a></h1>
+<p>↰ <a class="reference internal" href="dir_src_scene.html#dir-src-scene"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">src/scene</span></code>)</p>
+<section id="definition-src-scene-sample-boundary-cu">
+<h2>Definition (<code class="docutils literal notranslate"><span class="pre">src/scene/sample_boundary.cu</span></code>)<a class="headerlink" href="#definition-src-scene-sample-boundary-cu" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cu.html">Program Listing for File sample_boundary.cu</a></li>
 </ul>
-<section id="function-documentation">
-<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4plRK6float3RK6float3">
-<span id="_CPPv3plRK6float3RK6float3"></span><span id="_CPPv2plRK6float3RK6float3"></span><span id="add-operator__float3CR.float3CR"></span><span class="target" id="vector__helper_8cuh_1a54bff3e067eac774b5bf1d661a407f3a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">+</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">a</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4plRK6float3RK6float3" title="Link to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+</div>
+</section>
+<section id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">common.h</span></code> (<a class="reference internal" href="file_src_common.h.html#file-src-common-h"><span class="std std-ref">File common.h</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">curand.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">curand_kernel.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">doctest/doctest.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fstream</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernels.cuh</span></code> (<a class="reference internal" href="file_src_kernels.cuh.html#file-src-kernels-cuh"><span class="std std-ref">File kernels.cuh</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sample_boundary.cuh</span></code> (<a class="reference internal" href="file_src_scene_sample_boundary.cuh.html#file-src-scene-sample-boundary-cuh"><span class="std std-ref">File sample_boundary.cuh</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scene/ply_io.cuh</span></code> (<a class="reference internal" href="file_src_scene_ply_io.cuh.html#file-src-scene-ply-io-cuh"><span class="std std-ref">File ply_io.cuh</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thrust/execution_policy.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">thrust/transform_scan.h</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utility</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vector_helper.cuh</span></code> (<a class="reference internal" href="file_src_vector_helper.cuh.html#file-src-vector-helper-cuh"><span class="std std-ref">File vector_helper.cuh</span></a>)</p></li>
+</ul>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1ae23227607397e2633aa09f46d00fa912.html#exhale-function-sample-boundary-8cu-1ae23227607397e2633aa09f46d00fa912"><span class="std std-ref">Function _closest_point_on_triangle</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1ab5fc8f15e0fdd1f256b56a160a0d2a8a.html#exhale-function-sample-boundary-8cu-1ab5fc8f15e0fdd1f256b56a160a0d2a8a"><span class="std std-ref">Template Function _compute_number_densities</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1ab21292c77d63bb1efd601024dfed6979.html#exhale-function-sample-boundary-8cu-1ab21292c77d63bb1efd601024dfed6979"><span class="std std-ref">Template Function _hex_plane_rest_density</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1a507600d73f28e7d1efdd6bb978c6fc52.html#exhale-function-sample-boundary-8cu-1a507600d73f28e7d1efdd6bb978c6fc52"><span class="std std-ref">Function _init_curand</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1ab42ecfafeb4168530caf50ed8ed4871d.html#exhale-function-sample-boundary-8cu-1ab42ecfafeb4168530caf50ed8ed4871d"><span class="std std-ref">Template Function _refine_masses</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1a1fee8eadb40ef273f2f36088d95246c6.html#exhale-function-sample-boundary-8cu-1a1fee8eadb40ef273f2f36088d95246c6"><span class="std std-ref">Function _relax_sampling</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1ae06f11a85038d418fef1220c4b141cf5.html#exhale-function-sample-boundary-8cu-1ae06f11a85038d418fef1220c4b141cf5"><span class="std std-ref">Function _uniform_sample_tri_cdf</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1a6504c2eca1b668e0bbc972181d8f2098.html#exhale-function-sample-boundary-8cu-1a6504c2eca1b668e0bbc972181d8f2098"><span class="std std-ref">Function calculate_boundary_masses(DeviceBuffer&lt;float&gt;, DeviceBuffer&lt;float&gt;, DeviceBuffer&lt;float&gt;, const float, const float, const float, const uint)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1a45052e506e1218654db189d8dda89d53.html#exhale-function-sample-boundary-8cu-1a45052e506e1218654db189d8dda89d53"><span class="std std-ref">Function sample_mesh(const Mesh, const float, const float, const double, std::ostream *, const int, const float, const uint)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1a2235cabd697f75912cf829ab39f62d2e.html#exhale-function-sample-boundary-8cu-1a2235cabd697f75912cf829ab39f62d2e"><span class="std std-ref">Function sample_relaxation(DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, UniformGridBuilder&amp;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;uint3&gt;, float, thrust::device_vector&lt;int&gt;, thrust::device_vector&lt;float&gt;&amp;, const float)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1a557509e72ffbd52f287d149216a5bb70.html#exhale-function-sample-boundary-8cu-1a557509e72ffbd52f287d149216a5bb70"><span class="std std-ref">Function TEST_CASE(“Write Boundary Mesh Sampling for docs”)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cu_1a3cb2eee9673428d349fe5f10c08a9cae.html#exhale-function-sample-boundary-8cu-1a3cb2eee9673428d349fe5f10c08a9cae"><span class="std std-ref">Function TEST_CASE(“Observe Influence of Stiffness on Convergence”)</span></a></p></li>
+</ul>
 </section>
 </section>
 
@@ -366,8 +398,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="program_listing_file_src_scene_sample_boundary.cu.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Program Listing for File sample_boundary.cu</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="program_listing_file_src_scene_ply_io.cuh.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Program Listing for File ply_io.cuh</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -398,11 +448,10 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Function operator+(const float3&amp;, const float3&amp;)</a><ul>
-<li><a class="reference internal" href="#function-documentation">Function Documentation</a><ul>
-<li><a class="reference internal" href="#_CPPv4plRK6float3RK6float3"><code class="docutils literal notranslate"><span class="pre">operator+()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">File sample_boundary.cu</a><ul>
+<li><a class="reference internal" href="#definition-src-scene-sample-boundary-cu">Definition (<code class="docutils literal notranslate"><span class="pre">src/scene/sample_boundary.cu</span></code>)</a></li>
+<li><a class="reference internal" href="#includes">Includes</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 </ul>
 </li>
 </ul>

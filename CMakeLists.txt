@@ -129,7 +129,7 @@ set(REYN_SOURCES
     ${SRC_DIR}/scene/scene.cu
     ${SRC_DIR}/scene/loader.cpp
     ${SRC_DIR}/scene/ply_io.cu
-    ${SRC_DIR}/scene/sample.cu
+    ${SRC_DIR}/scene/sample_boundary.cu
     ${SRC_DIR}/kernels.cu
     ${SRC_DIR}/solvers/SESPH.cu
     ${SRC_DIR}/datastructure/uniformgrid.cu
@@ -141,7 +141,7 @@ set(REYN_HEADERS
     ${SRC_DIR}/particles.cuh
     ${SRC_DIR}/scene/scene.cuh
     ${SRC_DIR}/scene/loader.h
-    ${SRC_DIR}/scene/sample.cuh
+    ${SRC_DIR}/scene/sample_boundary.cuh
     ${SRC_DIR}/scene/ply_io.cuh
     ${SRC_DIR}/vector_helper.cuh
     ${SRC_DIR}/kernels.cuh

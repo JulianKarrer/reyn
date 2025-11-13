@@ -198,6 +198,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
@@ -269,12 +270,12 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_sample.cu.html">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_scene_sample.cu.html">Program Listing for File sample.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_scene_sample_boundary.cu.html">Program Listing for File sample_boundary.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_sample.cuh.html">File sample.cuh</a><input aria-label="Toggle navigation of File sample.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_scene_sample.cuh.html">Program Listing for File sample.cuh</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/program_listing_file_src_scene_sample_boundary.cuh.html">Program Listing for File sample_boundary.cuh</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -390,9 +391,9 @@
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
-<td class="text-right"><p><span style="color:#80EF80">+35.89%</span></p></td>
-<td class="text-right"><p>639.7μs</p></td>
-<td><p>0.13%</p></td>
+<td class="text-right"><p><span style="color:#80EF80">+35.83%</span></p></td>
+<td class="text-right"><p>640.3μs</p></td>
+<td><p>0.80%</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Branchless</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
@@ -408,9 +409,9 @@
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
-<td class="text-right"><p><span style="color:#80EF80">+31.44%</span></p></td>
-<td class="text-right"><p>15073.9μs</p></td>
-<td><p>0.05%</p></td>
+<td class="text-right"><p><span style="color:#80EF80">+27.76%</span></p></td>
+<td class="text-right"><p>15882.7μs</p></td>
+<td><p>3.49%</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AABB_Check</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
@@ -489,47 +490,47 @@
 <td class="text-right"><p>197.8μs</p></td>
 <td><p>0.24%</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
-<td class="text-center"><p>✅</p></td>
-<td class="text-right"><p><span style="color:#FFEE8C">-2.33%</span></p></td>
-<td class="text-right"><p>201.8μs</p></td>
-<td><p>1.55%</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Cells</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">125Cells</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
 <td class="text-right"><p><span style="color:#FFEE8C">-2.84%</span></p></td>
 <td class="text-right"><p>202.8μs</p></td>
 <td><p>1.88%</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AABB_Check</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AABB_Check</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
 <td class="text-right"><p><span style="color:#FF746C">-10.09%</span></p></td>
 <td class="text-right"><p>217.1μs</p></td>
 <td><p>2.79%</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AABB_Check</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AABB_Check</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
 <td class="text-right"><p><span style="color:#FF746C">-17.48%</span></p></td>
 <td class="text-right"><p>207.0μs</p></td>
 <td><p>2.37%</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
-<td class="text-center"><p>❌</p></td>
-<td class="text-right"><p><span style="color:#FF746C">-26.84%</span></p></td>
-<td class="text-right"><p>223.5μs</p></td>
-<td><p>1.94%</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
+<td class="text-center"><p>✅</p></td>
+<td class="text-right"><p><span style="color:#FF746C">-18.66%</span></p></td>
+<td class="text-right"><p>234.0μs</p></td>
+<td><p>5.67%</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Branchless</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">125Branchless</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
 <td class="text-right"><p><span style="color:#FF746C">-36.49%</span></p></td>
 <td class="text-right"><p>240.5μs</p></td>
 <td><p>3.46%</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code></p></td>
 <td class="text-center"><p>✅</p></td>
 <td class="text-right"><p><span style="color:#FF746C">-38.03%</span></p></td>
 <td class="text-right"><p>272.2μs</p></td>
 <td><p>5.57%</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
+<td class="text-center"><p>❌</p></td>
+<td class="text-right"><p><span style="color:#FF746C">-51.02%</span></p></td>
+<td class="text-right"><p>266.1μs</p></td>
+<td><p>2.90%</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">125Cells</span></code></p></td>
 <td class="text-center"><p>❌</p></td>
@@ -651,27 +652,27 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">Check_8of27</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Construction (No Reordering)</p></td>
-<td class="text-right"><p>223.5μs</p></td>
+<td class="text-right"><p>266.1μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>1.94%</p></td>
+<td class="text-right"><p>2.90%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Query (No Reordering)</p></td>
-<td class="text-right"><p>15073.9μs</p></td>
+<td class="text-right"><p>15882.7μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>0.05%</p></td>
+<td class="text-right"><p>3.49%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Construction (Reordering)</p></td>
-<td class="text-right"><p>201.8μs</p></td>
+<td class="text-right"><p>234.0μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>1.55%</p></td>
+<td class="text-right"><p>5.67%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>Query (Reordering)</p></td>
-<td class="text-right"><p>639.7μs</p></td>
+<td class="text-right"><p>640.3μs</p></td>
 <td class="text-right"><p>597</p></td>
-<td class="text-right"><p>0.13%</p></td>
+<td class="text-right"><p>0.80%</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">Current</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>Construction (No Reordering)</p></td>

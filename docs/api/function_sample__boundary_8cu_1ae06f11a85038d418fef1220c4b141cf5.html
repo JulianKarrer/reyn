@@ -7,7 +7,7 @@
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Function _closest_point_on_triangle - REYN documentation</title>
+        <title>Function _uniform_sample_tri_cdf - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -198,6 +198,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
@@ -269,12 +270,12 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample.cu.html">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample.cu.html">Program Listing for File sample.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cu.html">Program Listing for File sample_boundary.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample.cuh.html">File sample.cuh</a><input aria-label="Toggle navigation of File sample.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample.cuh.html">Program Listing for File sample.cuh</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cuh.html">Program Listing for File sample_boundary.cuh</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -327,7 +328,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_sample_8cu_1ae23227607397e2633aa09f46d00fa912.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_sample__boundary_8cu_1ae06f11a85038d418fef1220c4b141cf5.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -345,38 +346,17 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="function-closest-point-on-triangle">
-<span id="exhale-function-sample-8cu-1ae23227607397e2633aa09f46d00fa912"></span><h1>Function _closest_point_on_triangle<a class="headerlink" href="#function-closest-point-on-triangle" title="Link to this heading">¶</a></h1>
+          <section id="function-uniform-sample-tri-cdf">
+<span id="exhale-function-sample-boundary-8cu-1ae06f11a85038d418fef1220c4b141cf5"></span><h1>Function _uniform_sample_tri_cdf<a class="headerlink" href="#function-uniform-sample-tri-cdf" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_scene_sample.cu.html#file-src-scene-sample-cu"><span class="std std-ref">File sample.cu</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_scene_sample_boundary.cu.html#file-src-scene-sample-boundary-cu"><span class="std std-ref">File sample_boundary.cu</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv426_closest_point_on_triangleK6float3K6float3K6float3K6float3">
-<span id="_CPPv326_closest_point_on_triangleK6float3K6float3K6float3K6float3"></span><span id="_CPPv226_closest_point_on_triangleK6float3K6float3K6float3K6float3"></span><span id="_closest_point_on_triangle__float3C.float3C.float3C.float3C"></span><span class="target" id="sample_8cu_1ae23227607397e2633aa09f46d00fa912"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_closest_point_on_triangle</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">float3</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">c</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426_closest_point_on_triangleK6float3K6float3K6float3K6float3" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Compute the closest point oin a triangle to a given query point. </p>
-<p><p>Algorithm from “Real-Time Collision Detection” by Christer Ericson</p>
-<p>return</p>
-</p>
-<p>Compute the closest point to <code class="docutils literal notranslate"><span class="pre">p</span></code> on a triangle formed by <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code> and <code class="docutils literal notranslate"><span class="pre">c</span></code></p>
-<p>Algorithm from “Real-Time Collision Detection” by Christer Ericson <a class="reference external" href="https://www.r-5.org/files/books/computers/algo-list/realtime-3d/Christer_Ericson-Real-Time_Collision_Detection-EN.pdf">https://www.r-5.org/files/books/computers/algo-list/realtime-3d/Christer_Ericson-Real-Time_Collision_Detection-EN.pdf</a> </p>
-<dl class="field-list simple">
-<dt class="field-odd">Param <span class="colon">:</span></dt>
-<dd class="field-odd"><p></p></dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>p</strong> – query point, the closest point on the triangle to which is sought </p></li>
-<li><p><strong>a</strong> – first vertex of the triangle </p></li>
-<li><p><strong>b</strong> – second vertex of the triangle </p></li>
-<li><p><strong>c</strong> – third vertex of the triangle </p></li>
-</ul>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>the closest point to <code class="docutils literal notranslate"><span class="pre">p</span></code> in the triangle formed by <code class="docutils literal notranslate"><span class="pre">a</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code> and <code class="docutils literal notranslate"><span class="pre">c</span></code></p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv423_uniform_sample_tri_cdfK4uintPfPfPfPKdKiKdKdP26curandStatePhilox4_32_10_tPdPdPdP5uint3K4uintPi">
+<span id="_CPPv323_uniform_sample_tri_cdfK4uintPfPfPfPKdKiKdKdP26curandStatePhilox4_32_10_tPdPdPdP5uint3K4uintPi"></span><span id="_CPPv223_uniform_sample_tri_cdfK4uintPfPfPfPKdKiKdKdP26curandStatePhilox4_32_10_tPdPdPdP5uint3K4uintPi"></span><span id="_uniform_sample_tri_cdf__uintC.floatP.floatP.floatP.doubleCP.iC.doubleC.doubleC.curandStatePhilox4_32_10_tP.doubleP.doubleP.doubleP.uint3P.uintC.iP"></span><span class="target" id="sample__boundary_8cu_1ae06f11a85038d418fef1220c4b141cf5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_uniform_sample_tri_cdf</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">xs</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ys</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">zs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">cdf</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N_cdf</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bin_size</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">total_area</span></span>, <span class="n"><span class="pre">curandStatePhilox4_32_10_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">states</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vxs</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vys</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">vzs</span></span>, <span class="n"><span class="pre">uint3</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">faces</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vertex_count</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">tri_ids</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423_uniform_sample_tri_cdfK4uintPfPfPfPKdKiKdKdP26curandStatePhilox4_32_10_tPdPdPdP5uint3K4uintPi" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
 
 </section>
 </section>
@@ -418,9 +398,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Function _closest_point_on_triangle</a><ul>
+<li><a class="reference internal" href="#">Function _uniform_sample_tri_cdf</a><ul>
 <li><a class="reference internal" href="#function-documentation">Function Documentation</a><ul>
-<li><a class="reference internal" href="#_CPPv426_closest_point_on_triangleK6float3K6float3K6float3K6float3"><code class="docutils literal notranslate"><span class="pre">_closest_point_on_triangle()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv423_uniform_sample_tri_cdfK4uintPfPfPfPKdKiKdKdP26curandStatePhilox4_32_10_tPdPdPdP5uint3K4uintPi"><code class="docutils literal notranslate"><span class="pre">_uniform_sample_tri_cdf()</span></code></a></li>
 </ul>
 </li>
 </ul>

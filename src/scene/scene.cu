@@ -34,6 +34,7 @@ Scene::Scene(const uint N_desired, const float3 min, const float3 max,
     // safe info needed for apply step
     this->bound_min = bound_min;
     this->bound_max = bound_max;
+    this->rho_0 = rho_0;
 
     if (((bound_max - bound_min) <= 0.) || ((max - min) <= 0.))
         throw std::invalid_argument(

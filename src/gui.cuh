@@ -16,6 +16,7 @@ class Particles;
 class Scene;
 class UniformGridBuilder;
 struct BoundarySamples;
+template <typename T> class DeviceBuffer;
 
 enum class Resort : bool;
 template <Resort Resorted> struct UniformGrid;
@@ -63,9 +64,12 @@ public:
     /// @param state current `Particles` state to display
     /// @param scene current `Scene` being rendered, read for getting the
     /// particle spacing/radius etc.
+    /// @param rho optional pointer to a `DeviceBuffer` of densities for
+    /// visualization
     /// @return `false` if exit of the application is requested by the user
     /// through the GUI, `true` otherwise
-    bool update_or_exit(Particles& state, const Scene scene);
+    bool update_or_exit(Particles& state, const Scene scene,
+        DeviceBuffer<float>* rho = nullptr);
 
     /// @brief Resize the particle positions buffer. Must be called while mapped
     /// for use by CUDA.
@@ -135,7 +139,7 @@ private:
     float bdy_colour[4] { 0.5, 0.5, 0.5, 0.5 };
     /// @brief Relative size of a boundary particle to a fluid particle for
     /// visualization
-    float bdy_particle_display_size_factor { 0.5 };
+    float bdy_particle_display_size_factor { 0.1 };
 
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
@@ -283,9 +287,13 @@ private:
     /// @brief The scalar used for colour mapping is scaled by the inverse of
     /// this value, to be adjusted intuitively to the maximum value of whatever
     /// quantity should be visualized.
-    float colour_scale { 10. };
+    float colour_scale { 1. };
     /// @brief Which colour map to use, 0 is the default
     int colour_map_selector { 0 };
+    /// @brief Which attribute to visualize, where 0 is density, everything
+    /// else is velocity
+    int attribute_visualized { 0 };
+
     /// @brief value in \f$[0;100]\f$ that interpolates between diffuse
     /// lambertian and pure ambient / no shading
     float shading_strength { 5. };

@@ -83,7 +83,7 @@ UniformGridBuilder::UniformGridBuilder(const float3 bound_min,
     counts(nxyz.x * nxyz.y * nxyz.z, 0)
     ,
     // initialization of prefix does not matter, it is overwritten with counts
-    prefix(nxyz.x * nxyz.y * nxyz.z)
+    _prefix(1)
     ,
     // allocate only minimal memory for now, sorted will be resized to fit the
     // number of particles whenever required
@@ -96,7 +96,8 @@ UniformGridBuilder::UniformGridBuilder(const float3 bound_min,
 };
 
 void UniformGridBuilder::_construct(const DeviceBuffer<float>& xx,
-    const DeviceBuffer<float>& xy, const DeviceBuffer<float>& xz)
+    const DeviceBuffer<float>& xy, const DeviceBuffer<float>& xz,
+    DeviceBuffer<uint>& prefix)
 {
     // get the number of particles
     const uint N { (uint)xx.size() };
@@ -117,6 +118,9 @@ void UniformGridBuilder::_construct(const DeviceBuffer<float>& xx,
     CUDA_CHECK(cudaGetLastError());
 
     // copy counts -> prefix
+    if (prefix.size() < nxyz.x * nxyz.y * nxyz.z) {
+        prefix.get().resize(nxyz.x * nxyz.y * nxyz.z);
+    }
     // this means one copy of counts can be atomically decremented to sort,
     // while another provides offsets by storing the number of particles with a
     // lower linear index (i.e. the result of the exclusive prefix sum or
@@ -143,19 +147,19 @@ UniformGrid<Resort::no> UniformGridBuilder::construct(const float search_radius,
     const DeviceBuffer<float>& xz)
 {
     // reconstruct the datastructure from current position data
-    _construct(xx, xy, xz);
+    _construct(xx, xy, xz, _prefix);
     // pack all relevant pointers and information for queries into a POD struct
     // and return it
     return UniformGrid<Resort::no> { { .sorted = sorted.ptr() }, _bound_min,
         _cell_size, search_radius * search_radius, nxyz.x, nxyz.x * nxyz.y,
-        prefix.ptr() };
+        _prefix.ptr() };
 }
 
 UniformGrid<Resort::yes> UniformGridBuilder::construct_and_reorder(
     const float search_radius, DeviceBuffer<float>& tmp, Particles& state)
 {
     // reconstruct the datastructure from current position data
-    _construct(state.xx, state.xy, state.xz);
+    _construct(state.xx, state.xy, state.xz, _prefix);
     // then reorder the particle state such that the sorted array becomes the
     // sequence 0...N-1, i.e. redirection through sorted becomes superfluous and
     // a more efficient uniform grid can be returned
@@ -172,54 +176,9 @@ UniformGrid<Resort::yes> UniformGridBuilder::construct_and_reorder(
         .r_c_2 = search_radius * search_radius,
         .nx = nxyz.x,
         .nxny = nxyz.x * nxyz.y,
-        .prefix = prefix.ptr(),
+        .prefix = _prefix.ptr(),
     };
 }
-
-template <IsFltDevBufPtr... MoreBufs>
-    requires(sizeof...(MoreBufs) >= 0) // at least one buffer to reorder
-UniformGrid<Resort::yes> UniformGridBuilder::construct_and_reorder(
-    const float search_radius, DeviceBuffer<float>& tmp,
-    DeviceBuffer<float>& xx, DeviceBuffer<float>& xy, DeviceBuffer<float>& xz,
-    MoreBufs... reorder)
-{
-    // construct
-    _construct(xx, xy, xz);
-
-    // reorder (variadic)
-    // reuse the tmp buffer to save memory at the cost of not being able to use
-    // multiple cudaStreams
-    // reorder all position vectors to ensure the query is correct, but also any
-    // of the variable number of additional buffers that were passed in
-    uint N { (uint)sorted.size() };
-    tmp.resize(sorted.size());
-    DeviceBuffer<float>* buffers[] = { reorder... };
-    for (DeviceBuffer<float>* buf : buffers) {
-        buf->reorder(sorted, tmp);
-        // ensure that all resorted buffers fit to reduce the risk of
-        // misusage and runtime errors
-        if (buf->size() != N) {
-            throw std::runtime_error(
-                "Attempted to resort an array of grid construction the "
-                "dimensions of which don't match the number of particles in "
-                "the sorting.");
-        }
-    }
-    xx.reorder(sorted, tmp);
-    xy.reorder(sorted, tmp);
-    xz.reorder(sorted, tmp);
-
-    // return datastructure indicating that corresponding buffers are sorted so
-    // no indirection is needed in the query
-    return UniformGrid<Resort::yes> {
-        .bound_min = _bound_min,
-        .cell_size = _cell_size,
-        .r_c_2 = search_radius * search_radius,
-        .nx = nxyz.x,
-        .nxny = nxyz.x * nxyz.y,
-        .prefix = prefix.ptr(),
-    };
-};
 
 // TESTING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -233,16 +192,17 @@ __global__ void _test_kernel_uniform_grid(const uint N,
     if (i >= N)
         return;
 
-    count_out[i] = grid.ff_nbrs(xx, xy, xz, i,
-        [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+    const float3 x_i { v3(i, xx, xy, xz) };
+    count_out[i] = grid.ff_nbrs(x_i, xx, xy, xz,
+        [r_c_2, i] __device__(auto j, auto x_ij, auto x_ij_l2) {
             return (x_ij_l2 <= r_c_2) ? (i == j ? 0u : 1u) : 0u;
         });
-    len2_out[i] = grid.ff_nbrs(xx, xy, xz, i,
-        [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+    len2_out[i] = grid.ff_nbrs(x_i, xx, xy, xz,
+        [r_c_2, i] __device__(auto j, auto x_ij, auto x_ij_l2) {
             return (x_ij_l2 <= r_c_2) ? dot(x_ij, x_ij) : 0.f;
         });
-    vec_out[i] = grid.ff_nbrs(xx, xy, xz, i,
-        [r_c_2] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+    vec_out[i] = grid.ff_nbrs(x_i, xx, xy, xz,
+        [r_c_2, i] __device__(auto j, auto x_ij, auto x_ij_l2) {
             return (x_ij_l2 <= r_c_2) ? x_ij : v3(0.);
         });
 }
@@ -277,8 +237,9 @@ __global__ void _benchmark_kernel(const uint N, const float* __restrict__ xx,
     if (i >= N)
         return;
 
+    const float3 x_i { v3(i, xx, xy, xz) };
     res_out[i] = grid.ff_nbrs(
-        xx, xy, xz, i, [=] __device__(auto i, auto j, auto x_ij, auto x_ij_l2) {
+        x_i, xx, xy, xz, [=] __device__(auto j, auto x_ij, auto x_ij_l2) {
             return xx[i] * xx[j] * W(x_ij);
         });
 }

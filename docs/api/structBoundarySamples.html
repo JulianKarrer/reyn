@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Struct DeviceBuffer::ExternallyManagedBuffer" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html"><link rel="prev" title="C++ Documentation" href="library_root.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Struct DeviceBuffer::ExternallyManagedBuffer" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html"><link rel="prev" title="Struct Boundary" href="structBoundary.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -198,6 +198,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
@@ -269,12 +270,12 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample.cu.html">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample.cu.html">Program Listing for File sample.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cu.html">Program Listing for File sample_boundary.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample.cuh.html">File sample.cuh</a><input aria-label="Toggle navigation of File sample.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample.cuh.html">Program Listing for File sample.cuh</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cuh.html">Program Listing for File sample_boundary.cuh</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -348,14 +349,28 @@
           <section id="struct-boundarysamples">
 <span id="exhale-struct-structboundarysamples"></span><h1>Struct BoundarySamples<a class="headerlink" href="#struct-boundarysamples" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_scene_sample.cuh.html#file-src-scene-sample-cuh"><span class="std std-ref">File sample.cuh</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_scene_sample_boundary.cuh.html#file-src-scene-sample-boundary-cuh"><span class="std std-ref">File sample_boundary.cuh</span></a></p></li>
 </ul>
 <section id="struct-documentation">
 <h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading">¶</a></h2>
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv415BoundarySamples">
 <span id="_CPPv315BoundarySamples"></span><span id="_CPPv215BoundarySamples"></span><span id="BoundarySamples"></span><span class="target" id="structBoundarySamples"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BoundarySamples</span></span></span><a class="headerlink" href="#_CPPv415BoundarySamples" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Structure containing the positions of boundary samples in SoA format (one seperate <code class="docutils literal notranslate"><a class="reference internal" href="classDeviceBuffer.html#classDeviceBuffer"><span class="std std-ref"><span class="pre">DeviceBuffer</span></span></a></code> for each of the three components) </p>
+<dd><p>Structure representing a single layer of boundary particles sampled on some surface mesh. Includes respective coordinates, masses due to [Akinci et al. 2012] and a <code class="docutils literal notranslate"><span class="pre">UniformGrid</span></code> for neighbour search, accompanied by the <code class="docutils literal notranslate"><span class="pre">prefix</span></code> sum of particles per cell, since this buffer object must live at least as long as the <code class="docutils literal notranslate"><span class="pre">UniformGrid</span></code> does. Provides a convienience method <code class="docutils literal notranslate"><span class="pre">get</span></code> for collecting raw pointers to relevant buffers as a <code class="docutils literal notranslate"><span class="pre">__device__</span></code>-friendly POD. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK15BoundarySamples3getEv">
+<span id="_CPPv3NK15BoundarySamples3getEv"></span><span id="_CPPv2NK15BoundarySamples3getEv"></span><span id="BoundarySamples::getC"></span><span class="target" id="structBoundarySamples_1a9fb0afb6d35b0f32c7e137af0e94b6f6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="structBoundary.html#_CPPv48Boundary" title="Boundary"><span class="n"><span class="pre">Boundary</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK15BoundarySamples3getEv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get a <code class="docutils literal notranslate"><span class="pre">__device__</span></code>-friendly POD structure containing relevant pointers to posiitons and masses as well as a datastructure for neighbour queries. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>a POD to use in CUDA kernels </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
@@ -371,6 +386,21 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N15BoundarySamples2zsE">
 <span id="_CPPv3N15BoundarySamples2zsE"></span><span id="_CPPv2N15BoundarySamples2zsE"></span><span id="BoundarySamples::zs__DeviceBuffer:float:"></span><span class="target" id="structBoundarySamples_1afccfcdfd8c9f04267344ea91a03d8b05"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">zs</span></span></span><a class="headerlink" href="#_CPPv4N15BoundarySamples2zsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15BoundarySamples1mE">
+<span id="_CPPv3N15BoundarySamples1mE"></span><span id="_CPPv2N15BoundarySamples1mE"></span><span id="BoundarySamples::m__DeviceBuffer:float:"></span><span class="target" id="structBoundarySamples_1acce93fea178b43c32a4d9535c372c02c"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">m</span></span></span><a class="headerlink" href="#_CPPv4N15BoundarySamples1mE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15BoundarySamples6prefixE">
+<span id="_CPPv3N15BoundarySamples6prefixE"></span><span id="_CPPv2N15BoundarySamples6prefixE"></span><span id="BoundarySamples::prefix__DeviceBuffer:uint:"></span><span class="target" id="structBoundarySamples_1a9c42bef9dfea2fac0da92a07f3e19f78"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">prefix</span></span></span><a class="headerlink" href="#_CPPv4N15BoundarySamples6prefixE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N15BoundarySamples4gridE">
+<span id="_CPPv3N15BoundarySamples4gridE"></span><span id="_CPPv2N15BoundarySamples4gridE"></span><span id="BoundarySamples::grid__UniformGrid:Resort::yes:"></span><span class="target" id="structBoundarySamples_1a3c45138a4e8e71a28ab45647fae05781"></span><a class="reference internal" href="structUniformGrid.html#_CPPv4I_6ResortE11UniformGrid" title="UniformGrid"><span class="n"><span class="pre">UniformGrid</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="enum_uniformgrid_8cuh_1aeb06162af7ad362186923f98ceffd77a.html#_CPPv46Resort" title="Resort"><span class="n"><span class="pre">Resort</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="enum_uniformgrid_8cuh_1aeb06162af7ad362186923f98ceffd77a.html#_CPPv4N6Resort3yesE" title="Resort::yes"><span class="n"><span class="pre">yes</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">grid</span></span></span><a class="headerlink" href="#_CPPv4N15BoundarySamples4gridE" title="Link to this definition">¶</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -393,14 +423,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="library_root.html">
+          <a class="prev-page" href="structBoundary.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">C++ Documentation</div>
+                <div class="title">Struct Boundary</div>
                 
               </div>
             </a>
@@ -437,9 +467,13 @@
 <li><a class="reference internal" href="#">Struct BoundarySamples</a><ul>
 <li><a class="reference internal" href="#struct-documentation">Struct Documentation</a><ul>
 <li><a class="reference internal" href="#_CPPv415BoundarySamples"><code class="docutils literal notranslate"><span class="pre">BoundarySamples</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4NK15BoundarySamples3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N15BoundarySamples2xsE"><code class="docutils literal notranslate"><span class="pre">xs</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N15BoundarySamples2ysE"><code class="docutils literal notranslate"><span class="pre">ys</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N15BoundarySamples2zsE"><code class="docutils literal notranslate"><span class="pre">zs</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N15BoundarySamples1mE"><code class="docutils literal notranslate"><span class="pre">m</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N15BoundarySamples6prefixE"><code class="docutils literal notranslate"><span class="pre">prefix</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N15BoundarySamples4gridE"><code class="docutils literal notranslate"><span class="pre">grid</span></code></a></li>
 </ul>
 </li>
 </ul>

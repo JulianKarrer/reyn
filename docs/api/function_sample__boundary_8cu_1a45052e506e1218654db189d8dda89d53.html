@@ -7,7 +7,7 @@
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Define SCENE_SAMPLE_CUH_ - REYN documentation</title>
+        <title>Function sample_mesh(const Mesh, const float, const float, const double, std::ostream *, const int, const float, const uint) - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -198,6 +198,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
@@ -269,12 +270,12 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample.cu.html">File sample.cu</a><input aria-label="Toggle navigation of File sample.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample.cu.html">Program Listing for File sample.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cu.html">Program Listing for File sample_boundary.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample.cuh.html">File sample.cuh</a><input aria-label="Toggle navigation of File sample.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample.cuh.html">Program Listing for File sample.cuh</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cuh.html">Program Listing for File sample_boundary.cuh</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -327,7 +328,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/define_sample_8cuh_1af86647155e963ca9342daf73adc29e6e.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_sample__boundary_8cu_1a45052e506e1218654db189d8dda89d53.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -345,18 +346,23 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="define-scene-sample-cuh">
-<span id="exhale-define-sample-8cuh-1af86647155e963ca9342daf73adc29e6e"></span><h1>Define <a href="#id1"><span class="problematic" id="id2">SCENE_SAMPLE_CUH_</span></a><a class="headerlink" href="#define-scene-sample-cuh" title="Link to this heading">¶</a></h1>
+          <section id="function-sample-mesh-const-mesh-const-float-const-float-const-double-std-ostream-const-int-const-float-const-uint">
+<span id="exhale-function-sample-boundary-8cu-1a45052e506e1218654db189d8dda89d53"></span><h1>Function sample_mesh(const Mesh, const float, const float, const double, std::ostream *, const int, const float, const uint)<a class="headerlink" href="#function-sample-mesh-const-mesh-const-float-const-float-const-double-std-ostream-const-int-const-float-const-uint" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_scene_sample.cuh.html#file-src-scene-sample-cuh"><span class="std std-ref">File sample.cuh</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_scene_sample_boundary.cu.html#file-src-scene-sample-boundary-cu"><span class="std std-ref">File sample_boundary.cu</span></a></p></li>
 </ul>
-<section id="define-documentation">
-<h2>Define Documentation<a class="headerlink" href="#define-documentation" title="Link to this heading">¶</a></h2>
-<dl class="cpp macro">
-<dt class="sig sig-object cpp" id="c.SCENE_SAMPLE_CUH_">
-<span class="target" id="sample_8cuh_1af86647155e963ca9342daf73adc29e6e"></span><span class="sig-name descname"><span class="n"><span class="pre">SCENE_SAMPLE_CUH_</span></span></span><a class="headerlink" href="#c.SCENE_SAMPLE_CUH_" title="Link to this definition">¶</a><br /></dt>
-<dd></dd></dl>
-
+<section id="function-documentation">
+<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve function “sample_mesh” with arguments (const Mesh, const float, const float, const double, std::ostream*, const int, const float, const uint) in doxygen xml output for project “REYN” from directory: /home/julian/Code/reyn/builddocs/doxygen-output/xml.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">BoundarySamples</span> <span class="n">sample_mesh</span><span class="p">(</span><span class="n">const</span> <span class="n">Mesh</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">const</span> <span class="n">double</span> <span class="n">oversampling_factor</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">std</span><span class="p">::</span><span class="n">ostream</span> <span class="o">*</span><span class="n">debug_stream</span> <span class="o">=</span> <span class="n">nullptr</span><span class="p">,</span> <span class="n">const</span> <span class="nb">int</span> <span class="n">relaxation_iters</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">relaxation_stiffness</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">mass_refinement_iterations</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">BoundarySamples</span> <span class="n">sample_mesh</span><span class="p">(</span><span class="n">const</span> <span class="n">Mesh</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">rho_0</span><span class="p">,</span> <span class="n">const</span> <span class="n">double</span> <span class="n">oversampling_factor</span><span class="p">,</span> <span class="n">std</span><span class="p">::</span><span class="n">ostream</span> <span class="o">*</span><span class="n">debug_stream</span><span class="p">,</span> <span class="n">const</span> <span class="nb">int</span> <span class="n">relaxation_iters</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">relaxation_stiffness</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">mass_refinement_iterations</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 
@@ -397,11 +403,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Define SCENE_SAMPLE_CUH_</a><ul>
-<li><a class="reference internal" href="#define-documentation">Define Documentation</a><ul>
-<li><a class="reference internal" href="#c.SCENE_SAMPLE_CUH_"><code class="docutils literal notranslate"><span class="pre">SCENE_SAMPLE_CUH_</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">Function sample_mesh(const Mesh, const float, const float, const double, std::ostream *, const int, const float, const uint)</a><ul>
+<li><a class="reference internal" href="#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>

@@ -20,6 +20,8 @@ public:
     float h;
     /// @brief Number of dynamic particles in the scene
     uint N;
+    /// @brief Rest density of the fluid
+    float rho_0;
 
     /// @brief Construct a scene with a box filled with fluid at as close as
     /// possible to the desired number of particles within the bounding box

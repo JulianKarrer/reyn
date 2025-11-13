@@ -6,6 +6,7 @@
 #include "particles.cuh"
 #include "buffer.cuh"
 #include "datastructure/uniformgrid.cuh"
+#include "scene/sample_boundary.cuh"
 
 template <IsKernel K, Resort R> class SESPH {
 private:
@@ -27,15 +28,15 @@ public:
     /// @brief acceleration buffer (z-component)
     DeviceBuffer<float>& az;
     /// @brief Stiffness coefficient for the state equation
-    float k { 50. };
+    float k { 20000. };
     /// @brief Gravitational acceleration
     float3 g { v3(0.f, -9.81f, 0.f) };
     /// @brief rest density
-    float rho_0 { 1. };
+    float rho_0;
 
-    SESPH(K _W, uint _N, float _nu, const float _h, DeviceBuffer<float>& _rho,
-        DeviceBuffer<float>& _ax, DeviceBuffer<float>& _ay,
-        DeviceBuffer<float>& _az)
+    SESPH(K _W, uint _N, float _nu, const float _h, const float _rho_0,
+        DeviceBuffer<float>& _rho, DeviceBuffer<float>& _ax,
+        DeviceBuffer<float>& _ay, DeviceBuffer<float>& _az)
         : W(_W)
         , N(_N)
         , nu(_nu)
@@ -44,6 +45,7 @@ public:
         , ax(_ax)
         , ay(_ay)
         , az(_az)
+        , rho_0(_rho_0)
     {
         // ensure that the buffer can hold all densitites
         rho.resize(_N);
@@ -53,7 +55,8 @@ public:
     };
     ~SESPH() {};
 
-    void step(Particles& state, const UniformGrid<R> grid, const float dt);
+    void step(Particles& state, const UniformGrid<R> grid,
+        const BoundarySamples& bdy, const float dt);
 
     /// disallow copying
     SESPH(const SESPH&) = delete;

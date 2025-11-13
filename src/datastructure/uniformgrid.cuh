@@ -106,13 +106,13 @@ template <Resort R> struct UniformGrid : MaybeSorted<R> {
     }
 
     template <typename MapOp>
-    using AccType = std::invoke_result_t<MapOp, const uint, const uint,
-        const float3, const float>;
+    using AccType
+        = std::invoke_result_t<MapOp, const uint, const float3, const float>;
 
     template <typename MapOp>
-    __device__ inline auto ff_nbrs(const float* __restrict__ xx,
-        const float* __restrict__ xy, const float* __restrict__ xz,
-        const uint i, MapOp map,
+    __device__ inline auto ff_nbrs(const float3 x_i,
+        const float* __restrict__ xx, const float* __restrict__ xy,
+        const float* __restrict__ xz, MapOp map,
         // the default initial value of the accumulator is the default
         // zero-initialized value of the type that is being accumulated
         AccType<MapOp> initial_value = AccType<MapOp> {}) const
@@ -120,7 +120,6 @@ template <Resort R> struct UniformGrid : MaybeSorted<R> {
         AccType<MapOp> acc { initial_value };
         const AccType<MapOp> neutral_element {};
         // compute the cell id of the queried position
-        const float3 x_i { v3(i, xx, xy, xz) };
         const int3 cid3 { _index3(x_i, bound_min, cell_size) };
 
         // the range is the ceil of the ratio of search radius over cell size,
@@ -170,7 +169,7 @@ template <Resort R> struct UniformGrid : MaybeSorted<R> {
                     if (x_ij_l2 <= r_c_2) {
                         // now, j is an actual neighbour of i
                         // call the map operators and reduce in the accumulator
-                        acc += map(i, s_j, x_ij, x_ij_l2);
+                        acc += map(s_j, x_ij, x_ij_l2);
                     }
                 }
             }
@@ -218,7 +217,7 @@ private:
     /// @brief  Buffer of size (#grid cells) for a prefix sum over the number of
     /// particles per cell. Used to index into the sorted array of particle
     /// indices
-    DeviceBuffer<uint> prefix;
+    DeviceBuffer<uint> _prefix;
     /// @brief  Buffer of size (#grid cells) for the number of particles in each
     /// grid cell, to be atomically incremented and decremented during
     /// construction of the `UniformGrid`
@@ -231,7 +230,64 @@ private:
     DeviceBuffer<uint> sorted;
 
     void _construct(const DeviceBuffer<float>& xx,
-        const DeviceBuffer<float>& xy, const DeviceBuffer<float>& xz);
+        const DeviceBuffer<float>& xy, const DeviceBuffer<float>& xz,
+        DeviceBuffer<uint>& prefix);
+
+    // common implementation of uniform grid construction with variadic buffers
+    // to resort along with the particle positions and a specified buffer for
+    // storing the prefix sum, such that either the member variable can be used
+    // to allocate only once when the grid is frequently built, or a buffer
+    // external to this object can be used to provide persistance of the
+    // datastructure beyond this builder's lifetime when e.g. a constant uniform
+    // grid is built once for the remainder of the simulation
+    template <IsFltDevBufPtr... MoreBufs>
+        requires(sizeof...(MoreBufs) >= 0) // at least one buffer to reorder
+    UniformGrid<Resort::yes> _construct_reorder_variadic(
+        const float search_radius, DeviceBuffer<float>& tmp,
+        DeviceBuffer<uint>& prefix, DeviceBuffer<float>& xx,
+        DeviceBuffer<float>& xy, DeviceBuffer<float>& xz, MoreBufs... reorder)
+    {
+        // implementation needs to be here to be visible to other translation
+        // units due to the template arguments, unfortunately
+
+        // construct
+        _construct(xx, xy, xz, prefix);
+
+        // reorder (variadic)
+        // reuse the tmp buffer to save memory at the cost of not being able to
+        // use multiple cudaStreams reorder all position vectors to ensure the
+        // query is correct, but also any of the variable number of additional
+        // buffers that were passed in
+        uint N { (uint)sorted.size() };
+        tmp.resize(sorted.size());
+        DeviceBuffer<float>* buffers[] = { reorder... };
+        for (DeviceBuffer<float>* buf : buffers) {
+            buf->reorder(sorted, tmp);
+            // ensure that all resorted buffers fit to reduce the risk of
+            // misusage and runtime errors
+            if (buf->size() != N) {
+                throw std::runtime_error(
+                    "Attempted to resort an array of grid construction the "
+                    "dimensions of which don't match the number of particles "
+                    "in "
+                    "the sorting.");
+            }
+        }
+        xx.reorder(sorted, tmp);
+        xy.reorder(sorted, tmp);
+        xz.reorder(sorted, tmp);
+
+        // return datastructure indicating that corresponding buffers are sorted
+        // so no indirection is needed in the query
+        return UniformGrid<Resort::yes> {
+            .bound_min = _bound_min,
+            .cell_size = _cell_size,
+            .r_c_2 = search_radius * search_radius,
+            .nx = nxyz.x,
+            .nxny = nxyz.x * nxyz.y,
+            .prefix = prefix.ptr(),
+        };
+    }
 
 public:
     /// @brief Construct a uniform grid to efficiently query the neighbourhood
@@ -304,10 +360,52 @@ public:
         requires(sizeof...(MoreBufs) >= 0) // at least one buffer to reorder
     UniformGrid<Resort::yes> construct_and_reorder(const float search_radius,
         DeviceBuffer<float>& tmp, DeviceBuffer<float>& xx,
-        DeviceBuffer<float>& xy, DeviceBuffer<float>& xz, MoreBufs... reorder);
+        DeviceBuffer<float>& xy, DeviceBuffer<float>& xz, MoreBufs... reorder)
+    {
+        // in this overload, use the private prefix member
+        return _construct_reorder_variadic(
+            search_radius, tmp, _prefix, xx, xy, xz, reorder...);
+    };
 
-    // no copying
+    /// @brief Construct the uniform grid for the given buffer of query points,
+    /// returning a POD structure that may be used on the device for querying
+    /// neighbouring particles at positions within the AABB defined at
+    /// construction of this `UniformGridBuilder`.
+    ///
+    /// In contrast to the `construct` method, this calls on the `Particles` to
+    /// reorder according to the sorting used by the grid to improve memory
+    /// coherency.
+    /// @tparam ...MoreBufs Variable number of zero or more
+    /// `DeviceBuffer<float>*` to resort along the space-filling curve, must all
+    /// have the same number of entries
+    /// @param search_radius radius outside of which candidate neighbours around
+    /// the query point are pruned
+    /// @param tmp a temporary buffer used for the gathering operation that
+    /// reorders particle quantities
+    /// @param prefix output buffer for storing the prefix sum, in case it must
+    /// outlive this `UniformGridBuilder`
+    /// @param xx x-components of all points to index
+    /// @param xy y-components of all points to index
+    /// @param xz z-components of all points to index
+    /// @param ...reorder pack of zero or more `DeviceBuffer<float>` to resort
+    /// along the space-filling curve
+    /// @return a POD usable in a `__device__` context to providee functors that
+    /// map and reduce over neighbouring particles around some query position
+    template <IsFltDevBufPtr... MoreBufs>
+        requires(sizeof...(MoreBufs) >= 0) // at least one buffer to reorder
+    UniformGrid<Resort::yes> construct_and_reorder(const float search_radius,
+        DeviceBuffer<float>& tmp, DeviceBuffer<uint>& prefix,
+        DeviceBuffer<float>& xx, DeviceBuffer<float>& xy,
+        DeviceBuffer<float>& xz, MoreBufs... reorder)
+    {
+        // in this overload, use the prefix provided via argument
+        return _construct_reorder_variadic(
+            search_radius, tmp, prefix, xx, xy, xz, reorder...);
+    };
+
+    // no copying allowed, protect owned data in DeviceBuffers
     UniformGridBuilder(const UniformGridBuilder&) = delete;
+    // no copying allowed, protect owned data in DeviceBuffers
     UniformGridBuilder& operator=(const UniformGridBuilder&) = delete;
 };
 
