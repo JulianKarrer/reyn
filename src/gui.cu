@@ -810,7 +810,7 @@ void GUI::set_boundary_to_render(const BoundarySamples* samples)
 };
 
 bool GUI::update_or_exit(
-    Particles& state, const Scene scene, DeviceBuffer<float>* rho)
+    Particles& state, const float h, DeviceBuffer<float>* rho)
 {
     // declare a static variable for measuring how much time has passed since
     // the last re-render
@@ -873,12 +873,12 @@ bool GUI::update_or_exit(
 
     // now the main update to the GUI can happen, drawing to the screen,
     // processing inputs and handling interaction with UI elements
-    update(scene.h);
+    update(h);
 
     // repeat the update while the simulation is stopped
     while (stopped) {
         std::this_thread::sleep_for(1s / 60.);
-        update(scene.h);
+        update(h);
     }
 
     // before returning, remap the positions buffers and reflect that change in
@@ -1009,8 +1009,10 @@ void GUI::imgui_draw()
 
     // start of contents ~~~~~
     ImGui::Begin("SETTINGS");
-    if (ImGui::Button("Exit"))
+    if (ImGui::Button("Exit")) {
         exit_requested.store(true);
+        stopped = false;
+    }
     ImGui::Checkbox("Simulation Stopped", &stopped);
     ImGui::Text("GUI interval %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
         io->Framerate);

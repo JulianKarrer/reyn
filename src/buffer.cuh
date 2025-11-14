@@ -242,10 +242,11 @@ public:
     DeviceBuffer(const DeviceBuffer&) = delete;
     /// prevent copying
     DeviceBuffer& operator=(const DeviceBuffer&) = delete;
+
     /// allow moving
     DeviceBuffer(DeviceBuffer&& other)
         : ext({ other.ext.active, other.ext.raw, other.ext.size })
-        , buf(other.buf) {};
+        , buf(std::move(other.buf)) {};
 };
 
 #endif // BUFFER_H_

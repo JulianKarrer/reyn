@@ -1,4 +1,9 @@
 #include "scene/scene.cuh"
+#include "scene/sample_boundary.cuh"
+#include <filesystem>
+#include <concepts>
+#include "vector_helper.cuh"
+#include "scene/loader.h"
 
 /// @brief Kernel used by one of the Scene constructors to initialize a set of
 /// dynamic particles in a box using CUDA directly to set each position.
@@ -27,32 +32,33 @@ __global__ void init_box_kernel(float3 min, float* __restrict__ xx,
     m[i] = rho_0 * h * h * h;
 }
 
-Scene::Scene(const uint N_desired, const float3 min, const float3 max,
-    const float3 bound_min, const float3 bound_max, const float rho_0,
-    Particles& state)
+Scene::Scene(const std::filesystem::path& path, const uint N_desired,
+    const float3 min, const float3 max, const float rho_0, Particles& state,
+    const float bdy_oversampling_factor)
+    : h([&]() {
+        // from volume and desired particle count estimate the desired spacing
+        // h
+        const float3 dxyz { max - min };
+        const float h { cbrtf((dxyz.x * dxyz.y * dxyz.z) / (float)N_desired) };
+        return cbrtf((dxyz.x * dxyz.y * dxyz.z) / (float)N_desired);
+    }())
+    , bdy(sample_mesh(
+          load_mesh_from_obj(path), h, rho_0, bdy_oversampling_factor))
 {
-    // safe info needed for apply step
-    this->bound_min = bound_min;
-    this->bound_max = bound_max;
     this->rho_0 = rho_0;
 
-    if (((bound_max - bound_min) <= 0.) || ((max - min) <= 0.))
-        throw std::invalid_argument(
-            "Invalid bounds, minimum is greater than maximum");
-
-    // from volume and desired particle count estimate the desired spacing h
-    const float3 dxyz { max - min };
-    float h { cbrtf((dxyz.x * dxyz.y * dxyz.z) / (float)N_desired) };
-    assert(h >= 0.);
-    this->h = h;
-
-    const int3 nxyz { floor_div(dxyz, h) };
     // compute actual particle count and save it
+    const float3 dxyz { max - min };
+    const int3 nxyz { floor_div(dxyz, h) };
     N = { (uint)abs(nxyz.x) * (uint)abs(nxyz.y) * (uint)abs(nxyz.z) };
-
+    // exit early if the fluid domain is empty
     if (N == 0)
         throw std::domain_error(
             "Initialization of box failed, zero particles placed");
+
+    // ensure the scene bounds are those of the boundary samples
+    this->bound_min = bdy.bound_min;
+    this->bound_max = bdy.bound_max;
 
     state.resize_uninit(N);
 
@@ -79,7 +85,7 @@ __global__ void _hard_enforce_bounds(const float3 bound_min,
     // if at the boundary, mirror velocity and damp it
     if (x_i <= bound_min || bound_max <= x_i) {
         const float3 v_i { v3(i, vx, vy, vz) };
-        store_v3(-1e-3 * v_i, i, vx, vy, vz);
+        store_v3(-0.1 * v_i, i, vx, vy, vz);
     }
     // always clamp positions to the bounds
     store_v3(max(min(x_i, bound_max), bound_min), i, xx, xy, xz);

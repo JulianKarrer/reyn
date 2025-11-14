@@ -10,6 +10,7 @@
 #include <cuda_gl_interop.h>
 #include <thread>
 #include <atomic>
+#include <optional>
 
 // forwards declaration to avoid circular depenedency
 class Particles;
@@ -62,14 +63,13 @@ public:
     /// value signals whether the closing of the application has been requested
     /// through the GUI
     /// @param state current `Particles` state to display
-    /// @param scene current `Scene` being rendered, read for getting the
-    /// particle spacing/radius etc.
+    /// @param h fluid particle spacing
     /// @param rho optional pointer to a `DeviceBuffer` of densities for
     /// visualization
     /// @return `false` if exit of the application is requested by the user
     /// through the GUI, `true` otherwise
-    bool update_or_exit(Particles& state, const Scene scene,
-        DeviceBuffer<float>* rho = nullptr);
+    bool update_or_exit(
+        Particles& state, const float h, DeviceBuffer<float>* rho = nullptr);
 
     /// @brief Resize the particle positions buffer. Must be called while mapped
     /// for use by CUDA.

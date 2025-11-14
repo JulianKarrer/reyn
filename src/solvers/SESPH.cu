@@ -3,14 +3,10 @@
 #include <nanobench.h>
 
 template <IsKernel K, Resort R>
-__global__ void _compute_densities(
-    const float* __restrict__ xx, const float* __restrict__ xy,
-    const float* __restrict__ xz, const float* __restrict__ m, float* rho,
-    const uint N, const K W, const UniformGrid<R> grid, Boundary bdy
-    //  const float* __restrict__ bx,
-    // const float* __restrict__ by, const float* __restrict__ bz,
-    // const float* __restrict__ bm, const UniformGrid<Resort::yes> bdy_grid
-)
+__global__ void _compute_densities(const float* __restrict__ xx,
+    const float* __restrict__ xy, const float* __restrict__ xz,
+    const float* __restrict__ m, float* rho, const uint N, const K W,
+    const UniformGrid<R> grid, Boundary bdy)
 {
     // compute index and ensure safety at bounds
     const auto i { blockIdx.x * blockDim.x + threadIdx.x };

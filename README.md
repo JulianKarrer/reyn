@@ -23,11 +23,13 @@
 - [x] Use Structure of Arrays (AoS) layout for all particle attributes to improve coalescing
 - [x] Parameterize uniform grid with cell size different from search radius and benchmark for optimal grid size
 - [x] Add boundary sampling and de-/serialization
+- [x] Add boundary handling [Akinci et al. 2012]
+- [x] Add adaptive time step size calculation using efficient reductions
 - [ ] Add fluid volume sampling and de-/serialization
-- [ ] Add boundary handling [Akinci et al. 2012]
-- [ ] Add settings management with de-/serialization and expose solver and scene options to GUI
-- [ ] Add adaptive time step size calculation using efficient reductions
-- [ ] Implement standard iterative Equation-of-State based solvers (splitting, PCISPH)
-- [ ] Implement Jacobi-style incompressible solvers (IISPH, DFSPH, ...)
+- [ ] Add settings management with de-/serialization and expose solver and scene options to GUI and CLI
+- [ ] Implement PICSPH
+- [ ] Implement IISPH
 - [ ] Optimize kernel launch configurations
+- [ ] Add better logging with configurable verbosity
+- [ ] Add plots to UI
 - [ ] Use type aliases for safety (e.g. separating vectors and positions) and flexibility (change float precision, smaller index types for smaller scenes etc.)

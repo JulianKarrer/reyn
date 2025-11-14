@@ -6,37 +6,28 @@
 #include "../buffer.cuh"
 #include "datastructure/uniformgrid.cuh"
 
-/// @brief POD collection of pointers and datastructures required to query
-/// boundary neighbours on the device
-struct Boundary {
-    const float* xx;
-    const float* xy;
-    const float* xz;
-    const float* m;
-    const UniformGrid<Resort::yes> grid;
-};
-
-/// @brief Structure representing a single layer of boundary particles sampled
-/// on some surface mesh. Includes respective coordinates, masses due to [Akinci
-/// et al. 2012] and a `UniformGrid` for neighbour search, accompanied by the
-/// `prefix` sum of particles per cell, since this buffer object must live at
-/// least as long as the `UniformGrid` does.
-/// Provides a convienience method `get` for collecting raw pointers to relevant
-/// buffers as a `__device__`-friendly POD
-struct BoundarySamples {
-    DeviceBuffer<float> xs;
-    DeviceBuffer<float> ys;
-    DeviceBuffer<float> zs;
-    DeviceBuffer<float> m;
-    DeviceBuffer<uint> prefix;
-    UniformGrid<Resort::yes> grid;
-    /// @brief Get a `__device__`-friendly POD structure containing relevant
-    /// pointers to positions and masses as well as a datastructure for
-    /// neighbour queries
-    /// @return a POD to use in CUDA kernels
-    Boundary get() const
+/// @brief Device-side representation of a triangular mesh, containing vertex
+/// buffers (SoA by component) and a face buffer indexing the vertex buffers
+/// with a `uint3`. May be constructed from a `Mesh`, which is stored host-side
+/// in RAM, using the `from` method.
+struct DeviceMesh {
+    DeviceBuffer<double> vxs;
+    DeviceBuffer<double> vys;
+    DeviceBuffer<double> vzs;
+    DeviceBuffer<uint3> faces;
+    /// @brief Method for constructing a device-side triangular mesh from a
+    /// corresponding host side representation, allocating and copying to device
+    /// buffers
+    /// @param mesh host-side triangular `Mesh
+    /// @return corresponding `DeviceMesh`
+    static DeviceMesh from(Mesh mesh)
     {
-        return Boundary { xs.ptr(), ys.ptr(), zs.ptr(), m.ptr(), grid };
+        return DeviceMesh { //
+            DeviceBuffer<double>(mesh.xs.begin(), mesh.xs.end()),
+            DeviceBuffer<double>(mesh.ys.begin(), mesh.ys.end()),
+            DeviceBuffer<double>(mesh.zs.begin(), mesh.zs.end()),
+            DeviceBuffer<uint3>(mesh.faces.begin(), mesh.faces.end())
+        };
     }
 };
 
@@ -47,24 +38,20 @@ struct BoundarySamples {
 /// `mass_refinement_iterations` greater than one, the masses can be iteratively
 /// refined, since they actually depend on each of their neighbours's masses as
 /// well.
-/// @param xs x-compoenents of boundary particle positions
-/// @param ys y-compoenents of boundary particle positions
-/// @param zs z-compoenents of boundary particle positions
+/// @param bdy the boundary samples to calculate the masses of
 /// @param h fluid particle spacing
 /// @param h_bdy boundary particle spacing
 /// @param rho_0 fluid rest density
 /// @param mass_refinement_iterations iterations of boundary mass refinement
 /// @return `BoundarySamples` struct containing positions, masses and
 /// datastructure for neighbour queries
-BoundarySamples calculate_boundary_masses(DeviceBuffer<float> xs,
-    DeviceBuffer<float> ys, DeviceBuffer<float> zs, const float h,
+void calculate_boundary_masses(BoundarySamples& bdy, const float h,
     const float h_bdy, const float rho_0,
     const uint mass_refinement_iterations = 1);
 
-/// @brief Relax a uniformly random boudnary sampling in the sense that samples
+/// @brief Relax a uniformly random boundary sampling in the sense that samples
 /// should spread out across each face of the mesh evenly to produce a
-/// low-discrepancy, blue noise sampling. This method may be called repeatedly
-/// to iteratively achieve a more even sampling.
+/// low-discrepancy, blue noise sampling.
 ///
 /// The function uses SPH to estimate and minimize number density similar to how
 /// pressure forces in the fluid minimize density deviations, except negative
@@ -74,45 +61,56 @@ BoundarySamples calculate_boundary_masses(DeviceBuffer<float> xs,
 /// the triangle that each sample was created on. This may lead to problems with
 /// meshes that consist of triangles much smaller than the boundary sampling,
 /// since their ability to spread out is limited by the projection step.
-/// @param samples the `BoundarySamples` to relax - this  is modified by the
-/// function.
-/// @param grid_builder `UniformGridBuilder` for creating a datastructure
-/// accelerating the search for neighbouring boundary samples
-/// @param vxs x-component of all vertices in the sampled triangle mesh
-/// @param vys y-component of all vertices in the sampled triangle mesh
-/// @param vzs z-component of all vertices in the sampled triangle mesh
-/// @param faces faces of the sampled triangle mesh, where each face is a
-/// `uint3` of indices into the vertex buffers
+/// @param xs x-component of the samples to relax
+/// @param ys y-component of the samples to relax
+/// @param zs z-component of the samples to relax
+/// @param mesh device-side representation of the triangular mesh to sample
 /// @param h_bdy desired spacing of boundary particles
 /// boundary particles
 /// @param tri_ids the indices of the faces that each boundary sample was
 /// created on
-/// @param num_den a temporary buffer to store the intermediate number densities
-/// computed during relaxation
+/// @param stream output stream to print debug information in CSV format to, if
+/// any
 /// @param relaxation_factor factor akin to the stiffness in the pressure solver
-/// that determines the magnitude of the particle shift per iteration. Should be
-/// a relatively scale-independent constant, since number densities are
-/// normalized by the expected volume of a boundary particle if it were sampled
-/// on a regular 3D grid (???: a plane might be a better assumption to make this
-/// dimensionless).
-void sample_relaxation(BoundarySamples& samples,
-    UniformGridBuilder& grid_builder, thrust::device_vector<double> vxs,
-    thrust::device_vector<double> vys, thrust::device_vector<double> vzs,
-    thrust::device_vector<uint3> faces, float h_bdy,
-    thrust::device_vector<int> tri_ids, thrust::device_vector<float>& num_den,
-    const float relaxation_factor);
+/// that determines the magnitude of the particle shift per iteration, ideally
+/// as a fraction of boundary particle spacing (-> typical range from 0 to 1)
+/// @param relaxation_iters maximum number of iterations of the relaxation
+/// procedure
+void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
+    DeviceBuffer<float>& zs, const DeviceMesh& mesh, const float h_bdy,
+    const DeviceBuffer<int>& tri_ids, std::ostream* debug_stream,
+    const float relaxation_factor, const uint relaxation_iters);
 
-/// @brief Place boundary samples uniformly randomly on the surface of the given
-/// `Mesh` with a spacing indicated by `h / oversampling_factor`.
+/// @brief Uniformly randomly sample a mesh. Uses stratified sampling of
+/// triangles by area using a discrete CDF from the prefix sum of triangle
+/// areas, then a uniform sampling within each triangle. Optionally remember
+/// which face each sample was placed on for later post-processing
+/// @param xs buffer for x-components of the samples, resized by this function
+/// @param ys buffer for y-components of the samples, resized by this function
+/// @param zs buffer for z-components of the samples, resized by this function
+/// @param mesh a `DeviceMesh` of the surface to sample
+/// @param h fluid particle spacing
+/// @param oversampling_factor ratio of boundary sample spacing to fluid spacing
+/// h
+/// @param tri_ids optional pointer to a buffer that assigns a face to each
+/// boundary sample, referencing the `faces` buffer in the `DeviceMesh` by
+/// index
+void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
+    DeviceBuffer<float>& zs, const DeviceMesh& mesh, const float h,
+    const float oversampling_factor, DeviceBuffer<int>* tri_ids = nullptr);
+
+/// @brief Place boundary samples uniformly randomly on the surface of the
+/// given `Mesh` with a spacing indicated by `h / oversampling_factor`.
 ///
-/// Internally computes the area of each triangle, transforms it into a discrete
-/// CDF using an inclusive prefix sum and uses stratified uniform sampling to
-/// select a triangle to place each sample in, then uniformly randomly samples
-/// that triangle - this should result in a uniform distribution of samples over
-/// the area that matches the expected number of samples required to uphold the
-/// desired spacing. The discrapancy of this uniform sampling might be
-/// undesirable, so by specifying an iterative relaxation procedure
-/// is conducted as described in the function `sample_relaxation`
+/// Internally computes the area of each triangle, transforms it into a
+/// discrete CDF using an inclusive prefix sum and uses stratified uniform
+/// sampling to select a triangle to place each sample in, then uniformly
+/// randomly samples that triangle - this should result in a uniform
+/// distribution of samples over the area that matches the expected number
+/// of samples required to uphold the desired spacing. The discrapancy of
+/// this uniform sampling might be undesirable, so by specifying an
+/// iterative relaxation procedure is conducted as described in the function
+/// `relax_sampling`
 /// @param mesh input mesh as generated by `load_mesh_from_obj`
 /// @param h fluid particle spacing
 /// @param rho_0 fluid rest density
@@ -120,19 +118,19 @@ void sample_relaxation(BoundarySamples& samples,
 /// desired spacing of boudnary particles, where a higher factor results in
 /// more samples
 /// @param debug_stream an optional `std::ostream` pointer to write debug
-/// information about the convergence of the relaxation procedure in csv format
-/// to
+/// information about the convergence of the relaxation procedure in csv
+/// format to
 /// @param relaxation_iters maximum number of iterations of the relaxation
 /// procedure
 /// @param relaxation_stiffness stiffness coefficient for the relaxation
 /// procedure. Should be roughly in (0; 1.5]
-/// @param mass_refinement_iterations MUST be >= 1, boundary mass calculation in
-/// [Akinci et al. 2012] Sec. 2.2 can be iterated to get more accurate results.
+/// @param mass_refinement_iterations MUST be >= 1, boundary mass
+/// calculation in [Akinci et al. 2012] Sec. 2.2 can be iterated to get more
+/// accurate results.
 /// @return collection of coordinates of boundary samples
 BoundarySamples sample_mesh(const Mesh mesh, const float h, const float rho_0,
-    const double oversampling_factor = 2.0,
-    std::ostream* debug_stream = nullptr, const int relaxation_iters = 50,
-    const float relaxation_stiffness = 1.,
-    const uint mass_refinement_iterations = 1);
+    const float oversampling_factor = 2.0, std::ostream* debug_stream = nullptr,
+    const int relaxation_iters = 20, const float relaxation_factor = 1.,
+    const uint mass_refinement_iterations = 5);
 
 #endif // SCENE_SAMPLE_CUH_

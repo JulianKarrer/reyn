@@ -6,7 +6,7 @@
 #include "particles.cuh"
 #include "buffer.cuh"
 #include "datastructure/uniformgrid.cuh"
-#include "scene/sample_boundary.cuh"
+#include "scene/scene.cuh"
 
 template <IsKernel K, Resort R> class SESPH {
 private:
@@ -28,7 +28,7 @@ public:
     /// @brief acceleration buffer (z-component)
     DeviceBuffer<float>& az;
     /// @brief Stiffness coefficient for the state equation
-    float k { 1000. };
+    float k { 500. };
     /// @brief Gravitational acceleration
     float3 g { v3(0.f, -9.81f, 0.f) };
     /// @brief rest density
