@@ -78,6 +78,16 @@ public:
     /// @returns pointer to the resized and mapped buffer.
     void resize_mapped_buffers(uint N, Particles& state);
 
+    /// @brief Resize only a specific component of the positions buffers, which
+    /// are stored in SoA format
+    /// @param N_new new size of the component
+    /// @param state state to update the raw pointers of the component buffer in
+    /// @param component the component to resize, where 0=x, 1=y, 2=z
+    float* resize_pos_component(uint N_new, Particles& state, int component);
+
+    /// @brief Set the constant boundary samples to copy into a VBO and
+    /// visualize
+    /// @param samples `BoundarySamples` to render
     void set_boundary_to_render(const BoundarySamples* samples);
 
     /// @brief Update the projection matrix representing the current camera
@@ -245,7 +255,8 @@ private:
 
     // OpenGL resources
     GLuint col_vbo;
-    GLuint shader_program_fld, vao, x_vbo, y_vbo, z_vbo;
+    GLuint pos_vbo[3];
+    GLuint shader_program_fld, vao;
     GLuint shader_program_bdy, vao_bdy, x_vbo_bdy, y_vbo_bdy, z_vbo_bdy;
 
     float fov { 45.0 };
@@ -302,9 +313,8 @@ private:
     float shading_strength { 5. };
 
     // CUDA resources
-    cudaGraphicsResource* cuda_x_vbo_resource = nullptr;
-    cudaGraphicsResource* cuda_y_vbo_resource = nullptr;
-    cudaGraphicsResource* cuda_z_vbo_resource = nullptr;
+    cudaGraphicsResource* cuda_pos_vbo_resource[3] { nullptr, nullptr,
+        nullptr };
     cudaGraphicsResource* cuda_col_vbo_resource = nullptr;
 
     // internal functions for setup and events

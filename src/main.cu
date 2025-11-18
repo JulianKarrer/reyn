@@ -18,27 +18,22 @@ int main()
         GUI gui(1280, 720, false);
         std::cout << "gui initialized" << std::endl;
         Particles state(&gui, 1.);
-        // Particles state(10000, 1.);
         std::cout << "state initialized" << std::endl;
-
-        const Scene scene(
-            "scenes/cube.obj", 1000000, v3(-.95), v3(0.), 1., state, 3.);
-        std::cout << "scene initialized, h=" << scene.h << std::endl;
-        gui.set_boundary_to_render(&scene.bdy);
-
-        const B3 W(2.f * scene.h);
-        const uint N { scene.N };
-        double time { 0. };
-
-        UniformGridBuilder uniform_grid(
-            scene.bound_min, scene.bound_max, 2. * scene.h);
-        std::cout << "grid initialized" << std::endl;
 
         // tmp buffers to share across operations
         DeviceBuffer<float> tmp1(1);
         DeviceBuffer<float> tmp2(1);
         DeviceBuffer<float> tmp3(1);
         DeviceBuffer<float> tmp4(1);
+
+        Scene scene(
+            "scenes/cube.obj", 1000000, v3(-1.), v3(0.), 1., state, tmp1, 3.);
+        gui.set_boundary_to_render(&scene.bdy);
+        std::cout << "scene initialized, h=" << scene.h << std::endl;
+
+        const B3 W(2.f * scene.h);
+        const uint N { scene.N };
+        double time { 0. };
 
         SESPH<B3, Resort::yes> solver(
             W, N, 0.001f, scene.h, scene.rho_0, tmp1, tmp2, tmp3, tmp4);
@@ -50,13 +45,14 @@ int main()
         // MAIN LOOP
         std::cout << "fully initialized" << std::endl;
         while (gui.update_or_exit(state, scene.h, &tmp1)) {
-            const float dt { cfl_time_step(
-                0.1, scene.h, state, v3(0., -9.81, 0.)) };
-            // const float dt { 0.0002 };
+            // const float dt { cfl_time_step(
+            //     0.1, scene.h, state, v3(0., -9.81, 0.)) };
+            const float dt { 0.0001 };
 
-            // update the acceleration datastructure
-            const auto grid { uniform_grid.construct_and_reorder(
-                2. * scene.h, tmp1, state) };
+            // get an updated acceleration datastructure
+            const auto grid { scene.get_grid(state, tmp1) };
+            // const auto grid { grid_builder.construct_and_reorder(
+            //     2.f * scene.h, tmp1, state) };
 
             // then invoke the fluid solver
             solver.step(state, grid, scene.bdy, dt);

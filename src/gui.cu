@@ -569,28 +569,23 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
 void GUI::create_and_register_buffers(uint N)
 {
     // create VBO for positions
-    glGenBuffers(1, &x_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, x_vbo);
-    glBufferData(GL_ARRAY_BUFFER, N * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
-    glGenBuffers(1, &y_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, y_vbo);
-    glBufferData(GL_ARRAY_BUFFER, N * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
-    glGenBuffers(1, &z_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, z_vbo);
-    glBufferData(GL_ARRAY_BUFFER, N * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
-
+    for (uint i { 0 }; i < 3; ++i) {
+        glGenBuffers(1, &pos_vbo[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, pos_vbo[i]);
+        glBufferData(
+            GL_ARRAY_BUFFER, N * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    }
     // create vbo for colours
     glGenBuffers(1, &col_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, col_vbo);
     glBufferData(GL_ARRAY_BUFFER, N * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
 
     // expose VBOs to CUDA
-    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
-        &cuda_x_vbo_resource, x_vbo, cudaGraphicsMapFlagsWriteDiscard));
-    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
-        &cuda_y_vbo_resource, y_vbo, cudaGraphicsMapFlagsWriteDiscard));
-    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
-        &cuda_z_vbo_resource, z_vbo, cudaGraphicsMapFlagsWriteDiscard));
+
+    for (uint i { 0 }; i < 3; ++i) {
+        CUDA_CHECK(cudaGraphicsGLRegisterBuffer(&cuda_pos_vbo_resource[i],
+            pos_vbo[i], cudaGraphicsMapFlagsWriteDiscard));
+    }
     CUDA_CHECK(cudaGraphicsGLRegisterBuffer(
         &cuda_col_vbo_resource, col_vbo, cudaGraphicsMapFlagsWriteDiscard));
 
@@ -598,17 +593,13 @@ void GUI::create_and_register_buffers(uint N)
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     // - bind position vbos
-    glBindBuffer(GL_ARRAY_BUFFER, x_vbo);
-    glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, y_vbo);
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, z_vbo);
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
-    glEnableVertexAttribArray(2);
+    for (uint i { 0 }; i < 3; ++i) {
+        glBindBuffer(GL_ARRAY_BUFFER, pos_vbo[i]);
+        glVertexAttribPointer(
+            i, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        glEnableVertexAttribArray(i);
+    }
 
     // - bind colour vbo
     glBindBuffer(GL_ARRAY_BUFFER, col_vbo);
@@ -621,16 +612,16 @@ void GUI::create_and_register_buffers(uint N)
 void GUI::destroy_and_deregister_buffers()
 {
     // de-register VBO from use by CUDA
-    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_x_vbo_resource));
-    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_y_vbo_resource));
-    CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_z_vbo_resource));
 
+    for (uint i { 0 }; i < 3; ++i) {
+        CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_pos_vbo_resource[i]));
+    }
     CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_col_vbo_resource));
 
     // delete VBO and VAO buffers
-    glDeleteBuffers(1, &x_vbo);
-    glDeleteBuffers(1, &y_vbo);
-    glDeleteBuffers(1, &z_vbo);
+    for (uint i { 0 }; i < 3; ++i) {
+        glDeleteBuffers(1, &pos_vbo[i]);
+    }
 
     glDeleteBuffers(1, &col_vbo);
     glDeleteVertexArrays(1, &vao);
@@ -644,24 +635,24 @@ void GUI::map_buffers(Particles& state)
     size_t _num_bytes;
 
     // map x position buffer and update xx pointer in state
-    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_x_vbo_resource, 0));
+    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_pos_vbo_resource[0], 0));
     float* x_ptr = nullptr;
     CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
-        (void**)&x_ptr, &_num_bytes, cuda_x_vbo_resource));
+        (void**)&x_ptr, &_num_bytes, cuda_pos_vbo_resource[0]));
     state.xx.update_raw_ptr(x_ptr, N);
 
     // map y position buffer and update xy pointer in state
-    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_y_vbo_resource, 0));
+    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_pos_vbo_resource[1], 0));
     float* y_ptr = nullptr;
     CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
-        (void**)&y_ptr, &_num_bytes, cuda_y_vbo_resource));
+        (void**)&y_ptr, &_num_bytes, cuda_pos_vbo_resource[1]));
     state.xy.update_raw_ptr(y_ptr, N);
 
     // map z position buffer and update xz pointer in state
-    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_z_vbo_resource, 0));
+    CUDA_CHECK(cudaGraphicsMapResources(1, &cuda_pos_vbo_resource[2], 0));
     float* z_ptr = nullptr;
     CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
-        (void**)&z_ptr, &_num_bytes, cuda_z_vbo_resource));
+        (void**)&z_ptr, &_num_bytes, cuda_pos_vbo_resource[2]));
     state.xz.update_raw_ptr(z_ptr, N);
 }
 
@@ -682,9 +673,9 @@ float* GUI::map_colour_buffer()
 void GUI::unmap_buffers()
 {
     pos_cuda_mapped = false;
-    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_x_vbo_resource, 0))
-    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_y_vbo_resource, 0))
-    CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_z_vbo_resource, 0))
+    for (uint i { 0 }; i < 3; ++i) {
+        CUDA_CHECK(cudaGraphicsUnmapResources(1, &cuda_pos_vbo_resource[i], 0))
+    }
 }
 
 void GUI::unmap_colour_buffer()
@@ -715,6 +706,53 @@ void GUI::resize_mapped_buffers(uint N_new, Particles& state)
 
     // map the buffer for use by CUDA and return the resulting pointer
     map_buffers(state);
+}
+
+float* GUI::resize_pos_component(uint N_new, Particles& state, int component)
+{
+    if (component < 0 || component > 2)
+        throw std::runtime_error(
+            "resize_pos_component must be called with a component in {0,1,2}");
+
+    // synchronize to be safe, ensure OpenGL is not using the buffer
+    CUDA_CHECK(cudaDeviceSynchronize());
+    glFinish();
+
+    // unmap
+    CUDA_CHECK(
+        cudaGraphicsUnmapResources(1, &cuda_pos_vbo_resource[component], 0));
+    // unregister
+    CUDA_CHECK(
+        cudaGraphicsUnregisterResource(cuda_pos_vbo_resource[component]));
+
+    // change VBO size
+    this->N = N_new;
+    size_t new_size = static_cast<size_t>(N_new) * sizeof(float);
+    glBindBuffer(GL_ARRAY_BUFFER, pos_vbo[component]);
+    glBufferData(GL_ARRAY_BUFFER, new_size, nullptr, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // re-register
+    CUDA_CHECK(cudaGraphicsGLRegisterBuffer(&cuda_pos_vbo_resource[component],
+        pos_vbo[component], cudaGraphicsMapFlagsWriteDiscard));
+    // remap
+    CUDA_CHECK(
+        cudaGraphicsMapResources(1, &cuda_pos_vbo_resource[component], 0));
+    size_t _num_bytes;
+    float* ptr = nullptr;
+    CUDA_CHECK(cudaGraphicsResourceGetMappedPointer(
+        (void**)&ptr, &_num_bytes, cuda_pos_vbo_resource[component]));
+
+    // reflect change in raw pointer in the `Particles` instance and return the
+    // new pointer
+    if (component == 0) {
+        state.xx.update_raw_ptr(ptr, N_new);
+    } else if (component == 1) {
+        state.xy.update_raw_ptr(ptr, N_new);
+    } else {
+        state.xz.update_raw_ptr(ptr, N_new);
+    }
+    return ptr;
 }
 
 void GUI::initialize_buffers(Particles& state) { map_buffers(state); };

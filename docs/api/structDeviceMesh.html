@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Struct GUI::DragState" href="structGUI_1_1DragState.html"><link rel="prev" title="Struct DeviceBuffer::ExternallyManagedBuffer" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Function sample_relaxation(BoundarySamples&amp;, UniformGridBuilder&amp;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;uint3&gt;, float, thrust::device_vector&lt;int&gt;, thrust::device_vector&lt;float&gt;&amp;, const float) - REYN documentation</title>
+        <title>Struct DeviceMesh - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -194,13 +194,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
@@ -222,87 +223,95 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_buffer.cuh.html">Program Listing for File buffer.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_common.h.html">File common.h</a><input aria-label="Toggle navigation of File common.h" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_timestep_cfl.cu.html">File cfl.cu</a><input aria-label="Toggle navigation of File cfl.cu" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_timestep_cfl.cu.html">Program Listing for File cfl.cu</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_timestep_cfl.cuh.html">File cfl.cuh</a><input aria-label="Toggle navigation of File cfl.cuh" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_timestep_cfl.cuh.html">Program Listing for File cfl.cuh</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_common.h.html">File common.h</a><input aria-label="Toggle navigation of File common.h" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_common.h.html">Program Listing for File common.h</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_gui.cu.html">File gui.cu</a><input aria-label="Toggle navigation of File gui.cu" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_gui.cu.html">File gui.cu</a><input aria-label="Toggle navigation of File gui.cu" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_gui.cu.html">Program Listing for File gui.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_gui.cuh.html">File gui.cuh</a><input aria-label="Toggle navigation of File gui.cuh" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_gui.cuh.html">File gui.cuh</a><input aria-label="Toggle navigation of File gui.cuh" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_gui.cuh.html">Program Listing for File gui.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_kernels.cu.html">File kernels.cu</a><input aria-label="Toggle navigation of File kernels.cu" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_kernels.cu.html">File kernels.cu</a><input aria-label="Toggle navigation of File kernels.cu" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_kernels.cu.html">Program Listing for File kernels.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_kernels.cuh.html">File kernels.cuh</a><input aria-label="Toggle navigation of File kernels.cuh" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_kernels.cuh.html">File kernels.cuh</a><input aria-label="Toggle navigation of File kernels.cuh" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_kernels.cuh.html">Program Listing for File kernels.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.cpp.html">File loader.cpp</a><input aria-label="Toggle navigation of File loader.cpp" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.cpp.html">File loader.cpp</a><input aria-label="Toggle navigation of File loader.cpp" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_loader.cpp.html">Program Listing for File loader.cpp</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.h.html">File loader.h</a><input aria-label="Toggle navigation of File loader.h" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.h.html">File loader.h</a><input aria-label="Toggle navigation of File loader.h" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_loader.h.html">Program Listing for File loader.h</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_main.cu.html">File main.cu</a><input aria-label="Toggle navigation of File main.cu" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_main.cu.html">File main.cu</a><input aria-label="Toggle navigation of File main.cu" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_main.cu.html">Program Listing for File main.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cu.html">File particles.cu</a><input aria-label="Toggle navigation of File particles.cu" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cu.html">File particles.cu</a><input aria-label="Toggle navigation of File particles.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cu.html">Program Listing for File particles.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cuh.html">File particles.cuh</a><input aria-label="Toggle navigation of File particles.cuh" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cuh.html">File particles.cuh</a><input aria-label="Toggle navigation of File particles.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cuh.html">Program Listing for File particles.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cu.html">Program Listing for File ply_io.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cu.html">Program Listing for File sample_boundary.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cuh.html">Program Listing for File sample_boundary.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_scene.cu.html">Program Listing for File scene.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cuh.html">File scene.cuh</a><input aria-label="Toggle navigation of File scene.cuh" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cuh.html">File scene.cuh</a><input aria-label="Toggle navigation of File scene.cuh" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_scene.cuh.html">Program Listing for File scene.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cu.html">File SESPH.cu</a><input aria-label="Toggle navigation of File SESPH.cu" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cu.html">File SESPH.cu</a><input aria-label="Toggle navigation of File SESPH.cu" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_SESPH.cu.html">Program Listing for File SESPH.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cuh.html">File SESPH.cuh</a><input aria-label="Toggle navigation of File SESPH.cuh" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cuh.html">File SESPH.cuh</a><input aria-label="Toggle navigation of File SESPH.cuh" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_SESPH.cuh.html">Program Listing for File SESPH.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cu.html">File uniformgrid.cu</a><input aria-label="Toggle navigation of File uniformgrid.cu" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cu.html">File uniformgrid.cu</a><input aria-label="Toggle navigation of File uniformgrid.cu" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_uniformgrid.cu.html">Program Listing for File uniformgrid.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cuh.html">File uniformgrid.cuh</a><input aria-label="Toggle navigation of File uniformgrid.cuh" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cuh.html">File uniformgrid.cuh</a><input aria-label="Toggle navigation of File uniformgrid.cuh" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_uniformgrid.cuh.html">Program Listing for File uniformgrid.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_vector_helper.cuh.html">File vector_helper.cuh</a><input aria-label="Toggle navigation of File vector_helper.cuh" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_vector_helper.cuh.html">File vector_helper.cuh</a><input aria-label="Toggle navigation of File vector_helper.cuh" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_vector_helper.cuh.html">Program Listing for File vector_helper.cuh</a></li>
 </ul>
 </li>
@@ -328,7 +337,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_sample__boundary_8cuh_1a8cb7b442d28698f8f14797d05fcf671d.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/structDeviceMesh.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -346,34 +355,54 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="function-sample-relaxation-boundarysamples-uniformgridbuilder-thrust-device-vector-double-thrust-device-vector-double-thrust-device-vector-double-thrust-device-vector-uint3-float-thrust-device-vector-int-thrust-device-vector-float-const-float">
-<span id="exhale-function-sample-boundary-8cuh-1a8cb7b442d28698f8f14797d05fcf671d"></span><h1>Function sample_relaxation(BoundarySamples&amp;, UniformGridBuilder&amp;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;uint3&gt;, float, thrust::device_vector&lt;int&gt;, thrust::device_vector&lt;float&gt;&amp;, const float)<a class="headerlink" href="#function-sample-relaxation-boundarysamples-uniformgridbuilder-thrust-device-vector-double-thrust-device-vector-double-thrust-device-vector-double-thrust-device-vector-uint3-float-thrust-device-vector-int-thrust-device-vector-float-const-float" title="Link to this heading">¶</a></h1>
+          <section id="struct-devicemesh">
+<span id="exhale-struct-structdevicemesh"></span><h1>Struct DeviceMesh<a class="headerlink" href="#struct-devicemesh" title="Link to this heading">¶</a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_src_scene_sample_boundary.cuh.html#file-src-scene-sample-boundary-cuh"><span class="std std-ref">File sample_boundary.cuh</span></a></p></li>
 </ul>
-<section id="function-documentation">
-<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
+<section id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading">¶</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv410DeviceMesh">
+<span id="_CPPv310DeviceMesh"></span><span id="_CPPv210DeviceMesh"></span><span id="DeviceMesh"></span><span class="target" id="structDeviceMesh"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DeviceMesh</span></span></span><a class="headerlink" href="#_CPPv410DeviceMesh" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Device-side representation of a triangular mesh, containing vertex buffers (SoA by component) and a face buffer indexing the vertex buffers with a <code class="docutils literal notranslate"><span class="pre">uint3</span></code>. May be constructed from a <code class="docutils literal notranslate"><a class="reference internal" href="structMesh.html#structMesh"><span class="std std-ref"><span class="pre">Mesh</span></span></a></code>, which is stored host-side in RAM, using the <code class="docutils literal notranslate"><span class="pre">from</span></code> method. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N10DeviceMesh3vxsE">
+<span id="_CPPv3N10DeviceMesh3vxsE"></span><span id="_CPPv2N10DeviceMesh3vxsE"></span><span id="DeviceMesh::vxs__DeviceBuffer:double:"></span><span class="target" id="structDeviceMesh_1abe3804bc441d9e18d37ec4281985b32b"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vxs</span></span></span><a class="headerlink" href="#_CPPv4N10DeviceMesh3vxsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N10DeviceMesh3vysE">
+<span id="_CPPv3N10DeviceMesh3vysE"></span><span id="_CPPv2N10DeviceMesh3vysE"></span><span id="DeviceMesh::vys__DeviceBuffer:double:"></span><span class="target" id="structDeviceMesh_1a22bb0698508a9457700ff3973d393241"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vys</span></span></span><a class="headerlink" href="#_CPPv4N10DeviceMesh3vysE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N10DeviceMesh3vzsE">
+<span id="_CPPv3N10DeviceMesh3vzsE"></span><span id="_CPPv2N10DeviceMesh3vzsE"></span><span id="DeviceMesh::vzs__DeviceBuffer:double:"></span><span class="target" id="structDeviceMesh_1a32db1a98ec7d2cdd0d2ce947910c1440"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vzs</span></span></span><a class="headerlink" href="#_CPPv4N10DeviceMesh3vzsE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N10DeviceMesh5facesE">
+<span id="_CPPv3N10DeviceMesh5facesE"></span><span id="_CPPv2N10DeviceMesh5facesE"></span><span id="DeviceMesh::faces__DeviceBuffer:uint3:"></span><span class="target" id="structDeviceMesh_1afeb716e0261f9b259b684cff6fbfb07d"></span><a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint3</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">faces</span></span></span><a class="headerlink" href="#_CPPv4N10DeviceMesh5facesE" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv417sample_relaxationR15BoundarySamplesR18UniformGridBuilderN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorI5uint3EEfN6thrust13device_vectorIiEERN6thrust13device_vectorIfEEKf">
-<span id="_CPPv317sample_relaxationR15BoundarySamplesR18UniformGridBuilderN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorI5uint3EEfN6thrust13device_vectorIiEERN6thrust13device_vectorIfEEKf"></span><span id="_CPPv217sample_relaxationR15BoundarySamplesR18UniformGridBuilderN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorI5uint3EEfN6thrust13device_vectorIiEERN6thrust13device_vectorIfEEKf"></span><span id="sample_relaxation__BoundarySamplesR.UniformGridBuilderR.thrust::device_vector:double:.thrust::device_vector:double:.thrust::device_vector:double:.thrust::device_vector:uint3:.float.thrust::device_vector:i:.thrust::device_vector:float:R.floatC"></span><span class="target" id="sample__boundary_8cuh_1a8cb7b442d28698f8f14797d05fcf671d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sample_relaxation</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="structBoundarySamples.html#_CPPv415BoundarySamples" title="BoundarySamples"><span class="n"><span class="pre">BoundarySamples</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">samples</span></span>, <a class="reference internal" href="classUniformGridBuilder.html#_CPPv418UniformGridBuilder" title="UniformGridBuilder"><span class="n"><span class="pre">UniformGridBuilder</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid_builder</span></span>, <span class="n"><span class="pre">thrust</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">device_vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vxs</span></span>, <span class="n"><span class="pre">thrust</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">device_vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vys</span></span>, <span class="n"><span class="pre">thrust</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">device_vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vzs</span></span>, <span class="n"><span class="pre">thrust</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">device_vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint3</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">faces</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h_bdy</span></span>, <span class="n"><span class="pre">thrust</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">device_vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tri_ids</span></span>, <span class="n"><span class="pre">thrust</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">device_vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">num_den</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">relaxation_factor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417sample_relaxationR15BoundarySamplesR18UniformGridBuilderN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorI5uint3EEfN6thrust13device_vectorIiEERN6thrust13device_vectorIfEEKf" title="Link to this definition">¶</a><br /></dt>
-<dd><p>Relax a uniformly random boudnary sampling in the sense that samples should spread out across each face of the mesh evenly to produce a low-discrepancy, blue noise sampling. This method may be called repeatedly to iteratively achieve a more even sampling. </p>
-<p>The function uses SPH to estimate and minimize number density similar to how pressure forces in the fluid minimize density deviations, except negative “pressure” is allowed, stiffness is one, all masses are one and instead of a time step that is integrated over, a scale-dependent particle shift is calculated, before that shift is projected back onto the closest point on the triangle that each sample was created on. This may lead to problems with meshes that consist of triangles much smaller than the boundary sampling, since their ability to spread out is limited by the projection step. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N10DeviceMesh4fromE4Mesh">
+<span id="_CPPv3N10DeviceMesh4fromE4Mesh"></span><span id="_CPPv2N10DeviceMesh4fromE4Mesh"></span><span id="DeviceMesh::from__Mesh"></span><span class="target" id="structDeviceMesh_1a40886e95b36b3b8f9566efc6171f5ac3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv410DeviceMesh" title="DeviceMesh"><span class="n"><span class="pre">DeviceMesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="structMesh.html#_CPPv44Mesh" title="Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">mesh</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N10DeviceMesh4fromE4Mesh" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Method for constructing a device-side triangular mesh from a corresponding host side representation, allocating and copying to device buffers. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>samples</strong> – the <code class="docutils literal notranslate"><a class="reference internal" href="structBoundarySamples.html#structBoundarySamples"><span class="std std-ref"><span class="pre">BoundarySamples</span></span></a></code> to relax - this is modified by the function. </p></li>
-<li><p><strong>grid_builder</strong> – <code class="docutils literal notranslate"><a class="reference internal" href="classUniformGridBuilder.html#classUniformGridBuilder"><span class="std std-ref"><span class="pre">UniformGridBuilder</span></span></a></code> for creating a datastructure accelerating the search for neighbouring boundary samples </p></li>
-<li><p><strong>vxs</strong> – x-component of all vertices in the sampled triangle mesh </p></li>
-<li><p><strong>vys</strong> – y-component of all vertices in the sampled triangle mesh </p></li>
-<li><p><strong>vzs</strong> – z-component of all vertices in the sampled triangle mesh </p></li>
-<li><p><strong>faces</strong> – faces of the sampled triangle mesh, where each face is a <code class="docutils literal notranslate"><span class="pre">uint3</span></code> of indices into the vertex buffers </p></li>
-<li><p><strong>h_bdy</strong> – desired spacing of boundary particles boundary particles </p></li>
-<li><p><strong>tri_ids</strong> – the indices of the faces that each boundary sample was created on </p></li>
-<li><p><strong>num_den</strong> – a temporary buffer to store the intermediate number densities computed during relaxation </p></li>
-<li><p><strong>relaxation_factor</strong> – factor akin to the stiffness in the pressure solver that determines the magnitude of the particle shift per iteration. Should be a relatively scale-independent constant, since number densities are normalized by the expected volume of a boundary particle if it were sampled on a regular 3D grid (???: a plane might be a better assumption to make this dimensionless). </p></li>
-</ul>
+<dd class="field-odd"><p><strong>mesh</strong> – host-side triangular <code class="docutils literal notranslate"><a class="reference internal" href="structMesh.html#structMesh"><span class="std std-ref"><span class="pre">Mesh</span></span></a> <span class="pre">&#64;return</span> <span class="pre">corresponding</span></code>DeviceMesh` </p>
 </dd>
 </dl>
+</dd></dl>
+
+</div>
 </dd></dl>
 
 </section>
@@ -384,8 +413,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="structGUI_1_1DragState.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Struct GUI::DragState</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Struct DeviceBuffer::ExternallyManagedBuffer</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -416,9 +463,16 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Function sample_relaxation(BoundarySamples&amp;, UniformGridBuilder&amp;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;double&gt;, thrust::device_vector&lt;uint3&gt;, float, thrust::device_vector&lt;int&gt;, thrust::device_vector&lt;float&gt;&amp;, const float)</a><ul>
-<li><a class="reference internal" href="#function-documentation">Function Documentation</a><ul>
-<li><a class="reference internal" href="#_CPPv417sample_relaxationR15BoundarySamplesR18UniformGridBuilderN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorIdEEN6thrust13device_vectorI5uint3EEfN6thrust13device_vectorIiEERN6thrust13device_vectorIfEEKf"><code class="docutils literal notranslate"><span class="pre">sample_relaxation()</span></code></a></li>
+<li><a class="reference internal" href="#">Struct DeviceMesh</a><ul>
+<li><a class="reference internal" href="#struct-documentation">Struct Documentation</a><ul>
+<li><a class="reference internal" href="#_CPPv410DeviceMesh"><code class="docutils literal notranslate"><span class="pre">DeviceMesh</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4N10DeviceMesh3vxsE"><code class="docutils literal notranslate"><span class="pre">vxs</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N10DeviceMesh3vysE"><code class="docutils literal notranslate"><span class="pre">vys</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N10DeviceMesh3vzsE"><code class="docutils literal notranslate"><span class="pre">vzs</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N10DeviceMesh5facesE"><code class="docutils literal notranslate"><span class="pre">faces</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N10DeviceMesh4fromE4Mesh"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

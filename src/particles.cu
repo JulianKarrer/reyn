@@ -43,6 +43,44 @@ void Particles::resize_uninit(uint N)
     m.resize(N);
 }
 
+void Particles::resize_truncate(uint N, DeviceBuffer<float>& tmp)
+{
+    if (gui) {
+        // ensure tmp has sufficient size
+        tmp.resize(N);
+
+        thrust::copy_n(
+            thrust::device_pointer_cast(xx.ptr()), N, tmp.get().begin());
+        float* new_ptr_x { gui->resize_pos_component(N, *this, 0) };
+        thrust::copy_n(
+            tmp.get().begin(), N, thrust::device_pointer_cast(new_ptr_x));
+        CUDA_CHECK(cudaGetLastError());
+
+        thrust::copy_n(
+            thrust::device_pointer_cast(xy.ptr()), N, tmp.get().begin());
+        float* new_ptr_y { gui->resize_pos_component(N, *this, 1) };
+        thrust::copy_n(
+            tmp.get().begin(), N, thrust::device_pointer_cast(new_ptr_y));
+        CUDA_CHECK(cudaGetLastError());
+
+        thrust::copy_n(
+            thrust::device_pointer_cast(xz.ptr()), N, tmp.get().begin());
+        float* new_ptr_z { gui->resize_pos_component(N, *this, 2) };
+        thrust::copy_n(
+            tmp.get().begin(), N, thrust::device_pointer_cast(new_ptr_z));
+        CUDA_CHECK(cudaGetLastError());
+
+    } else {
+        xx.resize(N);
+        xy.resize(N);
+        xz.resize(N);
+    }
+    vx.resize(N);
+    vy.resize(N);
+    vz.resize(N);
+    m.resize(N);
+}
+
 void Particles::reorder(
     const DeviceBuffer<uint>& sorted, DeviceBuffer<float>& tmp)
 {

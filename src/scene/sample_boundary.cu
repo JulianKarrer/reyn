@@ -527,6 +527,7 @@ BoundarySamples sample_mesh(const Mesh mesh_host, const float h,
     calculate_boundary_masses(
         result, h, h_bdy, rho_0, mass_refinement_iterations);
 
+    CUDA_CHECK(cudaDeviceSynchronize());
     return result;
 };
 

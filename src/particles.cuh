@@ -36,9 +36,17 @@ public:
     Particles(const int N, float rho_0);
     Particles(GUI* _gui, float _rho_0);
 
-    /// Resize all buffers. This leaves the positions buffer uninitialized if
-    /// externally handled by the GUI for OpenGL interop!
+    /// @brief Resize all buffers. This leaves the positions buffer
+    /// uninitialized if externally handled by the GUI for OpenGL interop!
+    /// @param N new desired number of particles
     void resize_uninit(uint N);
+
+    /// @brief Resize all buffers, keeping the data but potentially truncating
+    /// it if the size decreases
+    /// @param N new desired number of particles
+    /// @param tmp temporary buffer for resizing externally managed buffers
+    /// without losing data
+    void resize_truncate(uint N, DeviceBuffer<float>& tmp);
 
     /// @brief Pointer to the GUI instance managing the position buffer, if any,
     /// and `nullptr` otherwise

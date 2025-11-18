@@ -195,6 +195,14 @@ inline __host__ __device__ double3 operator*(const double& a, const double3& b)
 
 // UNARY ARITHMATIC OPERATORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+/// @brief Return the product of the components in `a`
+/// @param a input `float3`
+/// @return product of the components in `a`
+inline __host__ __device__ float prod(const float3& a)
+{
+    return a.x * a.y * a.z;
+};
+
 /// @brief NOTE: this function might behave differently in `__device__` and
 /// `__host__` code due to alternate implementations depending on intrinsics
 /// availablility!

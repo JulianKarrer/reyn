@@ -46,21 +46,29 @@ struct BoundarySamples {
 
 class Scene {
 public:
-    /// @brief Point marking the lowest extend of the bounding box of the scene
-    /// along each coordinate axis
-    float3 bound_min;
-    /// @brief Point marking the highest extend of the bounding box of the scene
-    /// along each coordinate axis
-    float3 bound_max;
-    /// @brief particle spacing h
-    float h;
-    /// @brief Number of dynamic particles in the scene
-    uint N;
     /// @brief Rest density of the fluid
     float rho_0;
+    /// @brief particle spacing h
+    const float h;
+    /// @brief Number of dynamic particles in the scene
+    uint N;
     /// @brief Collection of boundary samples
     const BoundarySamples bdy;
+    /// @brief Point marking the lowest extend of the bounding box of the scene
+    /// along each coordinate axis
+    const float3 bound_min;
+    /// @brief Point marking the highest extend of the bounding box of the scene
+    /// along each coordinate axis
+    const float3 bound_max;
 
+private:
+    // list the grid builder now, since its constructor must follow those above
+
+    /// @brief Used to obtain a `UniformGrid` enabling fast fixed radius
+    /// neighbourhood queries
+    UniformGridBuilder grid_builder;
+
+public:
     /// @brief Construct a scene with a box filled with fluid at as close as
     /// possible to the desired number of particles within the bounding box
     /// defined by `min` and `max` and at rest density `rho_0`.
@@ -72,15 +80,36 @@ public:
     /// @param state current state of the particles
     /// @param bdy_oversampling_factor ratio of spacing of fluid samples to
     /// spacing of boundary samples
+    /// @param cull_bdy_radius radius in units of fluid particle spacing `h`
+    /// around any boundary particle in which fluid particles should be culled
+    /// to prevent intersections
     Scene(const std::filesystem::path& path, const uint N_desired,
         const float3 min, const float3 max, const float rho_0, Particles& state,
-        const float bdy_oversampling_factor = 2.0);
+        DeviceBuffer<float>& tmp, const float bdy_oversampling_factor = 2.f,
+        const float cull_bdy_radius = 1.f);
 
     /// @brief Strictly enforce the simulation bounds set at scene creation,
     /// clamping all particle positions in the argument state to scenes bounding
     /// volume and reflecting any offending velocities while also damping them.
     /// @param state `Particles` to clamp to the bounds
     void hard_enforce_bounds(Particles& state) const;
+
+    /// @brief Obtain a `UniformGrid` for neighbourhood search with a fixed
+    /// radius specified in units of fluid particle spacing `h`, potentially
+    /// reordering particles in `state` for better memory coherency and
+    /// coalescing.
+    /// @param search_radius maximum radius for the search in units of `h`
+    /// @param state `Particles` to query and potentially reorder during grid
+    /// construction
+    /// @param tmp temporary buffer used for non in-place reordering of buffers
+    /// @return a `UniformGrid` to use on the device-side for neigbhbourhood
+    /// queries
+    UniformGrid<Resort::yes> get_grid(Particles& state,
+        DeviceBuffer<float>& tmp, const float search_radius = 2.0)
+    {
+        return grid_builder.construct_and_reorder(
+            search_radius * h, tmp, state);
+    };
 };
 
 #endif // SCENE_H_
