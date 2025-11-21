@@ -2,11 +2,12 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <chrono>
+#include <time.h>
 using namespace std::literals;
 #include "particles.cuh"
 #include "scene/scene.cuh"
 #include "scene/sample_boundary.cuh"
-
+#include "io_bmp_writer.h"
 // constants
 const char* FONT_PATH { "res/JBM.ttf" };
 
@@ -362,7 +363,7 @@ void GUI::update_view()
     constexpr float eps { 0.00001 };
     theta = std::clamp(theta, 0.f, M_PIf);
     const float theta_cur { std::clamp(theta + d_theta, eps, M_PIf - eps) };
-    const float radius { radius_init * _radius_scroll_factor };
+    const float radius { camera_radius_init * _radius_scroll_factor };
     const glm::vec3 camera_position { glm::vec3(
         radius * sinf(theta_cur) * cosf(phi_cur), radius * cosf(theta_cur),
         radius * sinf(theta_cur) * sinf(phi_cur)) };
@@ -457,7 +458,8 @@ void GUI::glfw_process_input()
 
 // CONSTRUCTOR
 
-GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
+GUI::GUI(
+    int init_w, int init_h, bool enable_vsync, double target_fps, bool maximize)
 {
     // save parameters
     this->_window_width = init_w;
@@ -493,8 +495,10 @@ GUI::GUI(int init_w, int init_h, bool enable_vsync, double target_fps)
     // set callbacks for resizeing and scrolling
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetScrollCallback(window, scroll_callback);
-    // maximize the window
-    glfwMaximizeWindow(window);
+    if (maximize) {
+        // maximize the window
+        glfwMaximizeWindow(window);
+    }
 
     // SET UP IMGUI
     IMGUI_CHECKVERSION();
@@ -848,7 +852,7 @@ void GUI::set_boundary_to_render(const BoundarySamples* samples)
 };
 
 bool GUI::update_or_exit(
-    Particles& state, const float h, DeviceBuffer<float>* rho)
+    Particles& state, const float h, DeviceBuffer<float>* ρ)
 {
     // declare a static variable for measuring how much time has passed since
     // the last re-render
@@ -879,8 +883,8 @@ bool GUI::update_or_exit(
         switch (attribute_visualized) {
         case 0: {
             // visualize densities
-            if (rho) {
-                auto rho_raw { rho->ptr() };
+            if (ρ) {
+                auto rho_raw { ρ->ptr() };
                 thrust::transform(thrust::counting_iterator<size_t>(0),
                     thrust::counting_iterator<size_t>(N_fld),
                     thrust::device_pointer_cast(col_buf),
@@ -929,6 +933,24 @@ bool GUI::update_or_exit(
 
     // the program should not be exited right now, return true
     return true;
+}
+
+void GUI::screenshot(const std::filesystem::path& path)
+{
+    // https://vallentin.dev/blog/post/opengl-screenshot
+    // but using std::vector instead of manual malloc + free
+
+    // allocate RGB buffer for the screenshot
+    std::vector<unsigned char> pixels(
+        3 * this->_window_width * this->_window_height);
+
+    // read BGR values to buffer (BMP format takes that order over RGB)
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glReadPixels(0, 0, this->_window_width, this->_window_height, GL_BGR,
+        GL_UNSIGNED_BYTE, pixels.data());
+
+    // write to file
+    write_bmp(pixels, this->_window_width, this->_window_height, path);
 }
 
 void GUI::update(float h)
@@ -1055,6 +1077,12 @@ void GUI::imgui_draw()
     ImGui::Text("GUI interval %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
         io->Framerate);
     ImGui::Text("SIM interval %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
+    if (ImGui::Button("SCREENSHOT")) {
+        char filename[50];
+        time_t t = time(NULL);
+        strftime(filename, 50, "out/%Y_%m_%d_%T_.bmp", localtime(&t));
+        screenshot(filename);
+    }
 
     const float slider_width { 0.4f };
     if (ImGui::CollapsingHeader(
@@ -1063,7 +1091,8 @@ void GUI::imgui_draw()
         ImGui::Checkbox("show fluid particles", &show_fluid);
         ImGui::Checkbox("show boundary particles", &show_boundary);
         ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * slider_width);
-        if (ImGui::InputFloat("base camera radius", &radius_init, 0.1f, 1.0f))
+        if (ImGui::InputFloat(
+                "base camera radius", &camera_radius_init, 0.1f, 1.0f))
             update_view();
         ImGui::Checkbox("per-particle colours", &use_per_particle_colour);
         ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x * slider_width);
@@ -1092,6 +1121,8 @@ void GUI::imgui_draw()
         glfwMakeContextCurrent(backup_current_context);
     }
 }
+
+void GUI::exit() { this->exit_requested.store(true); }
 
 GUI::~GUI()
 {

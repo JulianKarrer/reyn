@@ -5,13 +5,15 @@
 #include <filesystem>
 #include <concepts>
 #include <thrust/remove.h>
+#include <thrust/random.h>
+#include <thrust/transform.h>
 
 /// @brief Kernel used by one of the Scene constructors to initialize a set of
 /// dynamic particles in a box using CUDA directly to set each position.
 __global__ void _init_box_kernel(float3 min, float* __restrict__ xx,
     float* __restrict__ xy, float* __restrict__ xz, float* __restrict__ vx,
     float* __restrict__ vy, float* __restrict__ vz, float* __restrict__ m,
-    int3 nxyz, uint N, float h, float rho_0)
+    int3 nxyz, uint N, float h, float ρ₀)
 {
     // calculate 3d index from 1d index of invocation and nx, ny limits
     auto i { blockIdx.x * blockDim.x + threadIdx.x };
@@ -30,7 +32,7 @@ __global__ void _init_box_kernel(float3 min, float* __restrict__ xx,
     // initial velocities are zero
     store_v3(v3(0.f), i, vx, vy, vz);
     // assume ideal rest mass for now
-    m[i] = rho_0 * h * h * h;
+    m[i] = ρ₀ * h * h * h;
 }
 
 __global__ void _cull_stencil(const float* __restrict__ xx,
@@ -53,11 +55,28 @@ __global__ void _cull_stencil(const float* __restrict__ xx,
     stencil[i] = res == 0 ? 0 : 1;
 }
 
+/// @brief Binary operator functor used by thrust to add pseudorandom zero-mean
+/// values of given standard deviation to existing values using
+/// `thrust::transform`, where an `N_offset` of the total number of threads that
+/// used this functor previously can be used to ensure fresh values are chosen
+/// in each invocation
+struct GenJitter {
+    float jitter_stddev;
+    uint N_offset;
+    __device__ float operator()(uint idx, float current)
+    {
+        thrust::default_random_engine rand;
+        thrust::normal_distribution<float> uni(0.f, jitter_stddev);
+        rand.discard(idx + N_offset);
+        return current + uni(rand);
+    }
+};
+
 Scene::Scene(const std::filesystem::path& path, const uint N_desired,
     const float3 min, const float3 max, const float _rho_0, Particles& state,
     DeviceBuffer<float>& tmp, const float bdy_oversampling_factor,
-    const float cull_bdy_radius)
-    : rho_0(_rho_0)
+    const float cull_bdy_radius, const float jitter_stddev)
+    : ρ₀(_rho_0)
     , h(cbrtf(prod(max - min) / (float)N_desired))
     , bdy([&]() {
 // ignore argument count error for default arguments in cuh header for function
@@ -91,7 +110,7 @@ Scene::Scene(const std::filesystem::path& path, const uint N_desired,
     // place particles using cuda
     _init_box_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(min, state.xx.ptr(),
         state.xy.ptr(), state.xz.ptr(), state.vx.ptr(), state.vy.ptr(),
-        state.vz.ptr(), state.m.ptr(), nxyz, N, h, rho_0);
+        state.vz.ptr(), state.m.ptr(), nxyz, N, h, ρ₀);
     CUDA_CHECK(cudaGetLastError());
 
     // remove particles that intersect with the boundary
@@ -106,7 +125,6 @@ Scene::Scene(const std::filesystem::path& path, const uint N_desired,
     const auto bz { bdy.zs.ptr() };
     const float cull_sq { cull_bdy_radius * cull_bdy_radius * h * h };
     DeviceBuffer<unsigned char> stencil(N);
-    std::cout << "stencillin" << std::endl;
 
     _cull_stencil<<<BLOCKS(N), BLOCK_SIZE>>>(
         xs, ys, zs, bx, by, bz, cull_sq, stencil.ptr(), bdy.grid, N);
@@ -130,6 +148,21 @@ Scene::Scene(const std::filesystem::path& path, const uint N_desired,
     state.resize_truncate(new_N, tmp);
 
     N = new_N;
+
+    // add a pseudorandom jitter to the coordinates
+    auto ndx { thrust::device_pointer_cast(state.xx.ptr()) };
+    auto ndy { thrust::device_pointer_cast(state.xy.ptr()) };
+    auto ndz { thrust::device_pointer_cast(state.xz.ptr()) };
+    const float stddev { jitter_stddev * h };
+    thrust::transform(thrust::make_counting_iterator(0u),
+        thrust::make_counting_iterator(new_N), ndx, ndx,
+        GenJitter { stddev, 0 });
+    thrust::transform(thrust::make_counting_iterator(0u),
+        thrust::make_counting_iterator(new_N), ndy, ndy,
+        GenJitter { stddev, new_N });
+    thrust::transform(thrust::make_counting_iterator(0u),
+        thrust::make_counting_iterator(new_N), ndz, ndz,
+        GenJitter { stddev, 2 * new_N });
 
     // block and wait for operation to complete
     CUDA_CHECK(cudaDeviceSynchronize());

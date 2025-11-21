@@ -16,7 +16,7 @@ __global__ void _compute_accelerations(float* __restrict__ xx,
     float* __restrict__ xy, float* __restrict__ xz, float* __restrict__ vx,
     float* __restrict__ vy, float* __restrict__ vz, float* __restrict__ ax,
     float* __restrict__ ay, float* __restrict__ az, const float* __restrict__ m,
-    const float* rho, const uint N, const K W, const float k, const float rho_0,
+    const float* ρ, const uint N, const K W, const float k, const float rho_0,
     const float nu, const float h, const float3 g, const UniformGrid<R> grid,
     const Boundary bdy)
 {
@@ -27,7 +27,7 @@ __global__ void _compute_accelerations(float* __restrict__ xx,
     // read own buffered values only once, in coalescing fashion
     const float3 x_i { v3(i, xx, xy, xz) };
     const float3 v_i { v3(i, vx, vy, vz) };
-    const float rho_i { rho[i] };
+    const float rho_i { ρ[i] };
     // compute own pressure once
     const float p_i { eos(rho_i, k, rho_0) };
     const float p_i_over_rho_i_sq { p_i / (rho_i * rho_i) };
@@ -36,7 +36,7 @@ __global__ void _compute_accelerations(float* __restrict__ xx,
         grid.ff_nbrs(
             x_i, xx, xy, xz,
             [=] __device__(auto j, auto x_ij, auto x_ij_l2) {
-                const float rho_j { rho[j] };
+                const float rho_j { ρ[j] };
                 const float m_j { m[j] };
                 const float3 v_ij { v_i - v3(j, vx, vy, vz) };
                 const float3 dW { W.nabla(x_ij) };
@@ -70,7 +70,7 @@ void SESPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
 {
     // first, compute densities
     compute_densities<K><<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(),
-        state.xy.ptr(), state.xz.ptr(), state.m.ptr(), rho.ptr(), N, W, grid,
+        state.xy.ptr(), state.xz.ptr(), state.m.ptr(), ρ.ptr(), N, W, grid,
         bdy.get());
     CUDA_CHECK(cudaGetLastError());
     // compute accelerations using these density values
@@ -82,8 +82,8 @@ void SESPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
     // can be reused for pressure- and non-pressure accelerations
     _compute_accelerations<K><<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(),
         state.xy.ptr(), state.xz.ptr(), state.vx.ptr(), state.vy.ptr(),
-        state.vz.ptr(), ax.ptr(), ay.ptr(), az.ptr(), state.m.ptr(), rho.ptr(),
-        N, W, k, rho_0, nu, h, g, grid, bdy.get());
+        state.vz.ptr(), ax.ptr(), ay.ptr(), az.ptr(), state.m.ptr(), ρ.ptr(), N,
+        W, k, rho_0, nu, h, g, grid, bdy.get());
     CUDA_CHECK(cudaGetLastError());
     // integration needs to happen in a seperate step, since reading and
     // writing positions and velocites without global synchronization would

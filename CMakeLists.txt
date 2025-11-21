@@ -92,14 +92,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glm)
 
-# fetch anyany
-include(FetchContent)
-FetchContent_Declare(
-  AnyAny
-  GIT_REPOSITORY https://github.com/kelbon/AnyAny
-  GIT_TAG        origin/main
-)
-FetchContent_MakeAvailable(AnyAny) 
+# # fetch anyany
+# include(FetchContent)
+# FetchContent_Declare(
+#   AnyAny
+#   GIT_REPOSITORY https://github.com/kelbon/AnyAny
+#   GIT_TAG        origin/main
+# )
+# FetchContent_MakeAvailable(AnyAny) 
 
 # get thrust
 find_package(Thrust REQUIRED)
@@ -203,7 +203,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     nanobench
     Thrust
     tinyobjloader
-    anyanylib
+    # anyanylib
 )
 
 # set compile flags

@@ -3,7 +3,7 @@
 #include <thrust/gather.h>
 
 Particles::Particles(GUI* _gui, float _rho_0)
-    : rho_0(_rho_0)
+    : ρ₀(_rho_0)
     , gui(_gui)
     , vx(_gui->N)
     , vy(_gui->N)
@@ -19,7 +19,7 @@ Particles::Particles(GUI* _gui, float _rho_0)
 };
 
 Particles::Particles(const int N, float _rho_0)
-    : rho_0(_rho_0)
+    : ρ₀(_rho_0)
     , vx(N)
     , vy(N)
     , vz(N)

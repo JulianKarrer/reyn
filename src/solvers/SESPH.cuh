@@ -19,7 +19,7 @@ private:
     /// @brief kinematic viscosity, with units of [L^2/T]
     float nu;
     /// @brief density buffer
-    DeviceBuffer<float>& rho;
+    DeviceBuffer<float>& ρ;
     /// @brief acceleration buffer (x-component)
     DeviceBuffer<float>& ax;
     /// @brief acceleration buffer (y-component)
@@ -42,7 +42,7 @@ public:
         , N(_N)
         , nu(_nu)
         , h(_h)
-        , rho(_rho)
+        , ρ(_rho)
         , ax(_ax)
         , ay(_ay)
         , az(_az)
@@ -51,7 +51,7 @@ public:
         , g(_g)
     {
         // ensure that the buffer can hold all densitites
-        rho.resize(_N);
+        ρ.resize(_N);
         ax.resize(_N);
         ay.resize(_N);
         az.resize(_N);

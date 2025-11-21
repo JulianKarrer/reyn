@@ -11,6 +11,7 @@
 #include <thread>
 #include <atomic>
 #include <optional>
+#include <filesystem>
 
 // forwards declaration to avoid circular depenedency
 class Particles;
@@ -42,8 +43,9 @@ public:
     /// @param target_fps the target maximum frame rate of the GUI, which is
     /// used for throttling in case the simulation runs at a higher rate than
     /// what is required by the GUI
+    /// @param maximize whether or not to maximize the resulting window
     GUI(int init_w, int init_h, bool enable_vsync = false,
-        double target_fps = 60.);
+        double target_fps = 60., const bool maximize = true);
     ~GUI();
 
     /// @brief Method called by the `Particles` class on construction with a
@@ -64,12 +66,12 @@ public:
     /// through the GUI
     /// @param state current `Particles` state to display
     /// @param h fluid particle spacing
-    /// @param rho optional pointer to a `DeviceBuffer` of densities for
+    /// @param ρ optional pointer to a `DeviceBuffer` of densities for
     /// visualization
     /// @return `false` if exit of the application is requested by the user
     /// through the GUI, `true` otherwise
     bool update_or_exit(
-        Particles& state, const float h, DeviceBuffer<float>* rho = nullptr);
+        Particles& state, const float h, DeviceBuffer<float>* ρ = nullptr);
 
     /// @brief Resize the particle positions buffer. Must be called while mapped
     /// for use by CUDA.
@@ -89,6 +91,11 @@ public:
     /// visualize
     /// @param samples `BoundarySamples` to render
     void set_boundary_to_render(const BoundarySamples* samples);
+
+    ///@brief Take a screenshot of the current image displayed by the GUI and
+    /// save it to the specified path
+    ///@param path the path to save the image to
+    void screenshot(const std::filesystem::path& path);
 
     /// @brief Update the projection matrix representing the current camera
     /// frustum, which depends on the fov, aspect ratio, near and far planes.
@@ -111,9 +118,35 @@ public:
     float _scroll_speed { 0.05f };
     ///  @brief Current number of particles
     uint N { 1 };
-
     ///  @brief Current number of boundary particles
     uint N_bdy { 0 };
+
+    // move some camera and visualization settings to the public section so they
+    // can be controlled when automatically creating videos or screenshots
+
+    /// @brief The initial or base radius of the camera around the
+    /// `camera_target` position in spherical cooridnates, before scrolling
+    float camera_radius_init { 4.f };
+    /// @brief The φ-angle of the camera in spherical coordinates
+    float phi { -M_PI / 2.0f };
+    /// @brief The θ-angle of the camera in spherical coordinates
+    float theta { M_PI / 2.0f * 0.5 };
+    /// @brief An offset to the position of the camera
+    glm::vec3 camera_offset { glm::vec3(0., -1., 0.) };
+    /// @brief whether or not to render boundary particles, if present
+    bool show_boundary { false };
+    /// @brief The scalar used for colour mapping is scaled by the inverse of
+    /// this value, to be adjusted intuitively to the maximum value of whatever
+    /// quantity should be visualized.
+    float colour_scale { 10. };
+    /// @brief Which colour map to use, 0 is the default
+    int colour_map_selector { 0 };
+    /// @brief Which attribute to visualize, where 0 is density, everything
+    /// else is velocity
+    int attribute_visualized { 1 };
+
+    ///@brief Request to exit the GUI and application
+    void exit();
 
     // explicitly forbid a copy constructor for safety, since only one GUI
     // instance may ever exist
@@ -143,8 +176,6 @@ private:
     /// @brief whether or not the `set_boundary_to_render` method has been
     /// successfully called and boundary particles may be rendered
     bool has_boundary { false };
-    /// @brief whether or not to render boundary particles, if present
-    bool show_boundary { true };
     /// @brief the RGB colour of the boundary particles
     float bdy_colour[4] { 0.5, 0.5, 0.5, 0.5 };
     /// @brief Relative size of a boundary particle to a fluid particle for
@@ -242,10 +273,6 @@ private:
     /// `DragState`
     DragState right_drag { false, 0., 0. };
 
-    /// @brief The initial or base radius of the camera around the
-    /// `camera_target` position in spherical cooridnates, before scrolling
-    float radius_init { 5.f };
-
     // GLFW resources
     GLFWwindow* window;
 
@@ -266,20 +293,14 @@ private:
     /// pointed
     /// @return view matrix for use in vertex shader as a uniform
     glm::mat4 view;
-    /// @brief The φ-angle of the camera in spherical coordinates
-    float phi { -M_PI / 2.0f };
     /// @brief Current offset to the φ-angleof the camera in spherical
     /// coordinates due to dragging
     float d_phi { 0.f };
-    /// @brief The θ-angle of the camera in spherical coordinates
-    float theta { M_PI / 2.0f };
     /// @brief Current offset to the θ-angle of the camera in spherical
     /// coordinates due to dragging
     float d_theta { 0.f };
     /// @brief The position that the camera is looking directly at
     glm::vec3 camera_target { glm::vec3(0.f) };
-    /// @brief An offset to the position of the camera
-    glm::vec3 camera_offset { glm::vec3(0.f) };
 
     /// @brief Current rightwards contribution to the camera offset due to
     /// dragging
@@ -298,15 +319,6 @@ private:
     /// @brief Unmap the colour buffer from CUDA and enable its use by OpenGL
     /// for rendering
     void unmap_colour_buffer();
-    /// @brief The scalar used for colour mapping is scaled by the inverse of
-    /// this value, to be adjusted intuitively to the maximum value of whatever
-    /// quantity should be visualized.
-    float colour_scale { 5. };
-    /// @brief Which colour map to use, 0 is the default
-    int colour_map_selector { 0 };
-    /// @brief Which attribute to visualize, where 0 is density, everything
-    /// else is velocity
-    int attribute_visualized { 1 };
 
     /// @brief value in \f$[0;100]\f$ that interpolates between diffuse
     /// lambertian and pure ambient / no shading

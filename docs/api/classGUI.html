@@ -198,10 +198,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="structBitmapFileHeader.html">Struct BitmapFileHeader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structBitmapInformationHeader.html">Struct BitmapInformationHeader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceMesh.html">Struct DeviceMesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structGenJitter.html">Struct GenJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
@@ -215,6 +218,7 @@
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Class GUI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classKernel.html">Template Class Kernel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classParticles.html">Class Particles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classPCISPH.html">Template Class PCISPH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classScene.html">Class Scene</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classSESPH.html">Template Class SESPH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classUniformGridBuilder.html">Class UniformGridBuilder</a></li>
@@ -243,75 +247,95 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_gui.cuh.html">Program Listing for File gui.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_kernels.cu.html">File kernels.cu</a><input aria-label="Toggle navigation of File kernels.cu" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_io_bmp_writer.h.html">File io_bmp_writer.h</a><input aria-label="Toggle navigation of File io_bmp_writer.h" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_io_bmp_writer.h.html">Program Listing for File io_bmp_writer.h</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_kernels.cu.html">File kernels.cu</a><input aria-label="Toggle navigation of File kernels.cu" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_kernels.cu.html">Program Listing for File kernels.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_kernels.cuh.html">File kernels.cuh</a><input aria-label="Toggle navigation of File kernels.cuh" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_kernels.cuh.html">File kernels.cuh</a><input aria-label="Toggle navigation of File kernels.cuh" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_kernels.cuh.html">Program Listing for File kernels.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.cpp.html">File loader.cpp</a><input aria-label="Toggle navigation of File loader.cpp" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.cpp.html">File loader.cpp</a><input aria-label="Toggle navigation of File loader.cpp" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_loader.cpp.html">Program Listing for File loader.cpp</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.h.html">File loader.h</a><input aria-label="Toggle navigation of File loader.h" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.h.html">File loader.h</a><input aria-label="Toggle navigation of File loader.h" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_loader.h.html">Program Listing for File loader.h</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_main.cu.html">File main.cu</a><input aria-label="Toggle navigation of File main.cu" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_main.cu.html">File main.cu</a><input aria-label="Toggle navigation of File main.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_main.cu.html">Program Listing for File main.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cu.html">File particles.cu</a><input aria-label="Toggle navigation of File particles.cu" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cu.html">File particles.cu</a><input aria-label="Toggle navigation of File particles.cu" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cu.html">Program Listing for File particles.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cuh.html">File particles.cuh</a><input aria-label="Toggle navigation of File particles.cuh" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cuh.html">File particles.cuh</a><input aria-label="Toggle navigation of File particles.cuh" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cuh.html">Program Listing for File particles.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_PCISPH.cu.html">File PCISPH.cu</a><input aria-label="Toggle navigation of File PCISPH.cu" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_PCISPH.cu.html">Program Listing for File PCISPH.cu</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_PCISPH.cuh.html">File PCISPH.cuh</a><input aria-label="Toggle navigation of File PCISPH.cuh" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_PCISPH.cuh.html">Program Listing for File PCISPH.cuh</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cu.html">Program Listing for File ply_io.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cu.html">Program Listing for File sample_boundary.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cuh.html">Program Listing for File sample_boundary.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_scene.cu.html">Program Listing for File scene.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cuh.html">File scene.cuh</a><input aria-label="Toggle navigation of File scene.cuh" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cuh.html">File scene.cuh</a><input aria-label="Toggle navigation of File scene.cuh" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_scene.cuh.html">Program Listing for File scene.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cu.html">File SESPH.cu</a><input aria-label="Toggle navigation of File SESPH.cu" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cu.html">File SESPH.cu</a><input aria-label="Toggle navigation of File SESPH.cu" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_SESPH.cu.html">Program Listing for File SESPH.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cuh.html">File SESPH.cuh</a><input aria-label="Toggle navigation of File SESPH.cuh" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cuh.html">File SESPH.cuh</a><input aria-label="Toggle navigation of File SESPH.cuh" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_SESPH.cuh.html">Program Listing for File SESPH.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cu.html">File uniformgrid.cu</a><input aria-label="Toggle navigation of File uniformgrid.cu" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_solver.cu.html">File solver.cu</a><input aria-label="Toggle navigation of File solver.cu" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_solver.cu.html">Program Listing for File solver.cu</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_solver.cuh.html">File solver.cuh</a><input aria-label="Toggle navigation of File solver.cuh" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_solver.cuh.html">Program Listing for File solver.cuh</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cu.html">File uniformgrid.cu</a><input aria-label="Toggle navigation of File uniformgrid.cu" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_uniformgrid.cu.html">Program Listing for File uniformgrid.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cuh.html">File uniformgrid.cuh</a><input aria-label="Toggle navigation of File uniformgrid.cuh" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cuh.html">File uniformgrid.cuh</a><input aria-label="Toggle navigation of File uniformgrid.cuh" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_uniformgrid.cuh.html">Program Listing for File uniformgrid.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_vector_helper.cuh.html">File vector_helper.cuh</a><input aria-label="Toggle navigation of File vector_helper.cuh" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_vector_helper.cuh.html">File vector_helper.cuh</a><input aria-label="Toggle navigation of File vector_helper.cuh" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_vector_helper.cuh.html">Program Listing for File vector_helper.cuh</a></li>
 </ul>
 </li>
@@ -378,8 +402,8 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N3GUI3GUIEiibd">
-<span id="_CPPv3N3GUI3GUIEiibd"></span><span id="_CPPv2N3GUI3GUIEiibd"></span><span id="GUI::GUI__i.i.b.double"></span><span class="target" id="classGUI_1a294c9bbc6fc18ccfa825065acdcea0ab"></span><span class="sig-name descname"><span class="n"><span class="pre">GUI</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">init_w</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">init_h</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">enable_vsync</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">target_fps</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">60.</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI3GUIEiibd" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI3GUIEiibdKb">
+<span id="_CPPv3N3GUI3GUIEiibdKb"></span><span id="_CPPv2N3GUI3GUIEiibdKb"></span><span id="GUI::GUI__i.i.b.double.bC"></span><span class="target" id="classGUI_1ab2847e8470b41a404e715641637ca20e"></span><span class="sig-name descname"><span class="n"><span class="pre">GUI</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">init_w</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">init_h</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">enable_vsync</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">target_fps</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">60.</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">maximize</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI3GUIEiibdKb" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Construct a <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a> window using GLFW and OpenGL for display of the particles. </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -390,6 +414,7 @@
 <li><p><strong>on_failure</strong> – a parameter-less void callback to execute when initialization of the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a> fails, such that e.g. MPI can be finalized before exiting the application </p></li>
 <li><p><strong>enable_vsync</strong> – whether or not the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a> framerate should be limited by the V-synced refresh rate </p></li>
 <li><p><strong>target_fps</strong> – the target maximum frame rate of the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a>, which is used for throttling in case the simulation runs at a higher rate than what is required by the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a></p></li>
+<li><p><strong>maximize</strong> – whether or not to maximize the resulting window </p></li>
 </ul>
 </dd>
 </dl>
@@ -412,8 +437,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N3GUI14update_or_exitER9ParticlesKfP12DeviceBufferIfE">
-<span id="_CPPv3N3GUI14update_or_exitER9ParticlesKfP12DeviceBufferIfE"></span><span id="_CPPv2N3GUI14update_or_exitER9ParticlesKfP12DeviceBufferIfE"></span><span id="GUI::update_or_exit__ParticlesR.floatC.DeviceBuffer:float:P"></span><span class="target" id="classGUI_1adcd299a254d3154e21eaf55253d1fa64"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_or_exit</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classParticles.html#_CPPv49Particles" title="Particles"><span class="n"><span class="pre">Particles</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h</span></span>, <a class="reference internal" href="classDeviceBuffer.html#_CPPv4I0E12DeviceBuffer" title="DeviceBuffer"><span class="n"><span class="pre">DeviceBuffer</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">rho</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI14update_or_exitER9ParticlesKfP12DeviceBufferIfE" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp">
+<span class="target" id="classGUI_1aeda1115b55b97926665b960c81ffb22f"></span><span class="sig-name descname"><span class="pre">bool</span> <span class="pre">update_or_exit</span> <span class="pre">(Particles</span> <span class="pre">&amp;state,</span> <span class="pre">const</span> <span class="pre">float</span> <span class="pre">h,</span> <span class="pre">DeviceBuffer&lt;</span> <span class="pre">float</span> <span class="pre">&gt;</span> <span class="pre">*ρ=nullptr)</span></span></dt>
 <dd><p>Update the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a>, rendering particles to screen, handling inputs and updating the UI if enough time has passed since the last update, otherwise exits early. </p>
 <p>Can be used as a <code class="docutils literal notranslate"><span class="pre">while</span></code> condition of the main loop since the return value signals whether the closing of the application has been requested through the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a> </p>
 <dl class="field-list simple">
@@ -421,7 +446,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>state</strong> – current <code class="docutils literal notranslate"><a class="reference internal" href="classParticles.html#classParticles"><span class="std std-ref"><span class="pre">Particles</span></span></a></code> state to display </p></li>
 <li><p><strong>h</strong> – fluid particle spacing </p></li>
-<li><p><strong>rho</strong> – optional pointer to a <code class="docutils literal notranslate"><a class="reference internal" href="classDeviceBuffer.html#classDeviceBuffer"><span class="std std-ref"><span class="pre">DeviceBuffer</span></span></a></code> of densities for visualization </p></li>
+<li><p><strong>ρ</strong> – optional pointer to a <code class="docutils literal notranslate"><a class="reference internal" href="classDeviceBuffer.html#classDeviceBuffer"><span class="std std-ref"><span class="pre">DeviceBuffer</span></span></a></code> of densities for visualization </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -474,6 +499,17 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI10screenshotERKNSt10filesystem4pathE">
+<span id="_CPPv3N3GUI10screenshotERKNSt10filesystem4pathE"></span><span id="_CPPv2N3GUI10screenshotERKNSt10filesystem4pathE"></span><span id="GUI::screenshot__std::filesystem::pathCR"></span><span class="target" id="classGUI_1a5a3fcea80b331fbd682a16f550c42b12"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">screenshot</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">filesystem</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">path</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">path</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI10screenshotERKNSt10filesystem4pathE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Take a screenshot of the current image displayed by the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a> and save it to the specified path. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> – the path to save the image to </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N3GUI12_update_projEv">
 <span id="_CPPv3N3GUI12_update_projEv"></span><span id="_CPPv2N3GUI12_update_projEv"></span><span id="GUI::_update_proj"></span><span class="target" id="classGUI_1ac7c7857271e6984e0ce0bdeb044cbfc5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">_update_proj</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI12_update_projEv" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Update the projection matrix representing the current camera frustum, which depends on the fov, aspect ratio, near and far planes. </p>
@@ -484,6 +520,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N3GUI11update_viewEv">
 <span id="_CPPv3N3GUI11update_viewEv"></span><span id="_CPPv2N3GUI11update_viewEv"></span><span id="GUI::update_view"></span><span class="target" id="classGUI_1a1e51ede269b56f4dd33091527c228b69"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">update_view</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI11update_viewEv" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Recompute and update the <code class="docutils literal notranslate"><span class="pre">view</span></code> matrix, required once initially and every time the camera might have changed. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI4exitEv">
+<span id="_CPPv3N3GUI4exitEv"></span><span id="_CPPv2N3GUI4exitEv"></span><span id="GUI::exit"></span><span class="target" id="classGUI_1a56d7939545d7be6bd75d603f70165fc3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">exit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N3GUI4exitEv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Request to exit the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a> and application. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -533,6 +575,54 @@
 <dt class="sig sig-object cpp" id="_CPPv4N3GUI5N_bdyE">
 <span id="_CPPv3N3GUI5N_bdyE"></span><span id="_CPPv2N3GUI5N_bdyE"></span><span id="GUI::N_bdy__uint"></span><span class="target" id="classGUI_1af69a6575ae86dbf5949b74ad017154db"></span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">N_bdy</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N3GUI5N_bdyE" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Current number of boundary particles. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI18camera_radius_initE">
+<span id="_CPPv3N3GUI18camera_radius_initE"></span><span id="_CPPv2N3GUI18camera_radius_initE"></span><span id="GUI::camera_radius_init__float"></span><span class="target" id="classGUI_1a5b52a32d7647d1aab9081e7734597a28"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">camera_radius_init</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">4.f</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N3GUI18camera_radius_initE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>The initial or base radius of the camera around the <code class="docutils literal notranslate"><span class="pre">camera_target</span></code> position in spherical cooridnates, before scrolling. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI3phiE">
+<span id="_CPPv3N3GUI3phiE"></span><span id="_CPPv2N3GUI3phiE"></span><span id="GUI::phi__float"></span><span class="target" id="classGUI_1a577abbc479ea40f97522f16909497868"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">phi</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="o"><span class="pre">-</span></span><span class="n"><span class="pre">M_PI</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="m"><span class="pre">2.0f</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N3GUI3phiE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>The φ-angle of the camera in spherical coordinates. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI5thetaE">
+<span id="_CPPv3N3GUI5thetaE"></span><span id="_CPPv2N3GUI5thetaE"></span><span id="GUI::theta__float"></span><span class="target" id="classGUI_1aafa2faf9a50d16493347075fb70c824d"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">theta</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="n"><span class="pre">M_PI</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="m"><span class="pre">2.0f</span></span><span class="w"> </span><span class="o"><span class="pre">*</span></span><span class="w"> </span><span class="m"><span class="pre">0.5</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N3GUI5thetaE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>The θ-angle of the camera in spherical coordinates. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI13camera_offsetE">
+<span id="_CPPv3N3GUI13camera_offsetE"></span><span id="_CPPv2N3GUI13camera_offsetE"></span><span id="GUI::camera_offset__glm::vec3"></span><span class="target" id="classGUI_1aff25740c3162f65fdc82c837bc53d051"></span><span class="n"><span class="pre">glm</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vec3</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">camera_offset</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="n"><span class="pre">glm</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vec3</span></span><span class="p"><span class="pre">(</span></span><span class="m"><span class="pre">0.</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1.</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0.</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N3GUI13camera_offsetE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>An offset to the position of the camera. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI13show_boundaryE">
+<span id="_CPPv3N3GUI13show_boundaryE"></span><span id="_CPPv2N3GUI13show_boundaryE"></span><span id="GUI::show_boundary__b"></span><span class="target" id="classGUI_1a372d613084feb0f8ae0daf80852a65ad"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">show_boundary</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">false</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N3GUI13show_boundaryE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>whether or not to render boundary particles, if present </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI12colour_scaleE">
+<span id="_CPPv3N3GUI12colour_scaleE"></span><span id="_CPPv2N3GUI12colour_scaleE"></span><span id="GUI::colour_scale__float"></span><span class="target" id="classGUI_1a0d666c15ac60156d3b159295a6f38098"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">colour_scale</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">10.</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N3GUI12colour_scaleE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>The scalar used for colour mapping is scaled by the inverse of this value, to be adjusted intuitively to the maximum value of whatever quantity should be visualized. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI19colour_map_selectorE">
+<span id="_CPPv3N3GUI19colour_map_selectorE"></span><span id="_CPPv2N3GUI19colour_map_selectorE"></span><span id="GUI::colour_map_selector__i"></span><span class="target" id="classGUI_1aad439250666f9d545445df05d8cacfdd"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">colour_map_selector</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N3GUI19colour_map_selectorE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Which colour map to use, 0 is the default. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N3GUI20attribute_visualizedE">
+<span id="_CPPv3N3GUI20attribute_visualizedE"></span><span id="_CPPv2N3GUI20attribute_visualizedE"></span><span id="GUI::attribute_visualized__i"></span><span class="target" id="classGUI_1ac60338d1d1bccc1627074a8532347279"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">attribute_visualized</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N3GUI20attribute_visualizedE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Which attribute to visualize, where 0 is density, everything else is velocity. </p>
 </dd></dl>
 
 </div>
@@ -603,15 +693,16 @@
 </li>
 <li><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
 <li><a class="reference internal" href="#_CPPv43GUI"><code class="docutils literal notranslate"><span class="pre">GUI</span></code></a><ul>
-<li><a class="reference internal" href="#_CPPv4N3GUI3GUIEiibd"><code class="docutils literal notranslate"><span class="pre">GUI()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI3GUIEiibdKb"><code class="docutils literal notranslate"><span class="pre">GUI()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUID0Ev"><code class="docutils literal notranslate"><span class="pre">~GUI()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI18initialize_buffersER9Particles"><code class="docutils literal notranslate"><span class="pre">initialize_buffers()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N3GUI14update_or_exitER9ParticlesKfP12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">update_or_exit()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI21resize_mapped_buffersE4uintR9Particles"><code class="docutils literal notranslate"><span class="pre">resize_mapped_buffers()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI20resize_pos_componentE4uintR9Particlesi"><code class="docutils literal notranslate"><span class="pre">resize_pos_component()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI22set_boundary_to_renderEPK15BoundarySamples"><code class="docutils literal notranslate"><span class="pre">set_boundary_to_render()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI10screenshotERKNSt10filesystem4pathE"><code class="docutils literal notranslate"><span class="pre">screenshot()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI12_update_projEv"><code class="docutils literal notranslate"><span class="pre">_update_proj()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI11update_viewEv"><code class="docutils literal notranslate"><span class="pre">update_view()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI4exitEv"><code class="docutils literal notranslate"><span class="pre">exit()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI3GUIERK3GUI"><code class="docutils literal notranslate"><span class="pre">GUI()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUIaSERK3GUI"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI13_window_widthE"><code class="docutils literal notranslate"><span class="pre">_window_width</span></code></a></li>
@@ -620,6 +711,14 @@
 <li><a class="reference internal" href="#_CPPv4N3GUI13_scroll_speedE"><code class="docutils literal notranslate"><span class="pre">_scroll_speed</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI1NE"><code class="docutils literal notranslate"><span class="pre">N</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N3GUI5N_bdyE"><code class="docutils literal notranslate"><span class="pre">N_bdy</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI18camera_radius_initE"><code class="docutils literal notranslate"><span class="pre">camera_radius_init</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI3phiE"><code class="docutils literal notranslate"><span class="pre">phi</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI5thetaE"><code class="docutils literal notranslate"><span class="pre">theta</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI13camera_offsetE"><code class="docutils literal notranslate"><span class="pre">camera_offset</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI13show_boundaryE"><code class="docutils literal notranslate"><span class="pre">show_boundary</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI12colour_scaleE"><code class="docutils literal notranslate"><span class="pre">colour_scale</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI19colour_map_selectorE"><code class="docutils literal notranslate"><span class="pre">colour_map_selector</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N3GUI20attribute_visualizedE"><code class="docutils literal notranslate"><span class="pre">attribute_visualized</span></code></a></li>
 </ul>
 </li>
 </ul>

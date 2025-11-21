@@ -7,6 +7,12 @@ imgui.ini
 *.mkv
 *.temp
 *.log
-builddocs
+
+builddocs/_build
+builddocs/api
+builddocs/doxygen-output
+!builddocs/_staticc/vid.mp4
+
 _sources
 !.nojekyll
+out/*

@@ -2,7 +2,6 @@
 #include "particles.cuh"
 #include "scene/scene.cuh"
 #include "kernels.cuh"
-// #include "solvers/SESPH.cuh"
 #include "solvers/PCISPH.cuh"
 #include "datastructure/uniformgrid.cuh"
 #include "vector_helper.cuh"
@@ -27,8 +26,8 @@ int main()
         DeviceBuffer<float> tmp3(1);
         DeviceBuffer<float> tmp4(1);
 
-        Scene scene("scenes/cube.obj", 100000, v3(-1.), v3(0.), 1., state, tmp1,
-            3., 1.);
+        Scene scene("scenes/cube.obj", 1000000, v3(-1.), v3(0.), 1., state,
+            tmp1, 3., 1.);
         gui.set_boundary_to_render(&scene.bdy);
         std::cout << "scene initialized, h=" << scene.h << std::endl;
 
@@ -37,7 +36,7 @@ int main()
         double time { 0. };
 
         auto solver { PCISPH<B3, Resort::yes>(
-            W, N, 0.001f, scene.h, scene.rho_0, tmp1, tmp2, tmp3, tmp4) };
+            W, N, 0.001f, scene.h, scene.ρ₀, tmp1, tmp2, tmp3, tmp4) };
         std::cout << "solver initialized" << std::endl;
 
         std::cout << "fluid avg mass " << state.m.sum() / (float)state.m.size()
@@ -48,7 +47,7 @@ int main()
         while (gui.update_or_exit(state, scene.h, &tmp1)) {
             // const float dt { cfl_time_step(
             //     0.1, scene.h, state, v3(0., -9.81, 0.)) };
-            const float dt { 0.00005 };
+            const float dt { 0.0005 };
 
             // get an updated acceleration datastructure
             const auto grid { scene.get_grid(state, tmp1) };

@@ -16,7 +16,7 @@ class GUI;
 ///
 /// - masses
 ///
-/// - some useful constants such as rest density `rho_0` and particle spacing
+/// - some useful constants such as rest density `ρ₀` and particle spacing
 /// `h`
 ///
 /// Other properties such as densities, accelerations etc. should be owned,
@@ -31,9 +31,9 @@ public:
     DeviceBuffer<float> vy;
     DeviceBuffer<float> vz;
     DeviceBuffer<float> m;
-    float rho_0;
+    float ρ₀;
 
-    Particles(const int N, float rho_0);
+    Particles(const int N, float ρ₀);
     Particles(GUI* _gui, float _rho_0);
 
     /// @brief Resize all buffers. This leaves the positions buffer

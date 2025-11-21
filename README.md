@@ -5,6 +5,11 @@
     <img src="./res/icon.png" width=300 height = 300/>
 </p>
 
+## AUTO-GENERATED VIDEO OF CURRENT STATE
+<p align=center style="margin-top:50px;">
+    <img src="./builddocs/_staticc/vid.gif" width=900 />
+</p>
+
 ## FEATURES
 - Zero-Copy GUI thanks to CUDA <-> OpenGL buffer sharing, throttled to not impact simulation performance
 - Interchangable kernel functions (Wendland C2, C6, Cubic B-Spline, Double Cosine, ...) with CRTP static polymorphism for maximum runtime performance and ergonomics of adding new functions
@@ -25,9 +30,9 @@
 - [x] Add boundary sampling and de-/serialization
 - [x] Add boundary handling [Akinci et al. 2012]
 - [x] Add adaptive time step size calculation using efficient reductions
+- [x] Implement PICSPH
 - [ ] Add fluid volume sampling and de-/serialization
 - [ ] Add settings management with de-/serialization and expose solver and scene options to GUI and CLI
-- [ ] Implement PICSPH
 - [ ] Implement IISPH
 - [ ] Optimize kernel launch configurations
 - [ ] Add better logging with configurable verbosity

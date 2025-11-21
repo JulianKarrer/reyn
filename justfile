@@ -59,7 +59,13 @@ docs:
     rm -rf {{DOCS_DIR}}/doxygen-output
 
     # run benchmarks (cmake setup must be re-run with DBENCH)
-    just run-benches
+    # just run-benches
+
+    ffmpeg -framerate 30 -pattern_type glob -i 'out/*.bmp' -vf "scale=1280:-2,pad=iw:ih+mod(ih\,2)" -c:v libx264 -preset veryslow -an -movflags +faststart -profile:v high -crf 18 -pix_fmt yuv420p builddocs/_staticc/vid.mp4 -y
+
+    ffmpeg -v warning -i builddocs/_staticc/vid.mp4 -vf "fps=25,scale=900:-1:flags=lanczos,palettegen=stats_mode=diff" -y /tmp/palette_small.png
+    ffmpeg -v warning -i builddocs/_staticc/vid.mp4 -i /tmp/palette_small.png -lavfi "fps=25,scale=900:-1:flags=lanczos [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=3:diff_mode=rectangle" -y  builddocs/_staticc/vid.gif
+
 
     # generate markdown from benchmark results
     mkdir -p {{DOCS_DIR}}/_staticc/benchmarks
@@ -76,6 +82,7 @@ docs:
 
     # replace relative URLs in markdown
     sed -i 's@<img src="./res/icon.png" width=300 height = 300/>@ @g' ./builddocs/_build/html/index.html
+    sed -i 's@<img src="./builddocs/_staticc/vid.gif" width=900 />@<video width="900" autoplay muted loop controls><source src="./_static/vid.mp4" type="video/mp4"></video>@g' ./builddocs/_build/html/index.html
 
     # move the final html output to the docs directory for display on github pages
     mv builddocs/_build/html/* docs

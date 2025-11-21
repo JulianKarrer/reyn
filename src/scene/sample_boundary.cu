@@ -166,12 +166,12 @@ static float _hex_plane_rest_density(
     const float3 r_axis { h_bdy * v3(.5, sqrt(3) * .5, 0.) };
     // these two span a lattice where every combination of q,r in the range
     // gives a unique point
-    float rho_0 { 0. };
+    float ρ₀ { 0. };
     for (int q { -range }; q <= range; ++q)
         for (int r { -range }; r <= range; ++r) {
-            rho_0 += W(q * q_axis + r * r_axis);
+            ρ₀ += W(q * q_axis + r * r_axis);
         }
-    return rho_0;
+    return ρ₀;
 };
 
 void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
@@ -198,8 +198,8 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     const B3 W(2.f * h_bdy);
     // compute the resting number density for perfect hexagonal sampling of
     // the plane, given the kernel function and smoothing radius
-    const float rho_0 { _hex_plane_rest_density(h_bdy, W) };
-    const float rho_0_sq_inv { 1.f / (rho_0 * rho_0) };
+    const float ρ₀ { _hex_plane_rest_density(h_bdy, W) };
+    const float rho_0_sq_inv { 1.f / (ρ₀ * ρ₀) };
 
     for (uint i { 0 }; i < relaxation_iters; ++i) {
         // build an acceleration datastructure to quickly find neighbours of
@@ -318,13 +318,13 @@ template <Resort R>
 __global__ void _refine_masses(const uint N, const B3 W,
     const UniformGrid<R> grid, const float* __restrict__ xs,
     const float* __restrict__ ys, const float* __restrict__ zs,
-    float* __restrict__ m, float rho_0)
+    float* __restrict__ m, float ρ₀)
 {
     const auto i { blockIdx.x * blockDim.x + threadIdx.x };
     if (i >= N)
         return;
     const float3 x_i { v3(i, xs, ys, zs) };
-    m[i] = rho_0 * m[i]
+    m[i] = ρ₀ * m[i]
         / grid.ff_nbrs(x_i, xs, ys, zs,
             [W, m] __device__(auto j, const float3 x_ij, auto _x_ij_l2) {
                 return m[j] * W(x_ij);
@@ -332,7 +332,7 @@ __global__ void _refine_masses(const uint N, const B3 W,
 };
 
 void calculate_boundary_masses(BoundarySamples& bdy, const float h,
-    const float h_bdy, const float rho_0, const uint mass_refinement_iterations)
+    const float h_bdy, const float ρ₀, const uint mass_refinement_iterations)
 {
     // now initialize masses
     const B3 W(2.f * h);
@@ -358,7 +358,7 @@ void calculate_boundary_masses(BoundarySamples& bdy, const float h,
     }
     for (uint i { 0 }; i < mass_refinement_iterations; ++i) {
         _refine_masses<<<BLOCKS(N_bdy), BLOCK_SIZE>>>(N_bdy, W, bdy.grid,
-            bdy.xs.ptr(), bdy.ys.ptr(), bdy.zs.ptr(), bdy.m.ptr(), rho_0);
+            bdy.xs.ptr(), bdy.ys.ptr(), bdy.zs.ptr(), bdy.m.ptr(), ρ₀);
         std::cout << "avg mass " << bdy.m.sum() / (float)bdy.m.size()
                   << std::endl;
     };
@@ -469,10 +469,10 @@ void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     return;
 }
 
-BoundarySamples sample_mesh(const Mesh mesh_host, const float h,
-    const float rho_0, const float oversampling_factor,
-    std::ostream* debug_stream, const int relaxation_iters,
-    const float relaxation_factor, const uint mass_refinement_iterations)
+BoundarySamples sample_mesh(const Mesh mesh_host, const float h, const float ρ₀,
+    const float oversampling_factor, std::ostream* debug_stream,
+    const int relaxation_iters, const float relaxation_factor,
+    const uint mass_refinement_iterations)
 {
     // move vertex data and faces to the GPU by constructing a `DeviceMesh`
     const DeviceMesh mesh { DeviceMesh::from(mesh_host) };
@@ -524,8 +524,7 @@ BoundarySamples sample_mesh(const Mesh mesh_host, const float h,
 
     // 3: calculate boundary masses
     std::cout << "calculating bdy masses" << std::endl;
-    calculate_boundary_masses(
-        result, h, h_bdy, rho_0, mass_refinement_iterations);
+    calculate_boundary_masses(result, h, h_bdy, ρ₀, mass_refinement_iterations);
 
     CUDA_CHECK(cudaDeviceSynchronize());
     return result;

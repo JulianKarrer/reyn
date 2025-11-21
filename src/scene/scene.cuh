@@ -47,7 +47,7 @@ struct BoundarySamples {
 class Scene {
 public:
     /// @brief Rest density of the fluid
-    float rho_0;
+    float ρ₀;
     /// @brief particle spacing h
     const float h;
     /// @brief Number of dynamic particles in the scene
@@ -71,22 +71,25 @@ private:
 public:
     /// @brief Construct a scene with a box filled with fluid at as close as
     /// possible to the desired number of particles within the bounding box
-    /// defined by `min` and `max` and at rest density `rho_0`.
+    /// defined by `min` and `max` and at rest density `ρ₀`.
     /// @param path path to the OBJ file to sample the boundary with
     /// @param N_desired desired number of dynamic particles
     /// @param min lower bound of the box of dynamic particles along each axis
     /// @param max upper bound of the box of dynamic particles along each axis
-    /// @param rho_0 rest density
+    /// @param ρ₀ rest density
     /// @param state current state of the particles
     /// @param bdy_oversampling_factor ratio of spacing of fluid samples to
     /// spacing of boundary samples
     /// @param cull_bdy_radius radius in units of fluid particle spacing `h`
     /// around any boundary particle in which fluid particles should be culled
     /// to prevent intersections
+    /// @param jitter_stddev standard deviation of normal distribution for
+    /// jittering initial fluid positions to reduce initial aliasing, in units
+    /// of particle spacing h
     Scene(const std::filesystem::path& path, const uint N_desired,
-        const float3 min, const float3 max, const float rho_0, Particles& state,
+        const float3 min, const float3 max, const float ρ₀, Particles& state,
         DeviceBuffer<float>& tmp, const float bdy_oversampling_factor = 2.f,
-        const float cull_bdy_radius = 1.f);
+        const float cull_bdy_radius = 1.f, const float jitter_stddev = 0.01);
 
     /// @brief Strictly enforce the simulation bounds set at scene creation,
     /// clamping all particle positions in the argument state to scenes bounding
