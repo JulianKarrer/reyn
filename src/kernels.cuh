@@ -50,11 +50,7 @@ public:
 
     __host__ __device__ __forceinline__ float3 nabla(float3 dx) const
     {
-        // compute dot product with itself (squared distance) using fused
-        // multiply add intrinsics
-        const float len_2 { dot(dx, dx) };
-        // take a fast square root
-        const float len { sqrtf(len_2) };
+        const float len { norm(dx) };
         const float one_over_len { 1.f / len };
         // then use isfinite to check for infinities and NaNs, in which case the
         // distance was zero this incurrs one conditional

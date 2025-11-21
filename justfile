@@ -34,6 +34,7 @@ run-tests:
 # remove the build folder
 clean:
     rm -rf build
+    rm -rf ~/.cache/sccache
 
 # Format all code using Clang
 format:

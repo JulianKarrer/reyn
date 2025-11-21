@@ -156,7 +156,7 @@ private:
     std::atomic<bool> exit_requested { ATOMIC_VAR_INIT(false) };
     /// @brief Whether or not the simulation should be paused, stalling in the
     /// GUI update instead
-    bool stopped { true };
+    bool stopped { false };
     /// @brief Whether the GUI should run at the maximum frame rate,
     /// unthrottled. This is generally not recommended for computationally
     /// undemanding scenes since the simulation and rendering will essentially
@@ -301,12 +301,12 @@ private:
     /// @brief The scalar used for colour mapping is scaled by the inverse of
     /// this value, to be adjusted intuitively to the maximum value of whatever
     /// quantity should be visualized.
-    float colour_scale { 1. };
+    float colour_scale { 5. };
     /// @brief Which colour map to use, 0 is the default
     int colour_map_selector { 0 };
     /// @brief Which attribute to visualize, where 0 is density, everything
     /// else is velocity
-    int attribute_visualized { 0 };
+    int attribute_visualized { 1 };
 
     /// @brief value in \f$[0;100]\f$ that interpolates between diffuse
     /// lambertian and pure ambient / no shading

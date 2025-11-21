@@ -39,14 +39,6 @@ set(CMAKE_CUDA_ARCHITECTURES 89)
 # fetch content
 include(FetchContent)
 
-# fetch GLFW 3.4
-FetchContent_Declare(
-    glfw
-    GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG "3.4"
-)
-FetchContent_MakeAvailable(glfw)
-
 # set up GLAD
 add_library(glad STATIC deps/glad/src/glad.c)
 target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/deps/glad/include)
@@ -54,6 +46,14 @@ target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/deps/glad/include)
 # require OpenGL
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
+
+# fetch GLFW 3.4
+FetchContent_Declare(
+    glfw
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG 7b6aead
+)
+FetchContent_MakeAvailable(glfw)
 
 # fetch ImGUI
 FetchContent_Populate(imgui
@@ -91,6 +91,15 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(glm)
+
+# fetch anyany
+include(FetchContent)
+FetchContent_Declare(
+  AnyAny
+  GIT_REPOSITORY https://github.com/kelbon/AnyAny
+  GIT_TAG        origin/main
+)
+FetchContent_MakeAvailable(AnyAny) 
 
 # get thrust
 find_package(Thrust REQUIRED)
@@ -132,6 +141,8 @@ set(REYN_SOURCES
     ${SRC_DIR}/scene/sample_boundary.cu
     ${SRC_DIR}/kernels.cu
     ${SRC_DIR}/solvers/SESPH.cu
+    ${SRC_DIR}/solvers/PCISPH.cu
+    ${SRC_DIR}/solvers/solver.cu
     ${SRC_DIR}/datastructure/uniformgrid.cu
     ${SRC_DIR}/timestep/cfl.cu
 )
@@ -147,6 +158,8 @@ set(REYN_HEADERS
     ${SRC_DIR}/vector_helper.cuh
     ${SRC_DIR}/kernels.cuh
     ${SRC_DIR}/solvers/SESPH.cuh
+    ${SRC_DIR}/solvers/PCISPH.cuh
+    ${SRC_DIR}/solvers/solver.cuh
     ${SRC_DIR}/datastructure/uniformgrid.cuh
     ${SRC_DIR}/timestep/cfl.cuh
 )
@@ -190,6 +203,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     nanobench
     Thrust
     tinyobjloader
+    anyanylib
 )
 
 # set compile flags

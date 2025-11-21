@@ -208,6 +208,8 @@ public:
         }
     }
 
+    /// @brief Reduce and return the minimum value of the buffer
+    /// @return minimum element
     T min() const
     {
         if (ext.active) {
@@ -218,6 +220,8 @@ public:
         }
     }
 
+    ///@brief Reduce and return the maximum value of the buffer
+    ///@return maximum element
     T max() const
     {
         if (ext.active) {
@@ -228,6 +232,8 @@ public:
         }
     }
 
+    ///@brief Reduce the sum of the elements in the buffer
+    ///@return sum of elements
     T sum() const
     {
         if (ext.active) {
@@ -235,6 +241,19 @@ public:
                                      "externally managed DeviceBuffer");
         } else {
             return thrust::reduce(get().begin(), get().end());
+        }
+    }
+
+    ///@brief Average value of the elements in the buffer - cast to float if not
+    /// already
+    ///@return average value of elements
+    float avg() const
+    {
+        if (ext.active) {
+            throw std::runtime_error("avg operation is not supported on "
+                                     "externally managed DeviceBuffer");
+        } else {
+            return (float)sum() / ((float)size());
         }
     }
 

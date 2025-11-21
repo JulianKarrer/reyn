@@ -10,7 +10,6 @@
 
 template <IsKernel K, Resort R> class SESPH {
 private:
-public:
     /// @brief Kernel function
     const K W;
     /// @brief particle spacing h
@@ -27,16 +26,18 @@ public:
     DeviceBuffer<float>& ay;
     /// @brief acceleration buffer (z-component)
     DeviceBuffer<float>& az;
-    /// @brief Stiffness coefficient for the state equation
-    float k { 500. };
     /// @brief Gravitational acceleration
-    float3 g { v3(0.f, -9.81f, 0.f) };
+    float3 g;
     /// @brief rest density
     float rho_0;
+    /// @brief stiffness coefficient k
+    double k;
 
+public:
     SESPH(K _W, uint _N, float _nu, const float _h, const float _rho_0,
         DeviceBuffer<float>& _rho, DeviceBuffer<float>& _ax,
-        DeviceBuffer<float>& _ay, DeviceBuffer<float>& _az)
+        DeviceBuffer<float>& _ay, DeviceBuffer<float>& _az,
+        float3 _g = v3(0.f, -9.81f, 0.f))
         : W(_W)
         , N(_N)
         , nu(_nu)
@@ -46,6 +47,8 @@ public:
         , ay(_ay)
         , az(_az)
         , rho_0(_rho_0)
+        , k(500.)
+        , g(_g)
     {
         // ensure that the buffer can hold all densitites
         rho.resize(_N);
@@ -53,10 +56,11 @@ public:
         ay.resize(_N);
         az.resize(_N);
     };
-    ~SESPH() {};
 
     void step(Particles& state, const UniformGrid<R> grid,
         const BoundarySamples& bdy, const float dt);
+
+    ~SESPH() {};
 
     /// disallow copying
     SESPH(const SESPH&) = delete;
