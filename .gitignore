@@ -12,6 +12,7 @@ builddocs/_build
 builddocs/api
 builddocs/doxygen-output
 !builddocs/_staticc/vid.mp4
+!docs/_static/vid.mp4
 
 _sources
 !.nojekyll
