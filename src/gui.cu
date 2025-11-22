@@ -287,7 +287,8 @@ static void _opengl_check_compile(GLuint shader, const char* message)
     if (!success) {
         char log[512];
         glGetShaderInfoLog(shader, 512, NULL, log);
-        std::cout << message << "\n" << log << std::endl;
+        Log::Error("OpenGL shader compilation failed! Error log:\n\t{}\n{}",
+            message, log);
     }
 }
 /// @brief OpenGL convenience function for checking the success of program
@@ -302,7 +303,8 @@ static void _opengl_check_link(GLuint program, const char* message)
     if (!success) {
         char log[512];
         glGetProgramInfoLog(program, 512, NULL, log);
-        std::cout << message << "\n" << log << std::endl;
+        Log::Error("OpenGL program linking failed! Error log:\n\t{}\n{}",
+            message, log);
     }
 }
 
@@ -568,6 +570,7 @@ GUI::GUI(
             std::this_thread::sleep_for(wait_time);
         }
     });
+    Log::Success("GUI initialized");
 }
 
 void GUI::create_and_register_buffers(uint N)

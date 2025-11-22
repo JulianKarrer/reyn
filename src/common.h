@@ -6,6 +6,7 @@
 #include <cassert>
 #include <format> // for std::format
 #include <stdexcept> // for std::runtime_error
+#include "log.h"
 
 #define BLOCK_SIZE 128
 #define BLOCKS(N)                                                              \

@@ -33,10 +33,10 @@
 - [x] Add adaptive (λ · Δt_CFL) time step size calculation using efficient reductions
 - [x] Implement PICSPH
 - [x] Add screenshot functionality -> automatic generation of video for docs
+- [x] Add better logging
 - [ ] Add fluid volume sampling and de-/serialization
 - [ ] Add settings management with de-/serialization and expose solver and scene options to GUI and CLI
 - [ ] Implement IISPH
 - [ ] Optimize kernel launch configurations
-- [ ] Add better logging with configurable verbosity
 - [ ] Add plots to UI
 - [ ] Use type aliases for safety (e.g. separating vectors and positions) and flexibility (change float precision, smaller index types for smaller scenes etc.)

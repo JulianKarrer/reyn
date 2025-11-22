@@ -55,6 +55,7 @@ public:
         ax.resize(_N);
         ay.resize(_N);
         az.resize(_N);
+        Log::Success("SESPH Solver initialized");
     };
 
     void step(Particles& state, const UniformGrid<R> grid,

@@ -422,10 +422,9 @@ void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     const uint bdy_count { (uint)(ceil(total_area / bdy_particle_area)) };
     const double bin_size { total_area / (double)(bdy_count) };
 
-    std::cout << std::format(
-        "total area: {}, h_bdy: {}, bdy_count: {}, face_count: {}", total_area,
-        h_bdy, bdy_count, N_face)
-              << std::endl;
+    Log::Info("BOUNDARY STATS\ttotal area: {}\th_bdy: {}\tbdy_count: "
+              "{}\tface_count: {}",
+        total_area, h_bdy, bdy_count, N_face);
 
     // resize buffers for sample coordinates
     xs.resize(bdy_count);
@@ -439,7 +438,6 @@ void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
         bdy_count, states, 1614201312);
     CUDA_CHECK(cudaDeviceSynchronize());
     CUDA_CHECK(cudaGetLastError());
-    std::cout << "curand initialized" << std::endl;
 
     // uniformly randomly sample the mesh
     if (tri_ids) {
@@ -464,7 +462,7 @@ void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
 
     // clean up cuRand states
     cudaFree(states);
-    std::cout << "uniformly sampled" << std::endl;
+    Log::Success("Uniform boundary sampling completed.");
 
     return;
 }
@@ -493,7 +491,7 @@ BoundarySamples sample_mesh(const Mesh mesh_host, const float h, const float Ïâ
         uniform_sample_mesh(xs, ys, zs, mesh, h, oversampling_factor, &tri_ids);
 
         // 2: optionally relax the sampling
-        std::cout << "relaxing sampling" << std::endl;
+        Log::Info("Relaxing boundary sampling");
         relax_sampling(xs, ys, zs, mesh, h_bdy, tri_ids, debug_stream,
             relaxation_factor, relaxation_iters);
     };
@@ -502,15 +500,11 @@ BoundarySamples sample_mesh(const Mesh mesh_host, const float h, const float Ïâ
     // now reordering is allowed
     DeviceBuffer<float> m(xs.size());
     DeviceBuffer<uint> prefix(1);
-    const float3 bound_min { v3(xs.min(), ys.min(), zs.min()) - v3(h) };
-    const float3 bound_max { v3(xs.max(), ys.max(), zs.max()) + v3(h) };
-
-    std::cout << "in sample_mesh bound min x =" << bound_min.x << std::endl;
-    std::cout << "in sample_mesh bound min y =" << bound_min.y << std::endl;
-    std::cout << "in sample_mesh bound min z =" << bound_min.z << std::endl;
-    std::cout << "in sample_mesh bound max x =" << bound_max.x << std::endl;
-    std::cout << "in sample_mesh bound max y =" << bound_max.y << std::endl;
-    std::cout << "in sample_mesh bound max z =" << bound_max.z << std::endl;
+    const float3 bound_min { v3(xs.min(), ys.min(), zs.min()) };
+    const float3 bound_max { v3(xs.max(), ys.max(), zs.max()) };
+    Log::Info("`sample_mesh` reports bounds:\t[{};{}] x [{};{}] x [{};{}]",
+        bound_min.x, bound_min.y, bound_min.z, bound_max.x, bound_max.y,
+        bound_max.z);
 
     UniformGridBuilder grid_builder { UniformGridBuilder(
         bound_min, bound_max, 2.f * h) };
@@ -523,7 +517,7 @@ BoundarySamples sample_mesh(const Mesh mesh_host, const float h, const float Ïâ
         std::move(m), std::move(prefix), grid, bound_min, bound_max };
 
     // 3: calculate boundary masses
-    std::cout << "calculating bdy masses" << std::endl;
+    Log::Info("Calculating boundary masses");
     calculate_boundary_masses(result, h, h_bdy, Ïâ‚€, mass_refinement_iterations);
 
     CUDA_CHECK(cudaDeviceSynchronize());

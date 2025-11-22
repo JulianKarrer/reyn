@@ -2,6 +2,7 @@
 #include <fstream>
 #include <bit>
 #include <thrust/host_vector.h>
+#include "log.h"
 
 void save_to_ply(const std::filesystem::path& path,
     const DeviceBuffer<float>& xs, const DeviceBuffer<float>& ys,
@@ -50,7 +51,6 @@ end_header
     }
     // close the file
     out.close();
-    std::cout << std::format("wrote {} vertices to {} using {} endian floats",
-        N, path.c_str(), endianess)
-              << std::endl;
+    Log::Success("`{}`: Wrote {} vertices to {} using {} endian floats",
+        __func__, N, path.c_str(), endianess);
 };

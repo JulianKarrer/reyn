@@ -77,11 +77,12 @@ private:
         }
         /// || Σ ∇W_ij ||²
         const double sq_of_sum { (double)dot(sumdW, sumdW) };
-        std::cout << sum_of_sq << "|" << sq_of_sum << std::endl;
         // m / ρ₀ = V₀ = (h³ * ρ₀)/ρ₀ = h³
         const double V₀ { h * h * h };
         const double beta { 2. * V₀ * V₀ };
-        std::cout << beta << std::endl;
+        Log::Info("PCISPH template particle stats:\n\t| Σ ∇W_ij ||² = {}\n\tΣ( "
+                  "|| ∇W_ij ||²) = {}\n\t β = {}",
+            sq_of_sum, sum_of_sq, beta);
         return (float)(1. / (beta * (sq_of_sum + sum_of_sq)));
     }
 
@@ -105,6 +106,7 @@ public:
         ax.resize(_N);
         ay.resize(_N);
         az.resize(_N);
+        Log::Success("PCISPH Solver initialized");
     };
 
     void step(Particles& state, const UniformGrid<R> grid,

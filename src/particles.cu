@@ -16,6 +16,7 @@ Particles::Particles(GUI* _gui, float _rho_0)
     // now that a state exists, tell the GUI to call `set_x` with the
     // appropriate pointer to a CUDA mapped position VBO
     _gui->initialize_buffers(*this);
+    Log::Success("State allocated, `Particles` initialized");
 };
 
 Particles::Particles(const int N, float _rho_0)
@@ -26,7 +27,10 @@ Particles::Particles(const int N, float _rho_0)
     , m(N)
     , xx(N)
     , xy(N)
-    , xz(N) {};
+    , xz(N)
+{
+    Log::Success("State allocated, `Particles` initialized");
+};
 
 void Particles::resize_uninit(uint N)
 {

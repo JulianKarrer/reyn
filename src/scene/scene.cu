@@ -140,8 +140,10 @@ Scene::Scene(const std::filesystem::path& path, const uint N_desired,
         stencil.get().begin(), ::cuda::std::identity {}) };
     uint new_N = thrust::distance(first, new_end);
 
-    std::cout << N << std::endl;
-    std::cout << new_N << std::endl;
+    if (new_N != N) {
+        Log::Warn("Culled particles closer than {}h to boundary: {} -> {}",
+            cull_bdy_radius, N, new_N);
+    }
 
     // resize tmp buffer to new size to save each component of externally
     // managed memory before resizing it
@@ -166,6 +168,9 @@ Scene::Scene(const std::filesystem::path& path, const uint N_desired,
 
     // block and wait for operation to complete
     CUDA_CHECK(cudaDeviceSynchronize());
+
+    Log::Success(
+        "Scene initialized:\tN={}, Nbdy={}, h={}", N, bdy.xs.size(), h);
 }
 
 __global__ void _hard_enforce_bounds(const float3 bound_min,
