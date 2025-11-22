@@ -44,7 +44,7 @@ private:
     const double δΔt²;
     /// @brief maximum accepted average density as a factor of rest density
     /// ρ₀
-    const float eta_rho_max { 1.01 };
+    const float eta_rho_max { 1.001 };
     /// @brief minimum iteration count
     const uint min_iter { 5 };
 

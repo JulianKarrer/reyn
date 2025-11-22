@@ -1069,6 +1069,7 @@ void GUI::imgui_draw()
 
     // start of contents ~~~~~
     ImGui::Begin("SETTINGS");
+    ImGui::Text("N=%u Nbdy=%u", N, N_bdy);
     if (ImGui::Button("Exit")) {
         exit_requested.store(true);
         stopped = false;
@@ -1100,9 +1101,10 @@ void GUI::imgui_draw()
             "shading strength", &shading_strength, 0.f, 100.f, "%.0f%");
         ImGui::InputFloat(
             "colour mapping max", &colour_scale, 1.f, 5.f, "%.0f");
-        ImGui::Combo("colour map", &colour_map_selector, "Spectral\0CB-RdYiBu");
         ImGui::Combo(
-            "attribute visualized", &attribute_visualized, "Density\0Velocity");
+            "colour map", &colour_map_selector, "Spectral\0CB-RdYiBu\0");
+        ImGui::Combo("attribute visualized", &attribute_visualized,
+            "Density\0Velocity\0");
         ImGui::SliderFloat(
             "boundary size", &bdy_particle_display_size_factor, 0.0f, 1.0f);
         ImGui::ColorEdit4("boundary colour", bdy_colour);
@@ -1126,7 +1128,9 @@ void GUI::exit() { this->exit_requested.store(true); }
 
 GUI::~GUI()
 {
+    exit();
     // join the timer thread to prevent leaks
+    exit_requested.store(true);
     timer.join();
     // unmap, unregister VBOs from CUDA and delete them
     unmap_buffers();

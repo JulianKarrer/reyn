@@ -20,17 +20,19 @@
 ## TODO
 - [x] Test zero-copy OpenGL VBO to CUDA buffer interop
 - [x] Add efficient visualization and GUI based on OpenGL interop, including ImGUI elements and single-batch billboard sphere rendering
-- [x] Implement safer abstraction over device arrays (no manual `cudaMalloc` and `cudaFree`) that is interoperable `thrust` and OpenGL
+- [x] Implement safer abstraction over device arrays (no manual `cudaMalloc` and `cudaFree`) that is interoperable with both `thrust` and OpenGL
 - [x] Implement acceleration datastructure, e.g. [Hoetzlein, 2014] using efficient prefix scan
 - [x] Add benchmarking for performance optimization
 - [x] Reorder state according to space-filling curve to improve memory coherency
 - [x] Colour particles according to some attribute like velocity
-- [x] Use Structure of Arrays (AoS) layout for all particle attributes to improve coalescing
+- [x] Use Structure of Arrays (SoA) layout for all particle attributes to improve coalescing
 - [x] Parameterize uniform grid with cell size different from search radius and benchmark for optimal grid size
-- [x] Add boundary sampling and de-/serialization
+- [x] Add random boundary sampling and de-/serialization
+- [x] Add blue noise boundary sampling
 - [x] Add boundary handling [Akinci et al. 2012]
-- [x] Add adaptive time step size calculation using efficient reductions
+- [x] Add adaptive (λ · Δt_CFL) time step size calculation using efficient reductions
 - [x] Implement PICSPH
+- [x] Add screenshot functionality -> automatic generation of video for docs
 - [ ] Add fluid volume sampling and de-/serialization
 - [ ] Add settings management with de-/serialization and expose solver and scene options to GUI and CLI
 - [ ] Implement IISPH

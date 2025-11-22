@@ -130,9 +130,9 @@ public:
     /// @brief The φ-angle of the camera in spherical coordinates
     float phi { -M_PI / 2.0f };
     /// @brief The θ-angle of the camera in spherical coordinates
-    float theta { M_PI / 2.0f * 0.5 };
+    float theta { M_PI / 2.0f };
     /// @brief An offset to the position of the camera
-    glm::vec3 camera_offset { glm::vec3(0., -1., 0.) };
+    glm::vec3 camera_offset { glm::vec3(0., 0., 0.) };
     /// @brief whether or not to render boundary particles, if present
     bool show_boundary { false };
     /// @brief The scalar used for colour mapping is scaled by the inverse of

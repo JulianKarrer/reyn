@@ -67,10 +67,12 @@ int main()
     } catch (std::exception const& e) {
         // print any errors thrown to stderr and terminate with error
         std::cerr << e.what() << std::endl;
+        std::exit(1);
     } catch (...) {
         // catch-all: detect non-standard exceptions and terminate with error
         std::cerr << "An unspecified exception has occured. Terminating."
                   << std::endl;
+        std::exit(1);
     }
 
     return 0;
