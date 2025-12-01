@@ -16,9 +16,8 @@ __host__ __device__ inline static AABB AABB_from_verts(
 }
 
 __global__ void generate_tree(const uint32_t* __restrict__ codes, const uint N,
-    uint* __restrict__ children_l, uint* __restrict__ children_r,
-    uint* __restrict__ parent, uint* __restrict__ leaf_parent,
-    bool* __restrict__ l_is_leaf, bool* __restrict__ r_is_leaf)
+    ChildNode* __restrict__ children_l, ChildNode* __restrict__ children_r,
+    uint* __restrict__ parent, uint* __restrict__ leaf_parent)
 {
     const uint i { blockIdx.x * blockDim.x + threadIdx.x };
     if (i >= N - 1)
@@ -33,14 +32,14 @@ __global__ void generate_tree(const uint32_t* __restrict__ codes, const uint N,
     const int split { find_split(codes, first, last) };
 
     // record left child
-    const bool l_leaf { split == first };
-    l_is_leaf[i] = l_leaf;
-    children_l[i] = split;
+    const uint32_t l_idx { (uint32_t)split };
+    const bool l_leaf { l_idx == first };
+    children_l[i] = ChildNode::create(l_idx, l_leaf);
 
     // record right child
-    const bool r_leaf { split + 1 == last };
-    r_is_leaf[i] = r_leaf;
-    children_r[i] = split + 1;
+    const uint32_t r_idx { (uint32_t)split + 1 };
+    const bool r_leaf { r_idx == last };
+    children_r[i] = ChildNode::create(r_idx, r_leaf);
 
     // record parent node of internal nodes
     if (l_leaf) {
@@ -58,10 +57,9 @@ __global__ void generate_tree(const uint32_t* __restrict__ codes, const uint N,
 
 __global__ void compute_aabbs(uint* __restrict__ parent,
     uint* __restrict__ leaf_parent, uint* __restrict__ visited,
-    uint* __restrict__ children_l, uint* __restrict__ children_r, uint N,
-    double* __restrict__ vxs, double* __restrict__ vys,
+    ChildNode* __restrict__ children_l, ChildNode* __restrict__ children_r,
+    uint N, double* __restrict__ vxs, double* __restrict__ vys,
     double* __restrict__ vzs, uint3* __restrict__ faces,
-    bool* __restrict__ l_is_leaf, bool* __restrict__ r_is_leaf,
     AABB* __restrict__ aabbs_leaf, AABB* __restrict__ aabbs_internal)
 {
     uint i { blockIdx.x * blockDim.x + threadIdx.x };
@@ -97,21 +95,29 @@ __global__ void compute_aabbs(uint* __restrict__ parent,
         }
         // check if current thread ascended the tree from the left or right,
         // fetching the sibling id from the repective other `children` array
-        const bool current_is_left { (children_l[i_parent] == i) };
-        const uint sibling_i { current_is_left ? children_r[i_parent]
-                                               : children_l[i_parent] };
-        // get the siblings aabb
-        const AABB sibling_aabb {
-            ((current_is_left ? r_is_leaf : l_is_leaf)[i_parent])
-                ?
-                // sibling is leaf
-                aabbs_leaf[sibling_i]
-                :
-                // sibling is not a leaf
-                aabbs_internal[sibling_i]
-        };
-        // combine the sibling's AABB with the own AABB
-        aabb = aabb | sibling_aabb;
+        const ChildNode sibling_l { children_l[i_parent] };
+        const uint32_t sibling_l_idx { sibling_l.idx() };
+        if (sibling_l_idx == i) {
+            // current thread is left child of i_parent:
+            // load right child as well
+            const ChildNode sibling_r { children_r[i_parent] };
+            const uint32_t sibling_idx { sibling_r.idx() };
+            // get aabb from leaf or internal array
+            const AABB sibling_aabb { sibling_r.is_leaf()
+                    ? aabbs_leaf[sibling_idx]
+                    : aabbs_internal[sibling_idx] };
+            // combine the sibling's AABB with the own AABB
+            aabb = aabb | sibling_aabb;
+        } else {
+            // current thread is right child of i_parent
+            // left sibling id is already known, lead its AABB
+            const AABB sibling_aabb { sibling_l.is_leaf()
+                    ? aabbs_leaf[sibling_l_idx]
+                    : aabbs_internal[sibling_l_idx] };
+            // combine the sibling's AABB with the own AABB
+            aabb = aabb | sibling_aabb;
+        }
+
         // this is the parent internal node's aabb
         aabbs_internal[i_parent] = aabb;
         // make the parent node the current one, get a new parent
@@ -162,10 +168,8 @@ bool check_lbvh_correctness_leaf(const thrust::host_vector<AABB>& leaf_aabbs,
 /// entirely contained in the parent AABB, and the leaf nodes entirely contain
 /// the respective primitives they represent, as checked by
 /// `check_lbvh_correctness_leaf`.
-/// @param children_l index of the left child node of i, indexed by i
-/// @param children_r index of the right child node of i, indexed by i
-/// @param l_is_leaf whether the left child node is a leaf node
-/// @param r_is_leaf whether the right child node is a leaf node
+/// @param children_l index of the left child node, and whether it is a leaf
+/// @param children_r index of the right child node, and whether it is a leaf
 /// @param leaf_aabbs the AABBs of all leaf nodes in order
 /// @param internal_aabbs the AABBs of all internal nodes in order
 /// @param faces faces of the triangular mesh to check against
@@ -177,10 +181,8 @@ bool check_lbvh_correctness_leaf(const thrust::host_vector<AABB>& leaf_aabbs,
 /// @return whether or not all child AABBs and primitives are contained in their
 /// respective parent nodes for a given triangular mesh and corresponding LBVH
 bool check_lbvh_correctness_internal(
-    const thrust::host_vector<uint>& children_l,
-    const thrust::host_vector<uint>& children_r,
-    const thrust::host_vector<bool>& l_is_leaf,
-    const thrust::host_vector<bool>& r_is_leaf,
+    const thrust::host_vector<ChildNode>& children_l,
+    const thrust::host_vector<ChildNode>& children_r,
     const thrust::host_vector<AABB>& leaf_aabbs,
     const thrust::host_vector<AABB>& internal_aabbs,
     const thrust::host_vector<uint3>& faces,
@@ -188,12 +190,15 @@ bool check_lbvh_correctness_internal(
     const thrust::host_vector<double>& vys,
     const thrust::host_vector<double>& vzs, const uint i)
 {
-    // get left and right child indices
-    const uint i_l { children_l[i] };
-    const uint i_r { children_r[i] };
-    // check if they are leafs
-    const bool l_leaf { l_is_leaf[i] };
-    const bool r_leaf { r_is_leaf[i] };
+    // get left and right child indices and check if they are leaves
+    const ChildNode l { children_l[i] };
+    const ChildNode r { children_r[i] };
+
+    const uint32_t i_l { l.idx() };
+    const uint32_t i_r { r.idx() };
+
+    const bool l_leaf { l.is_leaf() };
+    const bool r_leaf { r.is_leaf() };
     // get the respective AABBs
     const AABB l_aabb { (l_leaf ? leaf_aabbs : internal_aabbs)[i_l] };
     const AABB r_aabb { (r_leaf ? leaf_aabbs : internal_aabbs)[i_r] };
@@ -208,18 +213,16 @@ bool check_lbvh_correctness_internal(
     // otherwise, recursively check children
     const bool left_okay { l_leaf
             ? check_lbvh_correctness_leaf(leaf_aabbs, faces, vxs, vys, vzs, i_l)
-            : check_lbvh_correctness_internal(children_l, children_r, l_is_leaf,
-                  r_is_leaf, leaf_aabbs, internal_aabbs, faces, vxs, vys, vzs,
-                  i_l) };
+            : check_lbvh_correctness_internal(children_l, children_r,
+                  leaf_aabbs, internal_aabbs, faces, vxs, vys, vzs, i_l) };
     if (!left_okay) {
         // on violation, early exit indicating failure
         return false;
     }
     const bool right_okay { r_leaf
             ? check_lbvh_correctness_leaf(leaf_aabbs, faces, vxs, vys, vzs, i_r)
-            : check_lbvh_correctness_internal(children_l, children_r, l_is_leaf,
-                  r_is_leaf, leaf_aabbs, internal_aabbs, faces, vxs, vys, vzs,
-                  i_r) };
+            : check_lbvh_correctness_internal(children_l, children_r,
+                  leaf_aabbs, internal_aabbs, faces, vxs, vys, vzs, i_r) };
     // since left was checked, overall correctness is now the correctness of the
     // right child node
     return right_okay;
@@ -235,10 +238,8 @@ TEST_CASE("Check LBVH correctness")
     const LBVH lbvh(&device_mesh);
 
     // copy over relevant buffers to the host-side
-    const thrust::host_vector<uint> children_l = lbvh.children_l.get();
-    const thrust::host_vector<uint> children_r = lbvh.children_r.get();
-    const thrust::host_vector<bool> l_is_leaf = lbvh.l_is_leaf.get();
-    const thrust::host_vector<bool> r_is_leaf = lbvh.r_is_leaf.get();
+    const thrust::host_vector<ChildNode> children_l = lbvh.children_l.get();
+    const thrust::host_vector<ChildNode> children_r = lbvh.children_r.get();
     const thrust::host_vector<AABB> leaf_aabbs = lbvh.aabbs_leaf.get();
     const thrust::host_vector<AABB> internal_aabbs = lbvh.aabbs_internal.get();
     const thrust::host_vector<uint3> faces = device_mesh.faces.get();
@@ -249,8 +250,8 @@ TEST_CASE("Check LBVH correctness")
     // recursively check if parent AABB contains all child AABBs
     // and if leaves contain primitives entirely
     // this uses a recursive descent funciton started from the root node i=0
-    CHECK(check_lbvh_correctness_internal(children_l, children_r, l_is_leaf,
-        r_is_leaf, leaf_aabbs, internal_aabbs, faces, vxs, vys, vzs, 0));
+    CHECK(check_lbvh_correctness_internal(children_l, children_r, leaf_aabbs,
+        internal_aabbs, faces, vxs, vys, vzs, 0));
 }
 
 TEST_CASE("Write LBVH dump to file")

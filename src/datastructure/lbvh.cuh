@@ -111,6 +111,42 @@ __host__ __device__ inline bool operator<=(const AABB& lhs, const AABB& rhs)
         && lhs.maxi.y <= rhs.maxi.y && lhs.maxi.z <= rhs.maxi.z);
 }
 
+/// @brief A wrapper type around an unsigned integer, used to enforce safe
+/// handling of pointers to child nodes in binary trees that have
+/// leaf-vs-internal node information bitpacked into the index to the child.
+struct ChildNode {
+    /// @brief index to a child node, shifted once to the left, so that the
+    /// least significant, rightmost bit may indicate whether the child is a
+    /// leaf or not:
+    ///
+    /// - last bit is zero = leaf
+    ///
+    /// - last bit is one = internal node
+    uint32_t __i;
+
+    /// @brief Whether the child node is a leaf node or not
+    /// @return `true` if leaf node, `false` if internal node
+    __host__ __device__ inline bool is_leaf() const { return (__i & 1) == 0; };
+
+    /// @brief Get the index of the child node without leaf vs. internal node
+    /// information
+    /// @return index of the child
+    __host__ __device__ inline uint32_t idx() const { return (__i >> 1); };
+
+    /// @brief Create an instance of `ChildNode`. Static method used instead of
+    /// a constructor to keep the type trivially initializable and maximally
+    /// `__device__`-compatible.
+    /// @param child_index index of the child node
+    /// @param is_leaf whether that child node is a leaf node
+    /// @return a pointer to the child node with bitpacked leaf information
+    __host__ __device__ static ChildNode create(
+        const uint32_t child_index, const bool is_leaf)
+    {
+        // put 0 in LSB if leaf, 1 otherwise
+        return ChildNode { (child_index << 1) | (is_leaf ? 0 : 1) };
+    }
+};
+
 /// @brief Construct an AABB encompassing the three `double`-valued
 /// vertices of a triangle
 /// @param vert1 1st vertex
@@ -250,16 +286,15 @@ __device__ static inline int2 determine_range(
 /// and k-d Trees" [Tero Karras]
 /// @param codes morton codes
 /// @param N number of inner nodes of the tree (= #primitives - 1)
-/// @param children_l index of the left child node of i for each i
-/// @param children_r index of the right child node of i for each i
+/// @param children_l index of the left child node, and whether it is a leaf or
+/// not
+/// @param children_r index of the right child node, and whether it is a leaf or
+/// not
 /// @param parent index of the parent of the i-th internal node
 /// @param leaf_parent index of the parent of the i-th leaf node
-/// @param l_is_leaf whether the left child node is a leaf
-/// @param r_is_leaf whether the right child node is a leaf
 __global__ void generate_tree(const uint32_t* __restrict__ codes, const uint N,
-    uint* __restrict__ children_l, uint* __restrict__ children_r,
-    uint* __restrict__ parent, uint* __restrict__ leaf_parent,
-    bool* __restrict__ l_is_leaf, bool* __restrict__ r_is_leaf);
+    ChildNode* __restrict__ children_l, ChildNode* __restrict__ children_r,
+    uint* __restrict__ parent, uint* __restrict__ leaf_parent);
 
 /// @brief From a binary radix tree representing the structure of a BVH, compute
 /// the AABB of each node, whether it is a leaf node (primitive) or internal
@@ -280,25 +315,24 @@ __global__ void generate_tree(const uint32_t* __restrict__ codes, const uint N,
 /// @param visited flags indicating whether the parent at the given i was
 /// already visited by the sibling thread and the current thread may proceed or
 /// not. Could be bool but is taken as
-/// @param children_l index of the left child node of i for each i
-/// @param children_r index of the right child node of i for each i
+/// @param children_l index of the left child node, and whether it is a leaf or
+/// not
+/// @param children_r index of the right child node, and whether it is a leaf or
+/// not
 /// @param N number of leaf nodes or primitives
 /// @param vxs x-component of the vertex buffer
 /// @param vys y-component of the vertex buffer
 /// @param vzs z-component of the vertex buffer
 /// @param faces sorted faces or primitives, which index into the three vertex
 /// componentn buffers
-/// @param l_is_leaf whether the left child node is a leaf
-/// @param r_is_leaf whether the right child node is a leaf
 /// @param aabbs_leaf the AABBs of each leaf node
 /// @param aabbs_internal the AABBs of each internal node
 /// @return
 __global__ void compute_aabbs(uint* __restrict__ parent,
     uint* __restrict__ leaf_parent, uint* __restrict__ visited,
-    uint* __restrict__ children_l, uint* __restrict__ children_r, uint N,
-    double* __restrict__ vxs, double* __restrict__ vys,
+    ChildNode* __restrict__ children_l, ChildNode* __restrict__ children_r,
+    uint N, double* __restrict__ vxs, double* __restrict__ vys,
     double* __restrict__ vzs, uint3* __restrict__ faces,
-    bool* __restrict__ l_is_leaf, bool* __restrict__ r_is_leaf,
     AABB* __restrict__ aabbs_leaf, AABB* __restrict__ aabbs_internal);
 
 class LBVH {
@@ -309,10 +343,8 @@ public:
     uint N_faces;
     DeviceBuffer<AABB> aabbs_leaf;
     DeviceBuffer<AABB> aabbs_internal;
-    DeviceBuffer<uint> children_l;
-    DeviceBuffer<uint> children_r;
-    DeviceBuffer<bool> l_is_leaf;
-    DeviceBuffer<bool> r_is_leaf;
+    DeviceBuffer<ChildNode> children_l;
+    DeviceBuffer<ChildNode> children_r;
 
     LBVH(DeviceMesh* _mesh)
         : mesh(_mesh)
@@ -321,8 +353,6 @@ public:
         , aabbs_internal(N_faces - 1)
         , children_l(N_faces - 1)
         , children_r(N_faces - 1)
-        , l_is_leaf(N_faces - 1)
-        , r_is_leaf(N_faces - 1)
     {
         Log::InfoTagged("LBVH", "Computing Bounds");
         // assemble or compute the minimum and maximum bounds of overall
@@ -353,7 +383,7 @@ public:
             Log::InfoTagged("LBVH", "Generating LBVH Tree");
             generate_tree<<<BLOCKS(N_faces - 1), BLOCK_SIZE>>>(codes.ptr(),
                 N_faces, children_l.ptr(), children_r.ptr(), parent.ptr(),
-                leaf_parents.ptr(), l_is_leaf.ptr(), r_is_leaf.ptr());
+                leaf_parents.ptr());
 
             // create bounding boxes
             Log::InfoTagged(
@@ -362,8 +392,8 @@ public:
             compute_aabbs<<<BLOCKS(N_faces), BLOCK_SIZE>>>(parent.ptr(),
                 leaf_parents.ptr(), visited.ptr(), children_l.ptr(),
                 children_r.ptr(), N_faces, mesh->vxs.ptr(), mesh->vys.ptr(),
-                mesh->vzs.ptr(), mesh->faces.ptr(), l_is_leaf.ptr(),
-                r_is_leaf.ptr(), aabbs_leaf.ptr(), aabbs_internal.ptr());
+                mesh->vzs.ptr(), mesh->faces.ptr(), aabbs_leaf.ptr(),
+                aabbs_internal.ptr());
 
             // end the current scope, which calls the destructors of the buffers
             // containing information about the parent node of each leaf and

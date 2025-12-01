@@ -202,6 +202,7 @@
 <li class="toctree-l2"><a class="reference internal" href="api/structBitmapInformationHeader.html">Struct BitmapInformationHeader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/structBoundarySamples.html">Struct BoundarySamples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/structChildNode.html">Struct ChildNode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/structGenJitter.html">Struct GenJitter</a></li>
@@ -571,12 +572,22 @@
 </li>
         <li><a href="api/function_vector__helper_8cuh_1a30db85a811a1084fc122ce66e365a698.html#_CPPv48ceil_divRK6float3RKf">ceil_div (C++ function)</a>
 </li>
-        <li><a href="api/function_lbvh_8cu_1a19c9b44e20a041c60c2428c185177d89.html#_CPPv431check_lbvh_correctness_internalRKN6thrust11host_vectorI4uintEERKN6thrust11host_vectorI4uintEERKN6thrust11host_vectorIbEERKN6thrust11host_vectorIbEERKN6thrust11host_vectorI4AABBEERKN6thrust11host_vectorI4AABBEERKN6thrust11host_vectorI5uint3EERKN6thrust11host_vectorIdEERKN6thrust11host_vectorIdEERKN6thrust11host_vectorIdEEK4uint">check_lbvh_correctness_internal (C++ function)</a>
+        <li><a href="api/function_lbvh_8cu_1ac96c715fda5246d445151f99987533d3.html#_CPPv431check_lbvh_correctness_internalRKN6thrust11host_vectorI9ChildNodeEERKN6thrust11host_vectorI9ChildNodeEERKN6thrust11host_vectorI4AABBEERKN6thrust11host_vectorI4AABBEERKN6thrust11host_vectorI5uint3EERKN6thrust11host_vectorIdEERKN6thrust11host_vectorIdEERKN6thrust11host_vectorIdEEK4uint">check_lbvh_correctness_internal (C++ function)</a>
 </li>
         <li><a href="api/function_lbvh_8cu_1a9679058d435875863d28aeffb351b52b.html#_CPPv427check_lbvh_correctness_leafRKN6thrust11host_vectorI4AABBEERKN6thrust11host_vectorI5uint3EERKN6thrust11host_vectorIdEERKN6thrust11host_vectorIdEERKN6thrust11host_vectorIdEEK4uint">check_lbvh_correctness_leaf (C++ function)</a>
 </li>
+        <li><a href="api/structChildNode.html#_CPPv49ChildNode">ChildNode (C++ struct)</a>
+</li>
+        <li><a href="api/structChildNode.html#_CPPv4N9ChildNode3__iE">ChildNode::__i (C++ member)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/structChildNode.html#_CPPv4N9ChildNode6createEK8uint32_tKb">ChildNode::create (C++ function)</a>
+</li>
+        <li><a href="api/structChildNode.html#_CPPv4NK9ChildNode3idxEv">ChildNode::idx (C++ function)</a>
+</li>
+        <li><a href="api/structChildNode.html#_CPPv4NK9ChildNode7is_leafEv">ChildNode::is_leaf (C++ function)</a>
+</li>
         <li><a href="api/function_lbvh_8cuh_1a2d471b27d88b0925b2d1a32f7cbc60e1.html#_CPPv413common_prefixK8uint32_tKiK8uint32_tKi">common_prefix (C++ function)</a>
 </li>
         <li><a href="api/classCOS.html#_CPPv43COS">COS (C++ class)</a>
@@ -831,22 +842,18 @@
 </li>
         <li><a href="api/classLBVH.html#_CPPv4N4LBVH10children_rE">LBVH::children_r (C++ member)</a>
 </li>
-        <li><a href="api/classLBVH.html#_CPPv4N4LBVH9l_is_leafE">LBVH::l_is_leaf (C++ member)</a>
-</li>
         <li><a href="api/classLBVH.html#_CPPv4N4LBVH4LBVHEP10DeviceMesh">LBVH::LBVH (C++ function)</a>
 </li>
         <li><a href="api/classLBVH.html#_CPPv4N4LBVH7N_facesE">LBVH::N_faces (C++ member)</a>
-</li>
-        <li><a href="api/classLBVH.html#_CPPv4N4LBVH9r_is_leafE">LBVH::r_is_leaf (C++ member)</a>
 </li>
         <li><a href="api/function_loader_8cpp_1ac57c8e3ca4f862c4178a32338e6af6b8.html#_CPPv418load_mesh_from_objRKNSt10filesystem4pathE">load_mesh_from_obj (C++ function)</a>, <a href="api/function_loader_8h_1ac57c8e3ca4f862c4178a32338e6af6b8.html#_CPPv418load_mesh_from_objRKNSt10filesystem4pathE">[1]</a>
 </li>
         <li><a href="api/classLog.html#_CPPv43Log">Log (C++ class)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/classLog.html#_CPPv4IDpEN3Log5ErrorEvNSt13format_stringIDp4ArgsEEDpRR4Args">Log::Error (C++ function)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/classLog.html#_CPPv4IDpEN3Log11ErrorTaggedEvNSt11string_viewENSt13format_stringIDp4ArgsEEDpRR4Args">Log::ErrorTagged (C++ function)</a>
 </li>
         <li><a href="api/classLog.html#_CPPv4IDpEN3Log4InfoEvNSt13format_stringIDp4ArgsEEDpRR4Args">Log::Info (C++ function)</a>

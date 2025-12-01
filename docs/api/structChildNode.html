@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Struct DeviceBuffer::ExternallyManagedBuffer" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html"><link rel="prev" title="Struct BoundarySamples" href="structBoundarySamples.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Function generate_tree(const uint32_t *, const uint, uint *, uint *, uint *, uint *, bool *, bool *) - REYN documentation</title>
+        <title>Struct ChildNode - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -194,16 +194,17 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lbvh/index.html">LBVH</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="structAABB.html">Struct AABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBitmapFileHeader.html">Struct BitmapFileHeader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBitmapInformationHeader.html">Struct BitmapInformationHeader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Struct ChildNode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGenJitter.html">Struct GenJitter</a></li>
@@ -378,7 +379,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_lbvh_8cuh_1a8ae3a868821fb528ce371882ad504ee7.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/structChildNode.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -396,23 +397,78 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="function-generate-tree-const-uint32-t-const-uint-uint-uint-uint-uint-bool-bool">
-<span id="exhale-function-lbvh-8cuh-1a8ae3a868821fb528ce371882ad504ee7"></span><h1>Function generate_tree(const uint32_t *, const uint, uint *, uint *, uint *, uint *, bool *, bool *)<a class="headerlink" href="#function-generate-tree-const-uint32-t-const-uint-uint-uint-uint-uint-bool-bool" title="Link to this heading">¶</a></h1>
+          <section id="struct-childnode">
+<span id="exhale-struct-structchildnode"></span><h1>Struct ChildNode<a class="headerlink" href="#struct-childnode" title="Link to this heading">¶</a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_src_datastructure_lbvh.cuh.html#file-src-datastructure-lbvh-cuh"><span class="std std-ref">File lbvh.cuh</span></a></p></li>
 </ul>
-<section id="function-documentation">
-<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve function “generate_tree” with arguments (const uint32_t*, const uint, uint*, uint*, uint*, uint*, bool*, bool*) in doxygen xml output for project “REYN” from directory: /home/julian/Code/reyn/builddocs/doxygen-output/xml.
-Potential matches:
+<section id="struct-documentation">
+<h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading">¶</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv49ChildNode">
+<span id="_CPPv39ChildNode"></span><span id="_CPPv29ChildNode"></span><span id="ChildNode"></span><span class="target" id="structChildNode"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ChildNode</span></span></span><a class="headerlink" href="#_CPPv49ChildNode" title="Link to this definition">¶</a><br /></dt>
+<dd><p>A wrapper type around an unsigned integer, used to enforce safe handling of pointers to child nodes in binary trees that have leaf-vs-internal node information bitpacked into the index to the child. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK9ChildNode7is_leafEv">
+<span id="_CPPv3NK9ChildNode7is_leafEv"></span><span id="_CPPv2NK9ChildNode7is_leafEv"></span><span id="ChildNode::is_leafC"></span><span class="target" id="structChildNode_1ad2a2693590d85766cb8190a1466412e2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">is_leaf</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK9ChildNode7is_leafEv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Whether the child node is a leaf node or not. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if leaf node, <code class="docutils literal notranslate"><span class="pre">false</span></code> if internal node </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK9ChildNode3idxEv">
+<span id="_CPPv3NK9ChildNode3idxEv"></span><span id="_CPPv2NK9ChildNode3idxEv"></span><span id="ChildNode::idxC"></span><span class="target" id="structChildNode_1ab3c9a4890ce49f889fba21870bbf1d3e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">idx</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK9ChildNode3idxEv" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Get the index of the child node without leaf vs. internal node information. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>index of the child </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N9ChildNode3__iE">
+<span id="_CPPv3N9ChildNode3__iE"></span><span id="_CPPv2N9ChildNode3__iE"></span><span id="ChildNode::__i__uint32_t"></span><span class="target" id="structChildNode_1a68bbb6c6d2f440d8a56f3e4898b8d544"></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__i</span></span></span><a class="headerlink" href="#_CPPv4N9ChildNode3__iE" title="Link to this definition">¶</a><br /></dt>
+<dd><p>index to a child node, shifted once to the left, so that the least significant, rightmost bit may indicate whether the child is a leaf or not: </p>
+<p><ul class="simple">
+<li><p>last bit is zero = leaf</p></li>
+<li><p>last bit is one = internal node </p></li>
+</ul>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">generate_tree</span><span class="p">(</span><span class="n">const</span> <span class="n">uint32_t</span> <span class="o">*</span><span class="n">codes</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">N</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">children_l</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">children_r</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">leaf_parent</span><span class="p">,</span> <span class="nb">bool</span> <span class="o">*</span><span class="n">l_is_leaf</span><span class="p">,</span> <span class="nb">bool</span> <span class="o">*</span><span class="n">r_is_leaf</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">generate_tree</span><span class="p">(</span><span class="n">const</span> <span class="n">uint32_t</span> <span class="o">*</span><span class="n">codes</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">N</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">children_l</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">children_r</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">leaf_parent</span><span class="p">,</span> <span class="nb">bool</span> <span class="o">*</span><span class="n">l_is_leaf</span><span class="p">,</span> <span class="nb">bool</span> <span class="o">*</span><span class="n">r_is_leaf</span><span class="p">)</span>
-</pre></div>
+</dd></dl>
+
 </div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N9ChildNode6createEK8uint32_tKb">
+<span id="_CPPv3N9ChildNode6createEK8uint32_tKb"></span><span id="_CPPv2N9ChildNode6createEK8uint32_tKb"></span><span id="ChildNode::create__uint32_tC.bC"></span><span class="target" id="structChildNode_1a93057ecd6b6d16ea7d2b2c05578ea439"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv49ChildNode" title="ChildNode"><span class="n"><span class="pre">ChildNode</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">child_index</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">is_leaf</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9ChildNode6createEK8uint32_tKb" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Create an instance of <code class="docutils literal notranslate"><a class="reference internal" href="#structChildNode"><span class="std std-ref"><span class="pre">ChildNode</span></span></a></code>. Static method used instead of a constructor to keep the type trivially initializable and maximally <code class="docutils literal notranslate"><span class="pre">__device__</span></code>-compatible. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>child_index</strong> – index of the child node </p></li>
+<li><p><strong>is_leaf</strong> – whether that child node is a leaf node </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a pointer to the child node with bitpacked leaf information </p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
+</dd></dl>
+
 </section>
 </section>
 
@@ -421,8 +477,26 @@ Potential matches:
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Struct DeviceBuffer::ExternallyManagedBuffer</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="structBoundarySamples.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Struct BoundarySamples</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -453,8 +527,17 @@ Potential matches:
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Function generate_tree(const uint32_t *, const uint, uint *, uint *, uint *, uint *, bool *, bool *)</a><ul>
-<li><a class="reference internal" href="#function-documentation">Function Documentation</a></li>
+<li><a class="reference internal" href="#">Struct ChildNode</a><ul>
+<li><a class="reference internal" href="#struct-documentation">Struct Documentation</a><ul>
+<li><a class="reference internal" href="#_CPPv49ChildNode"><code class="docutils literal notranslate"><span class="pre">ChildNode</span></code></a><ul>
+<li><a class="reference internal" href="#_CPPv4NK9ChildNode7is_leafEv"><code class="docutils literal notranslate"><span class="pre">is_leaf()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4NK9ChildNode3idxEv"><code class="docutils literal notranslate"><span class="pre">idx()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9ChildNode3__iE"><code class="docutils literal notranslate"><span class="pre">__i</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9ChildNode6createEK8uint32_tKb"><code class="docutils literal notranslate"><span class="pre">create()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

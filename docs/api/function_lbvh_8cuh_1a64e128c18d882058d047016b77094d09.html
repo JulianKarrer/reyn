@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Program Listing for File lbvh.cu" href="program_listing_file_src_datastructure_lbvh.cu.html"><link rel="prev" title="Program Listing for File kernels.cuh" href="program_listing_file_src_kernels.cuh.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>File lbvh.cu - REYN documentation</title>
+        <title>Function generate_tree(const uint32_t *, const uint, ChildNode *, ChildNode *, uint *, uint *) - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -194,11 +194,11 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
+  <ul>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lbvh/index.html">LBVH</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="structAABB.html">Struct AABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBitmapFileHeader.html">Struct BitmapFileHeader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBitmapInformationHeader.html">Struct BitmapInformationHeader</a></li>
@@ -265,7 +265,7 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_kernels.cuh.html">Program Listing for File kernels.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">File lbvh.cu</a><input aria-label="Toggle navigation of File lbvh.cu" checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_lbvh.cu.html">File lbvh.cu</a><input aria-label="Toggle navigation of File lbvh.cu" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_lbvh.cu.html">Program Listing for File lbvh.cu</a></li>
 </ul>
 </li>
@@ -379,7 +379,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/file_src_datastructure_lbvh.cu.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_lbvh_8cuh_1a64e128c18d882058d047016b77094d09.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -397,37 +397,23 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="file-lbvh-cu">
-<span id="file-src-datastructure-lbvh-cu"></span><h1>File lbvh.cu<a class="headerlink" href="#file-lbvh-cu" title="Link to this heading">¶</a></h1>
-<p>↰ <a class="reference internal" href="dir_src_datastructure.html#dir-src-datastructure"><span class="std std-ref">Parent directory</span></a> (<code class="docutils literal notranslate"><span class="pre">src/datastructure</span></code>)</p>
-<section id="definition-src-datastructure-lbvh-cu">
-<h2>Definition (<code class="docutils literal notranslate"><span class="pre">src/datastructure/lbvh.cu</span></code>)<a class="headerlink" href="#definition-src-datastructure-lbvh-cu" title="Link to this heading">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="program_listing_file_src_datastructure_lbvh.cu.html">Program Listing for File lbvh.cu</a></li>
+          <section id="function-generate-tree-const-uint32-t-const-uint-childnode-childnode-uint-uint">
+<span id="exhale-function-lbvh-8cuh-1a64e128c18d882058d047016b77094d09"></span><h1>Function generate_tree(const uint32_t *, const uint, ChildNode *, ChildNode *, uint *, uint *)<a class="headerlink" href="#function-generate-tree-const-uint32-t-const-uint-childnode-childnode-uint-uint" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_datastructure_lbvh.cuh.html#file-src-datastructure-lbvh-cuh"><span class="std std-ref">File lbvh.cuh</span></a></p></li>
 </ul>
+<section id="function-documentation">
+<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve function “generate_tree” with arguments (const uint32_t*, const uint, ChildNode*, ChildNode*, uint*, uint*) in doxygen xml output for project “REYN” from directory: /home/julian/Code/reyn/builddocs/doxygen-output/xml.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">generate_tree</span><span class="p">(</span><span class="n">const</span> <span class="n">uint32_t</span> <span class="o">*</span><span class="n">codes</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">N</span><span class="p">,</span> <span class="n">ChildNode</span> <span class="o">*</span><span class="n">children_l</span><span class="p">,</span> <span class="n">ChildNode</span> <span class="o">*</span><span class="n">children_r</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">leaf_parent</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">generate_tree</span><span class="p">(</span><span class="n">const</span> <span class="n">uint32_t</span> <span class="o">*</span><span class="n">codes</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">N</span><span class="p">,</span> <span class="n">ChildNode</span> <span class="o">*</span><span class="n">children_l</span><span class="p">,</span> <span class="n">ChildNode</span> <span class="o">*</span><span class="n">children_r</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">leaf_parent</span><span class="p">)</span>
+</pre></div>
 </div>
-</section>
-<section id="includes">
-<h2>Includes<a class="headerlink" href="#includes" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">datastructure/lbvh.cuh</span></code> (<a class="reference internal" href="file_src_datastructure_lbvh.cuh.html#file-src-datastructure-lbvh-cuh"><span class="std std-ref">File lbvh.cuh</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">doctest/doctest.h</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fstream</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">thrust/host_vector.h</span></code></p></li>
-</ul>
-</section>
-<section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="function_lbvh_8cu_1aab3ed7064b3ed6f2f09b02f20f775f54.html#exhale-function-lbvh-8cu-1aab3ed7064b3ed6f2f09b02f20f775f54"><span class="std std-ref">Function AABB_from_verts(double3, double3, double3)</span></a></p></li>
-<li><p><a class="reference internal" href="function_lbvh_8cu_1ac96c715fda5246d445151f99987533d3.html#exhale-function-lbvh-8cu-1ac96c715fda5246d445151f99987533d3"><span class="std std-ref">Function check_lbvh_correctness_internal</span></a></p></li>
-<li><p><a class="reference internal" href="function_lbvh_8cu_1a9679058d435875863d28aeffb351b52b.html#exhale-function-lbvh-8cu-1a9679058d435875863d28aeffb351b52b"><span class="std std-ref">Function check_lbvh_correctness_leaf</span></a></p></li>
-<li><p><a class="reference internal" href="function_lbvh_8cu_1ad2ac819b534d7924175799360eec130f.html#exhale-function-lbvh-8cu-1ad2ac819b534d7924175799360eec130f"><span class="std std-ref">Function compute_aabbs(uint *, uint *, uint *, ChildNode *, ChildNode *, uint, double *, double *, double *, uint3 *, AABB *, AABB *)</span></a></p></li>
-<li><p><a class="reference internal" href="function_lbvh_8cu_1a64e128c18d882058d047016b77094d09.html#exhale-function-lbvh-8cu-1a64e128c18d882058d047016b77094d09"><span class="std std-ref">Function generate_tree(const uint32_t *, const uint, ChildNode *, ChildNode *, uint *, uint *)</span></a></p></li>
-<li><p><a class="reference internal" href="function_lbvh_8cu_1ae467adfa27e3383712c513b5829d23b5.html#exhale-function-lbvh-8cu-1ae467adfa27e3383712c513b5829d23b5"><span class="std std-ref">Function TEST_CASE(“Write LBVH dump to file”)</span></a></p></li>
-<li><p><a class="reference internal" href="function_lbvh_8cu_1af1fa0c2d128312bbf0d5b85ecef619a8.html#exhale-function-lbvh-8cu-1af1fa0c2d128312bbf0d5b85ecef619a8"><span class="std std-ref">Function TEST_CASE(“Check LBVH correctness”)</span></a></p></li>
-</ul>
+</div>
 </section>
 </section>
 
@@ -436,26 +422,8 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="program_listing_file_src_datastructure_lbvh.cu.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">Program Listing for File lbvh.cu</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="program_listing_file_src_kernels.cuh.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">Program Listing for File kernels.cuh</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -486,10 +454,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">File lbvh.cu</a><ul>
-<li><a class="reference internal" href="#definition-src-datastructure-lbvh-cu">Definition (<code class="docutils literal notranslate"><span class="pre">src/datastructure/lbvh.cu</span></code>)</a></li>
-<li><a class="reference internal" href="#includes">Includes</a></li>
-<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#">Function generate_tree(const uint32_t *, const uint, ChildNode *, ChildNode *, uint *, uint *)</a><ul>
+<li><a class="reference internal" href="#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
 </ul>

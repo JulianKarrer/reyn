@@ -59,10 +59,10 @@ docs:
     rm -rf {{DOCS_DIR}}/doxygen-output
 
     # run benchmarks (cmake setup must be re-run with DBENCH)
-    just run-benches
+    # just run-benches
 
     # run tests
-    # just test
+    just test
 
     ffmpeg -framerate 30 -pattern_type glob -i 'out/*.bmp' -vf "scale=1280:-2,pad=iw:ih+mod(ih\,2)" -c:v libx264 -preset veryslow -an -movflags +faststart -profile:v high -crf 18 -pix_fmt yuv420p builddocs/_staticc/vid.mp4 -y
 

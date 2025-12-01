@@ -7,7 +7,7 @@
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Function generate_tree(const uint32_t *, const uint, uint *, uint *, uint *, uint *, bool *, bool *) - REYN documentation</title>
+        <title>Function compute_aabbs(uint *, uint *, uint *, ChildNode *, ChildNode *, uint, double *, double *, double *, uint3 *, AABB *, AABB *) - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -204,6 +204,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structBitmapInformationHeader.html">Struct BitmapInformationHeader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structChildNode.html">Struct ChildNode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGenJitter.html">Struct GenJitter</a></li>
@@ -378,7 +379,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_lbvh_8cu_1a8ae3a868821fb528ce371882ad504ee7.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_lbvh_8cu_1ad2ac819b534d7924175799360eec130f.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -396,8 +397,8 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="function-generate-tree-const-uint32-t-const-uint-uint-uint-uint-uint-bool-bool">
-<span id="exhale-function-lbvh-8cu-1a8ae3a868821fb528ce371882ad504ee7"></span><h1>Function generate_tree(const uint32_t *, const uint, uint *, uint *, uint *, uint *, bool *, bool *)<a class="headerlink" href="#function-generate-tree-const-uint32-t-const-uint-uint-uint-uint-uint-bool-bool" title="Link to this heading">¶</a></h1>
+          <section id="function-compute-aabbs-uint-uint-uint-childnode-childnode-uint-double-double-double-uint3-aabb-aabb">
+<span id="exhale-function-lbvh-8cu-1ad2ac819b534d7924175799360eec130f"></span><h1>Function compute_aabbs(uint *, uint *, uint *, ChildNode *, ChildNode *, uint, double *, double *, double *, uint3 *, AABB *, AABB *)<a class="headerlink" href="#function-compute-aabbs-uint-uint-uint-childnode-childnode-uint-double-double-double-uint3-aabb-aabb" title="Link to this heading">¶</a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_src_datastructure_lbvh.cu.html#file-src-datastructure-lbvh-cu"><span class="std std-ref">File lbvh.cu</span></a></p></li>
 </ul>
@@ -405,11 +406,11 @@
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve function “generate_tree” with arguments (const uint32_t*, const uint, uint*, uint*, uint*, uint*, bool*, bool*) in doxygen xml output for project “REYN” from directory: /home/julian/Code/reyn/builddocs/doxygen-output/xml.
+<p>doxygenfunction: Unable to resolve function “compute_aabbs” with arguments (uint*, uint*, uint*, ChildNode*, ChildNode*, uint, double*, double*, double*, uint3*, AABB*, AABB*) in doxygen xml output for project “REYN” from directory: /home/julian/Code/reyn/builddocs/doxygen-output/xml.
 Potential matches:
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">generate_tree</span><span class="p">(</span><span class="n">const</span> <span class="n">uint32_t</span> <span class="o">*</span><span class="n">codes</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">N</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">children_l</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">children_r</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">leaf_parent</span><span class="p">,</span> <span class="nb">bool</span> <span class="o">*</span><span class="n">l_is_leaf</span><span class="p">,</span> <span class="nb">bool</span> <span class="o">*</span><span class="n">r_is_leaf</span><span class="p">)</span>
-<span class="o">-</span> <span class="n">void</span> <span class="n">generate_tree</span><span class="p">(</span><span class="n">const</span> <span class="n">uint32_t</span> <span class="o">*</span><span class="n">codes</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">N</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">children_l</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">children_r</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">leaf_parent</span><span class="p">,</span> <span class="nb">bool</span> <span class="o">*</span><span class="n">l_is_leaf</span><span class="p">,</span> <span class="nb">bool</span> <span class="o">*</span><span class="n">r_is_leaf</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">void</span> <span class="n">compute_aabbs</span><span class="p">(</span><span class="n">uint</span> <span class="o">*</span><span class="n">parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">leaf_parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">visited</span><span class="p">,</span> <span class="n">ChildNode</span> <span class="o">*</span><span class="n">children_l</span><span class="p">,</span> <span class="n">ChildNode</span> <span class="o">*</span><span class="n">children_r</span><span class="p">,</span> <span class="n">uint</span> <span class="n">N</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">vxs</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">vys</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">vzs</span><span class="p">,</span> <span class="n">uint3</span> <span class="o">*</span><span class="n">faces</span><span class="p">,</span> <span class="n">AABB</span> <span class="o">*</span><span class="n">aabbs_leaf</span><span class="p">,</span> <span class="n">AABB</span> <span class="o">*</span><span class="n">aabbs_internal</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">void</span> <span class="n">compute_aabbs</span><span class="p">(</span><span class="n">uint</span> <span class="o">*</span><span class="n">parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">leaf_parent</span><span class="p">,</span> <span class="n">uint</span> <span class="o">*</span><span class="n">visited</span><span class="p">,</span> <span class="n">ChildNode</span> <span class="o">*</span><span class="n">children_l</span><span class="p">,</span> <span class="n">ChildNode</span> <span class="o">*</span><span class="n">children_r</span><span class="p">,</span> <span class="n">uint</span> <span class="n">N</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">vxs</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">vys</span><span class="p">,</span> <span class="n">double</span> <span class="o">*</span><span class="n">vzs</span><span class="p">,</span> <span class="n">uint3</span> <span class="o">*</span><span class="n">faces</span><span class="p">,</span> <span class="n">AABB</span> <span class="o">*</span><span class="n">aabbs_leaf</span><span class="p">,</span> <span class="n">AABB</span> <span class="o">*</span><span class="n">aabbs_internal</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -453,7 +454,7 @@ Potential matches:
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Function generate_tree(const uint32_t *, const uint, uint *, uint *, uint *, uint *, bool *, bool *)</a><ul>
+<li><a class="reference internal" href="#">Function compute_aabbs(uint *, uint *, uint *, ChildNode *, ChildNode *, uint, double *, double *, double *, uint3 *, AABB *, AABB *)</a><ul>
 <li><a class="reference internal" href="#function-documentation">Function Documentation</a></li>
 </ul>
 </li>
