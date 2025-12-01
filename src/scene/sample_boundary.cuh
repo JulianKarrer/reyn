@@ -96,7 +96,7 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
 /// boundary sample, referencing the `faces` buffer in the `DeviceMesh` by
 /// index
 void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
-    DeviceBuffer<float>& zs, const DeviceMesh& mesh, const float h,
+    DeviceBuffer<float>& zs, DeviceMesh& mesh, const float h,
     const float oversampling_factor, DeviceBuffer<int>* tri_ids = nullptr);
 
 /// @brief Place boundary samples uniformly randomly on the surface of the
@@ -130,7 +130,7 @@ void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
 /// @return collection of coordinates of boundary samples
 BoundarySamples sample_mesh(const Mesh mesh, const float h, const float ρ₀,
     const float oversampling_factor = 2.0, std::ostream* debug_stream = nullptr,
-    const int relaxation_iters = 20, const float relaxation_factor = 1.,
+    const int relaxation_iters = 50, const float relaxation_factor = 1.,
     const uint mass_refinement_iterations = 5);
 
 #endif // SCENE_SAMPLE_CUH_

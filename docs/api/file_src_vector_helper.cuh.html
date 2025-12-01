@@ -197,7 +197,9 @@
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lbvh/index.html">LBVH</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="structAABB.html">Struct AABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBitmapFileHeader.html">Struct BitmapFileHeader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBitmapInformationHeader.html">Struct BitmapInformationHeader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
@@ -210,6 +212,7 @@
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMesh.html">Struct Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structMortonCodeGenerator.html">Struct MortonCodeGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structUniformGrid.html">Template Struct UniformGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classB3.html">Class B3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classC2.html">Class C2</a></li>
@@ -217,6 +220,7 @@
 <li class="toctree-l2"><a class="reference internal" href="classDeviceBuffer.html">Template Class DeviceBuffer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classGUI.html">Class GUI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classKernel.html">Template Class Kernel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classLBVH.html">Class LBVH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classLog.html">Class Log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classParticles.html">Class Particles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classPCISPH.html">Template Class PCISPH</a></li>
@@ -260,87 +264,95 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_kernels.cuh.html">Program Listing for File kernels.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.cpp.html">File loader.cpp</a><input aria-label="Toggle navigation of File loader.cpp" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_lbvh.cu.html">File lbvh.cu</a><input aria-label="Toggle navigation of File lbvh.cu" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_lbvh.cu.html">Program Listing for File lbvh.cu</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_lbvh.cuh.html">File lbvh.cuh</a><input aria-label="Toggle navigation of File lbvh.cuh" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_lbvh.cuh.html">Program Listing for File lbvh.cuh</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.cpp.html">File loader.cpp</a><input aria-label="Toggle navigation of File loader.cpp" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_loader.cpp.html">Program Listing for File loader.cpp</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.h.html">File loader.h</a><input aria-label="Toggle navigation of File loader.h" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_loader.h.html">File loader.h</a><input aria-label="Toggle navigation of File loader.h" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_loader.h.html">Program Listing for File loader.h</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_log.h.html">File log.h</a><input aria-label="Toggle navigation of File log.h" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_log.h.html">File log.h</a><input aria-label="Toggle navigation of File log.h" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_log.h.html">Program Listing for File log.h</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_main.cu.html">File main.cu</a><input aria-label="Toggle navigation of File main.cu" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_main.cu.html">File main.cu</a><input aria-label="Toggle navigation of File main.cu" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_main.cu.html">Program Listing for File main.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cu.html">File particles.cu</a><input aria-label="Toggle navigation of File particles.cu" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cu.html">File particles.cu</a><input aria-label="Toggle navigation of File particles.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cu.html">Program Listing for File particles.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cuh.html">File particles.cuh</a><input aria-label="Toggle navigation of File particles.cuh" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_particles.cuh.html">File particles.cuh</a><input aria-label="Toggle navigation of File particles.cuh" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_particles.cuh.html">Program Listing for File particles.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_PCISPH.cu.html">File PCISPH.cu</a><input aria-label="Toggle navigation of File PCISPH.cu" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_PCISPH.cu.html">File PCISPH.cu</a><input aria-label="Toggle navigation of File PCISPH.cu" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_PCISPH.cu.html">Program Listing for File PCISPH.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_PCISPH.cuh.html">File PCISPH.cuh</a><input aria-label="Toggle navigation of File PCISPH.cuh" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_PCISPH.cuh.html">File PCISPH.cuh</a><input aria-label="Toggle navigation of File PCISPH.cuh" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_PCISPH.cuh.html">Program Listing for File PCISPH.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cu.html">File ply_io.cu</a><input aria-label="Toggle navigation of File ply_io.cu" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cu.html">Program Listing for File ply_io.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_ply_io.cuh.html">File ply_io.cuh</a><input aria-label="Toggle navigation of File ply_io.cuh" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_ply_io.cuh.html">Program Listing for File ply_io.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cu.html">File sample_boundary.cu</a><input aria-label="Toggle navigation of File sample_boundary.cu" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cu.html">Program Listing for File sample_boundary.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_sample_boundary.cuh.html">File sample_boundary.cuh</a><input aria-label="Toggle navigation of File sample_boundary.cuh" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_sample_boundary.cuh.html">Program Listing for File sample_boundary.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cu.html">File scene.cu</a><input aria-label="Toggle navigation of File scene.cu" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_scene.cu.html">Program Listing for File scene.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cuh.html">File scene.cuh</a><input aria-label="Toggle navigation of File scene.cuh" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_scene_scene.cuh.html">File scene.cuh</a><input aria-label="Toggle navigation of File scene.cuh" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_scene_scene.cuh.html">Program Listing for File scene.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cu.html">File SESPH.cu</a><input aria-label="Toggle navigation of File SESPH.cu" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cu.html">File SESPH.cu</a><input aria-label="Toggle navigation of File SESPH.cu" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_SESPH.cu.html">Program Listing for File SESPH.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cuh.html">File SESPH.cuh</a><input aria-label="Toggle navigation of File SESPH.cuh" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_SESPH.cuh.html">File SESPH.cuh</a><input aria-label="Toggle navigation of File SESPH.cuh" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_SESPH.cuh.html">Program Listing for File SESPH.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_solver.cu.html">File solver.cu</a><input aria-label="Toggle navigation of File solver.cu" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_solver.cu.html">File solver.cu</a><input aria-label="Toggle navigation of File solver.cu" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_solver.cu.html">Program Listing for File solver.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_solver.cuh.html">File solver.cuh</a><input aria-label="Toggle navigation of File solver.cuh" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_solvers_solver.cuh.html">File solver.cuh</a><input aria-label="Toggle navigation of File solver.cuh" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_solvers_solver.cuh.html">Program Listing for File solver.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cu.html">File uniformgrid.cu</a><input aria-label="Toggle navigation of File uniformgrid.cu" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cu.html">File uniformgrid.cu</a><input aria-label="Toggle navigation of File uniformgrid.cu" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_uniformgrid.cu.html">Program Listing for File uniformgrid.cu</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cuh.html">File uniformgrid.cuh</a><input aria-label="Toggle navigation of File uniformgrid.cuh" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_datastructure_uniformgrid.cuh.html">File uniformgrid.cuh</a><input aria-label="Toggle navigation of File uniformgrid.cuh" class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_datastructure_uniformgrid.cuh.html">Program Listing for File uniformgrid.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">File vector_helper.cuh</a><input aria-label="Toggle navigation of File vector_helper.cuh" checked="" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">File vector_helper.cuh</a><input aria-label="Toggle navigation of File vector_helper.cuh" checked="" class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_vector_helper.cuh.html">Program Listing for File vector_helper.cuh</a></li>
 </ul>
 </li>
@@ -404,6 +416,7 @@
 <section id="included-by">
 <h2>Included By<a class="headerlink" href="#included-by" title="Link to this heading">¶</a></h2>
 <ul class="simple">
+<li><p><a class="reference internal" href="file_src_datastructure_lbvh.cuh.html#file-src-datastructure-lbvh-cuh"><span class="std std-ref">File lbvh.cuh</span></a></p></li>
 <li><p><a class="reference internal" href="file_src_datastructure_uniformgrid.cuh.html#file-src-datastructure-uniformgrid-cuh"><span class="std std-ref">File uniformgrid.cuh</span></a></p></li>
 <li><p><a class="reference internal" href="file_src_kernels.cuh.html#file-src-kernels-cuh"><span class="std std-ref">File kernels.cuh</span></a></p></li>
 <li><p><a class="reference internal" href="file_src_main.cu.html#file-src-main-cu"><span class="std std-ref">File main.cu</span></a></p></li>
@@ -418,43 +431,47 @@
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a30db85a811a1084fc122ce66e365a698.html#exhale-function-vector-helper-8cuh-1a30db85a811a1084fc122ce66e365a698"><span class="std std-ref">Function ceil_div</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a174a7fbaaea79b22964b1541f98e9524.html#exhale-function-vector-helper-8cuh-1a174a7fbaaea79b22964b1541f98e9524"><span class="std std-ref">Function cross(const double3&amp;, const double3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a873031c3612827400d3b33b6d2e022c7.html#exhale-function-vector-helper-8cuh-1a873031c3612827400d3b33b6d2e022c7"><span class="std std-ref">Function cross(const float3&amp;, const float3&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a75018db11b66ae0e63807e06b676bf1b.html#exhale-function-vector-helper-8cuh-1a75018db11b66ae0e63807e06b676bf1b"><span class="std std-ref">Function dot(const float3&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a4edeab2e4a784576fd8b898f451d6b9a.html#exhale-function-vector-helper-8cuh-1a4edeab2e4a784576fd8b898f451d6b9a"><span class="std std-ref">Function dot(const double3&amp;, const double3&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a6fb04bd01f21b6eaeae80ae16beab220.html#exhale-function-vector-helper-8cuh-1a6fb04bd01f21b6eaeae80ae16beab220"><span class="std std-ref">Function dv3</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a75018db11b66ae0e63807e06b676bf1b.html#exhale-function-vector-helper-8cuh-1a75018db11b66ae0e63807e06b676bf1b"><span class="std std-ref">Function dot(const float3&amp;, const float3&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a4e1c6e4542918c46e3d9f82226349f55.html#exhale-function-vector-helper-8cuh-1a4e1c6e4542918c46e3d9f82226349f55"><span class="std std-ref">Function dv3(const double&amp;, const double&amp;, const double&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a6fb04bd01f21b6eaeae80ae16beab220.html#exhale-function-vector-helper-8cuh-1a6fb04bd01f21b6eaeae80ae16beab220"><span class="std std-ref">Function dv3(const uint&amp;, const double *, const double *, const double *)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a4b2ce3f84072f8ec96163bf95353419f.html#exhale-function-vector-helper-8cuh-1a4b2ce3f84072f8ec96163bf95353419f"><span class="std std-ref">Function floor</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a683a1c9742c1856814004c2d5b70d1ff.html#exhale-function-vector-helper-8cuh-1a683a1c9742c1856814004c2d5b70d1ff"><span class="std std-ref">Function floor_div</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1af5fe7411fd2df55cd4380a55700d411e.html#exhale-function-vector-helper-8cuh-1af5fe7411fd2df55cd4380a55700d411e"><span class="std std-ref">Function floorf</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a72950334e9e46f1c06d974d8f62b9fb1.html#exhale-function-vector-helper-8cuh-1a72950334e9e46f1c06d974d8f62b9fb1"><span class="std std-ref">Function max</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a72950334e9e46f1c06d974d8f62b9fb1.html#exhale-function-vector-helper-8cuh-1a72950334e9e46f1c06d974d8f62b9fb1"><span class="std std-ref">Function max(const float3&amp;, const float3&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a81700598a91fb7bb4c9654c409e62a13.html#exhale-function-vector-helper-8cuh-1a81700598a91fb7bb4c9654c409e62a13"><span class="std std-ref">Function max(const double3&amp;, const double3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a531f3bcc98061695a33b52bf908603f7.html#exhale-function-vector-helper-8cuh-1a531f3bcc98061695a33b52bf908603f7"><span class="std std-ref">Function min</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1aa55c990b6ab4707ddaa4ecd0ab63a207.html#exhale-function-vector-helper-8cuh-1aa55c990b6ab4707ddaa4ecd0ab63a207"><span class="std std-ref">Function norm(const double3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a28f73470afc42130bf54a623c4e915a9.html#exhale-function-vector-helper-8cuh-1a28f73470afc42130bf54a623c4e915a9"><span class="std std-ref">Function norm(const float3&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a1f3b513e6ed1575aaa4c71eccf61a5da.html#exhale-function-vector-helper-8cuh-1a1f3b513e6ed1575aaa4c71eccf61a5da"><span class="std std-ref">Function operator*(const float3&amp;, const float&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1afd6722a71ccc06dba2509c239c46f110.html#exhale-function-vector-helper-8cuh-1afd6722a71ccc06dba2509c239c46f110"><span class="std std-ref">Function operator*(const float&amp;, const float3&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1aa55c990b6ab4707ddaa4ecd0ab63a207.html#exhale-function-vector-helper-8cuh-1aa55c990b6ab4707ddaa4ecd0ab63a207"><span class="std std-ref">Function norm(const double3&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a1e9fb1e802bc32f24b38c214e338404c.html#exhale-function-vector-helper-8cuh-1a1e9fb1e802bc32f24b38c214e338404c"><span class="std std-ref">Function operator*(const double3&amp;, const double3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a4aac4c07f934ba8502ab33552e9b7ba6.html#exhale-function-vector-helper-8cuh-1a4aac4c07f934ba8502ab33552e9b7ba6"><span class="std std-ref">Function operator*(const float2&amp;, const float&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a1dff652374b2961e41faf1c2709f517c.html#exhale-function-vector-helper-8cuh-1a1dff652374b2961e41faf1c2709f517c"><span class="std std-ref">Function operator*(const float&amp;, const float2&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a8855fb23f98448be5fc493ac975ae91b.html#exhale-function-vector-helper-8cuh-1a8855fb23f98448be5fc493ac975ae91b"><span class="std std-ref">Function operator*(const double3&amp;, const double&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a1f3b513e6ed1575aaa4c71eccf61a5da.html#exhale-function-vector-helper-8cuh-1a1f3b513e6ed1575aaa4c71eccf61a5da"><span class="std std-ref">Function operator*(const float3&amp;, const float&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1acf83fcfd2a72d8af9885b249faa492d2.html#exhale-function-vector-helper-8cuh-1acf83fcfd2a72d8af9885b249faa492d2"><span class="std std-ref">Function operator*(const float3&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a34c70af235c48a52a41e1d479b4d391d.html#exhale-function-vector-helper-8cuh-1a34c70af235c48a52a41e1d479b4d391d"><span class="std std-ref">Function operator*(const double&amp;, const double3&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1afd6722a71ccc06dba2509c239c46f110.html#exhale-function-vector-helper-8cuh-1afd6722a71ccc06dba2509c239c46f110"><span class="std std-ref">Function operator*(const float&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a54bff3e067eac774b5bf1d661a407f3a.html#exhale-function-vector-helper-8cuh-1a54bff3e067eac774b5bf1d661a407f3a"><span class="std std-ref">Function operator+(const float3&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a8d2fceab33556e4c195e7bcd8e6c0c07.html#exhale-function-vector-helper-8cuh-1a8d2fceab33556e4c195e7bcd8e6c0c07"><span class="std std-ref">Function operator+(const double3&amp;, const double3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a78c9781a7d3dc4fc2ab525291cefd9fa.html#exhale-function-vector-helper-8cuh-1a78c9781a7d3dc4fc2ab525291cefd9fa"><span class="std std-ref">Function operator+=(float3&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1add7d5bbcd82d8ebaffcc70b8bbb3742d.html#exhale-function-vector-helper-8cuh-1add7d5bbcd82d8ebaffcc70b8bbb3742d"><span class="std std-ref">Function operator+=(float2&amp;, const float2&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a09d7ee9ef5de7265e2125d4fd2537edf.html#exhale-function-vector-helper-8cuh-1a09d7ee9ef5de7265e2125d4fd2537edf"><span class="std std-ref">Function operator-(const float3&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a2fbe11e96fb7bc6d19177966450ec5ab.html#exhale-function-vector-helper-8cuh-1a2fbe11e96fb7bc6d19177966450ec5ab"><span class="std std-ref">Function operator-(const double3&amp;, const double3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1af9a53abb1d8a4b028e2d1d387a477b07.html#exhale-function-vector-helper-8cuh-1af9a53abb1d8a4b028e2d1d387a477b07"><span class="std std-ref">Function operator-(const float3&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a09d7ee9ef5de7265e2125d4fd2537edf.html#exhale-function-vector-helper-8cuh-1a09d7ee9ef5de7265e2125d4fd2537edf"><span class="std std-ref">Function operator-(const float3&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a6ca3a1b33fb8f7664ae0ecf19fcdd077.html#exhale-function-vector-helper-8cuh-1a6ca3a1b33fb8f7664ae0ecf19fcdd077"><span class="std std-ref">Function operator-=</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a45e1809480fba25152ee19f55bed0670.html#exhale-function-vector-helper-8cuh-1a45e1809480fba25152ee19f55bed0670"><span class="std std-ref">Function operator/</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1acb593b8af6a3631f5c3ed2fbc987e4fb.html#exhale-function-vector-helper-8cuh-1acb593b8af6a3631f5c3ed2fbc987e4fb"><span class="std std-ref">Function operator&lt;=(const float3&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a86016f1de774a4d2a9d97c72d1e9535f.html#exhale-function-vector-helper-8cuh-1a86016f1de774a4d2a9d97c72d1e9535f"><span class="std std-ref">Function operator&lt;=(const float3&amp;, const float&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1ae4157cc903094bb0960d8ca9da4e6f81.html#exhale-function-vector-helper-8cuh-1ae4157cc903094bb0960d8ca9da4e6f81"><span class="std std-ref">Function operator&gt;=(const float3&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a7f27f993cff57f9958020f4e1e8131f9.html#exhale-function-vector-helper-8cuh-1a7f27f993cff57f9958020f4e1e8131f9"><span class="std std-ref">Function operator&gt;=(const float3&amp;, const float&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1ae4157cc903094bb0960d8ca9da4e6f81.html#exhale-function-vector-helper-8cuh-1ae4157cc903094bb0960d8ca9da4e6f81"><span class="std std-ref">Function operator&gt;=(const float3&amp;, const float3&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1ac203d3fdc35e4d96722c5c50cfc93eb7.html#exhale-function-vector-helper-8cuh-1ac203d3fdc35e4d96722c5c50cfc93eb7"><span class="std std-ref">Function prod</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a8295609b89def8e83f54dd7dec04a2be.html#exhale-function-vector-helper-8cuh-1a8295609b89def8e83f54dd7dec04a2be"><span class="std std-ref">Function sat(const float&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a93b7ebe608d96062ea9b8050528a1cc2.html#exhale-function-vector-helper-8cuh-1a93b7ebe608d96062ea9b8050528a1cc2"><span class="std std-ref">Function sat(const float2&amp;)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1afb2fe7522c5ae88ac19ee29ca193f02a.html#exhale-function-vector-helper-8cuh-1afb2fe7522c5ae88ac19ee29ca193f02a"><span class="std std-ref">Function store_v3</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a75ee4de24d52c61fc842ea9a64f8e90d.html#exhale-function-vector-helper-8cuh-1a75ee4de24d52c61fc842ea9a64f8e90d"><span class="std std-ref">Function v3(const float&amp;)</span></a></p></li>
-<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a1e0abb2b185c58a6979bfd2231df8831.html#exhale-function-vector-helper-8cuh-1a1e0abb2b185c58a6979bfd2231df8831"><span class="std std-ref">Function v3(const uint&amp;, const float *, const float *, const float *)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a4c7f9eff1493a945230f4a2b2064b101.html#exhale-function-vector-helper-8cuh-1a4c7f9eff1493a945230f4a2b2064b101"><span class="std std-ref">Function v3(const uint&amp;, const double *, const double *, const double *)</span></a></p></li>
 <li><p><a class="reference internal" href="function_vector__helper_8cuh_1a1135c3bc403d9cd87ea798dcfbc10db4.html#exhale-function-vector-helper-8cuh-1a1135c3bc403d9cd87ea798dcfbc10db4"><span class="std std-ref">Function v3(const float&amp;, const float&amp;, const float&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a75ee4de24d52c61fc842ea9a64f8e90d.html#exhale-function-vector-helper-8cuh-1a75ee4de24d52c61fc842ea9a64f8e90d"><span class="std std-ref">Function v3(const float&amp;)</span></a></p></li>
+<li><p><a class="reference internal" href="function_vector__helper_8cuh_1a1e0abb2b185c58a6979bfd2231df8831.html#exhale-function-vector-helper-8cuh-1a1e0abb2b185c58a6979bfd2231df8831"><span class="std std-ref">Function v3(const uint&amp;, const float *, const float *, const float *)</span></a></p></li>
 </ul>
 </section>
 <section id="defines">

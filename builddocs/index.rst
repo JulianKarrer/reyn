@@ -10,4 +10,5 @@ C++ Documentation
 
    samplings/index
    benchmarks/index
+   lbvh/index
    api/library_root

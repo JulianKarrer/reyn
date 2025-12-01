@@ -30,6 +30,20 @@ public:
             std::format(fmt, std::forward<Args>(args)...));
     };
 
+    ///@brief Log some debug message with an "INFO" tag
+    ///
+    ///@tparam Args
+    ///@param tag optional coloured name to display before the message
+    ///@param fmt `std::format` format string for log message
+    ///@param args `std::format` arguments for log message
+    template <typename... Args>
+    static void InfoTagged(
+        std::string_view tag, std::format_string<Args...> fmt, Args&&... args)
+    {
+        _log("INFO", Log::ESC_CYAN, Log::ESC_CYAN_BOLD,
+            std::format(fmt, std::forward<Args>(args)...), tag);
+    };
+
     ///@brief Log a warning with an "WARN" tag
     ///
     ///@tparam Args
@@ -40,6 +54,20 @@ public:
     {
         _log("WARN", Log::ESC_YELLOW, Log::ESC_YELLOW_BOLD,
             std::format(fmt, std::forward<Args>(args)...));
+    };
+
+    ///@brief Log some debug message with an "WARN" tag
+    ///
+    ///@tparam Args
+    ///@param tag optional coloured name to display before the message
+    ///@param fmt `std::format` format string for log message
+    ///@param args `std::format` arguments for log message
+    template <typename... Args>
+    static void WarnTagged(
+        std::string_view tag, std::format_string<Args...> fmt, Args&&... args)
+    {
+        _log("WARN", Log::ESC_YELLOW, Log::ESC_YELLOW_BOLD,
+            std::format(fmt, std::forward<Args>(args)...), tag);
     };
 
     ///@brief Log a success message with a "SUCC" tag
@@ -54,6 +82,20 @@ public:
             std::format(fmt, std::forward<Args>(args)...));
     };
 
+    ///@brief Log some debug message with an "SUCC" tag
+    ///
+    ///@tparam Args
+    ///@param tag optional coloured name to display before the message
+    ///@param fmt `std::format` format string for log message
+    ///@param args `std::format` arguments for log message
+    template <typename... Args>
+    static void SuccessTagged(
+        std::string_view tag, std::format_string<Args...> fmt, Args&&... args)
+    {
+        _log("SUCC", Log::ESC_GREEN, Log::ESC_GREEN_BOLD,
+            std::format(fmt, std::forward<Args>(args)...), tag);
+    };
+
     ///@brief Log an error message with an "ERROR" tag
     ///
     ///@tparam Args
@@ -64,6 +106,19 @@ public:
     {
         _log("ERROR", Log::ESC_RED, Log::ESC_RED_BOLD,
             std::format(fmt, std::forward<Args>(args)...));
+    };
+    ///@brief Log some debug message with an "ERROR" tag
+    ///
+    ///@tparam Args
+    ///@param tag optional coloured name to display before the message
+    ///@param fmt `std::format` format string for log message
+    ///@param args `std::format` arguments for log message
+    template <typename... Args>
+    static void ErrorTagged(
+        std::string_view tag, std::format_string<Args...> fmt, Args&&... args)
+    {
+        _log("SUCC", Log::ESC_RED, Log::ESC_RED_BOLD,
+            std::format(fmt, std::forward<Args>(args)...), tag);
     };
 
     ///@brief Flush the output stream in the destructor
@@ -80,8 +135,9 @@ private:
     /// @param bold ANSII escape sequence for the BOLD colour used to display
     /// the message tag
     /// @param msg the message to log
+    /// @param tag optional coloured tag to display before the message
     static void _log(const char* name, const std::string_view colour,
-        const std::string_view bold, std::string msg)
+        const std::string_view bold, std::string msg, std::string_view tag = "")
     {
         Log& inst = instance();
 
@@ -91,9 +147,9 @@ private:
         std::time_t t = system_clock::to_time_t(now);
         char hms_str[20];
         strftime(hms_str, sizeof(hms_str), "%T", std::localtime(&t));
-        std::cout << std::format("{}[{}{}{} {}/{:03}{}]{} {}\n", colour, bold,
-            name, Log::ESC_DIMMED, hms_str, static_cast<int>(ms.count()),
-            colour, Log::ESC_DEFAULT, msg);
+        std::cout << std::format("{}[{}{}{} {}/{:03}{}] {} {} {}\n", colour,
+            bold, name, Log::ESC_DIMMED, hms_str, static_cast<int>(ms.count()),
+            colour, tag, Log::ESC_DEFAULT, msg);
     }
 
     // escape sequences taken from:

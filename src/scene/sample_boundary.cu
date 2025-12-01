@@ -11,6 +11,7 @@
 #include "common.h"
 #include "scene/ply_io.cuh"
 #include "scene.cuh"
+#include "datastructure/lbvh.cuh"
 
 #include "doctest/doctest.h"
 #include <fstream>
@@ -365,7 +366,7 @@ void calculate_boundary_masses(BoundarySamples& bdy, const float h,
 };
 
 void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
-    DeviceBuffer<float>& zs, const DeviceMesh& mesh, const float h,
+    DeviceBuffer<float>& zs, DeviceMesh& mesh, const float h,
     const float oversampling_factor, DeviceBuffer<int>* tri_ids)
 {
     const uint N_face { (uint)mesh.faces.size() };
@@ -473,7 +474,7 @@ BoundarySamples sample_mesh(const Mesh mesh_host, const float h, const float œÅ‚
     const uint mass_refinement_iterations)
 {
     // move vertex data and faces to the GPU by constructing a `DeviceMesh`
-    const DeviceMesh mesh { DeviceMesh::from(mesh_host) };
+    DeviceMesh mesh { DeviceMesh::from(mesh_host) };
 
     const float h_bdy { h / oversampling_factor };
     DeviceBuffer<float> xs(1);

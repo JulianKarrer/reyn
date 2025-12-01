@@ -144,6 +144,7 @@ set(REYN_SOURCES
     ${SRC_DIR}/solvers/PCISPH.cu
     ${SRC_DIR}/solvers/solver.cu
     ${SRC_DIR}/datastructure/uniformgrid.cu
+    ${SRC_DIR}/datastructure/lbvh.cu
     ${SRC_DIR}/timestep/cfl.cu
 )
 set(REYN_HEADERS
@@ -161,6 +162,7 @@ set(REYN_HEADERS
     ${SRC_DIR}/solvers/PCISPH.cuh
     ${SRC_DIR}/solvers/solver.cuh
     ${SRC_DIR}/datastructure/uniformgrid.cuh
+    ${SRC_DIR}/datastructure/lbvh.cuh
     ${SRC_DIR}/timestep/cfl.cuh
 )
 add_executable(${PROJECT_NAME}

@@ -19,6 +19,13 @@ inline __host__ __device__ float3 v3(const float& x)
     return make_float3(x, x, x);
 };
 
+/// A shorthand constructor for `double3`, alias for `make_double3`
+inline __host__ __device__ double3 dv3(
+    const double& x, const double& y, const double& z)
+{
+    return make_double3(x, y, z);
+};
+
 /// @brief Constructor for a `float3` that loads each compoenent from the `i`th
 /// entry provided in the accompanying pointers in order to construct a vector
 /// from quantities stored in SoA format
@@ -174,6 +181,16 @@ inline __host__ __device__ float3 operator*(const float& a, const float3& b)
 {
     return make_float3(b.x * a, b.y * a, b.z * a);
 };
+/// @brief Element-wise multiplication of two vectors, i.e. Hadamard product ⊗
+inline __host__ __device__ float3 operator*(const float3& a, const float3& b)
+{
+    return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
+};
+/// @brief Element-wise multiplication of two vectors, i.e. Hadamard product ⊗
+inline __host__ __device__ double3 operator*(const double3& a, const double3& b)
+{
+    return make_double3(a.x * b.x, a.y * b.y, a.z * b.z);
+};
 
 inline __host__ __device__ float2 operator*(const float2& a, const float& b)
 {
@@ -241,19 +258,6 @@ inline __host__ __device__ float norm(const float3& a)
     return fsqrt(dot(a, a));
 #endif
 };
-
-/// @brief Compute the element-wise minimum
-inline __host__ __device__ float3 min(const float3& a, const float3& b)
-{
-    return make_float3(fmin(a.x, b.x), fmin(a.y, b.y), fmin(a.z, b.z));
-}
-
-/// @brief Compute the element-wise maximum
-inline __host__ __device__ float3 max(const float3& a, const float3& b)
-{
-    return make_float3(fmax(a.x, b.x), fmax(a.y, b.y), fmax(a.z, b.z));
-}
-
 /// @brief NOTE: this function might behave differently in `__device__` and
 /// `__host__` code due to alternate implementations depending on intrinsics
 /// availablility!
@@ -267,6 +271,23 @@ inline __host__ __device__ double norm(const double3& a)
     return sqrt(dot(a, a));
 #endif
 };
+
+/// @brief Compute the element-wise minimum
+inline __host__ __device__ float3 min(const float3& a, const float3& b)
+{
+    return make_float3(fminf(a.x, b.x), fminf(a.y, b.y), fminf(a.z, b.z));
+}
+
+/// @brief Compute the element-wise maximum
+inline __host__ __device__ float3 max(const float3& a, const float3& b)
+{
+    return make_float3(fmaxf(a.x, b.x), fmaxf(a.y, b.y), fmaxf(a.z, b.z));
+}
+/// @brief Compute the element-wise maximum
+inline __host__ __device__ double3 max(const double3& a, const double3& b)
+{
+    return make_double3(fmax(a.x, b.x), fmax(a.y, b.y), fmax(a.z, b.z));
+}
 
 /// @brief Round down each component of a `float3` to the next highest integer
 /// smaller than the component
