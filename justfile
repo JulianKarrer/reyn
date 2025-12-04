@@ -59,7 +59,7 @@ docs:
     rm -rf {{DOCS_DIR}}/doxygen-output
 
     # run benchmarks (cmake setup must be re-run with DBENCH)
-    # just run-benches
+    just run-benches
 
     # run tests
     just test

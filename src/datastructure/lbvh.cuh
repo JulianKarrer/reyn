@@ -3,7 +3,9 @@
 
 #include "scene/sample_boundary.cuh"
 #include "buffer.cuh"
-#include "vector_helper.cuh"
+#include "utils/vector.cuh"
+#include "utils/geometry.cuh"
+#include "utils/dispatch.cuh"
 #include <thrust/sort.h>
 #include "log.h"
 
@@ -27,9 +29,12 @@ __device__ static inline uint32_t expand_bits(uint32_t v)
 /// [Tero Karras]
 /// https://developer.nvidia.com/blog/thinking-parallel-part-iii-tree-construction-gpu/
 /// @param v a vertex to assign a morton code to, which should be in [0.f ;
-/// 1024.f] along every spatial dimension
+/// 1.f] along every spatial dimension
 __device__ static inline uint32_t morton_3d(double3 v)
 {
+    assert(0. <= v.x && v.x <= 1.);
+    assert(0. <= v.y && v.y <= 1.);
+    assert(0. <= v.z && v.z <= 1.);
     const float x = (float)min(max(v.x * 1024., 0.), 1023.);
     const float y = (float)min(max(v.y * 1024., 0.), 1023.);
     const float z = (float)min(max(v.z * 1024., 0.), 1023.);
@@ -37,31 +42,6 @@ __device__ static inline uint32_t morton_3d(double3 v)
     unsigned int yy = expand_bits((unsigned int)y);
     unsigned int zz = expand_bits((unsigned int)z);
     return xx * 4 + yy * 2 + zz;
-}
-
-/// @brief Compare two 32 bit Morton codes, returning the length of the longest
-/// common prefix. For i!=j, this function emulates unique morton codes by using
-/// the respective indices as a tiebreaker when Morton codes are equal, meaning
-/// 32 will never be returned.
-///
-/// This performs `__clz(kᵢ ⊗ kⱼ)` if kᵢ ≠ kⱼ (keys are distinct) and
-/// `__clz(kᵢ' ⊗ kⱼ')` with `kᵢ' = (kᵢ << 32 | i)` etc. otherwise
-/// @param code_i first Morton code to compare
-/// @param i index of first Morton code
-/// @param codes second Morton code to compare to the first
-/// @param j index of second Morton code
-/// @return the length of the longest common prefix of either the codes, or the
-/// codes and their concatenated indices for tiebreaks.
-__device__ static inline int common_prefix(
-    const uint32_t code_i, const int i, const uint32_t code_j, const int j)
-{
-    if (code_i != code_j) {
-        return __clz(code_i ^ code_j);
-    } else {
-        const uint64_t k_i { code_i };
-        const uint64_t k_j { code_j };
-        return __clzll(((k_i << 32) | i) ^ ((k_j << 32) | j));
-    }
 }
 
 /// @brief Struct representing an Axis-Aligned Bounding Box or AABB
@@ -77,8 +57,16 @@ struct AABB {
     /// @return the union of both AABBs
     __host__ __device__ AABB operator|(const AABB other) const
     {
-        return AABB { min(this->mini, other.mini),
+        const AABB res { min(this->mini, other.mini),
             max(this->maxi, other.maxi) };
+        const float3 v { res.maxi - res.mini };
+        if (min(v.x, min(v.y, v.z)) == 0.f) {
+            // add a small epsilon offset relative to largest extent to mini and
+            // maxi
+            const float3 ε { v3(FLT_EPSILON) };
+            return AABB { mini - ε, maxi + ε };
+        }
+        return res;
     };
 
     ///@brief Get the centroid of the AABB
@@ -97,7 +85,64 @@ struct AABB {
             && mini.z <= v.z && v.z <= maxi.z);
     };
 
-    __host__ __device__ float3 get_volume() const { return maxi - mini; };
+    /// @brief Get the size of the AABB along every coordinate axis, i.e. `maxi
+    /// - mini`
+    /// @return size of the AABB along every axis
+    __host__ __device__ float3 get_size() const { return maxi - mini; };
+
+    /// @brief Lower bound of the squared euclidean distance from the query
+    /// point `p` to any point inside the AABB. Described in "Nearest Neighbor
+    /// Queries" [Roussopoulos, Kelley, Vincent]
+    /// @param p query point
+    /// @return lower bound of squared distance between p and any point in the
+    /// AABB
+    __host__ __device__ float min_dist(const float3 p) const
+    {
+        // r_i in the paper is equivalent to clamping between mini and maxi
+        // (if the invariant mini <= maxi is not violated)
+        assert(mini <= maxi);
+        const float3 r { min(max(p, mini), maxi) };
+        // return the sum of squared distances from p to r
+        const float3 d { r - p };
+        return dot(d, d);
+    };
+
+    ///@brief Upper bound on the squared euclidean distance from query point p
+    /// to any point in the AABB. Described in "Nearest Neighbor
+    /// Queries" [Roussopoulos, Kelley, Vincent]
+    ///@param p query point
+    ///@return upper bound of euclidean distance between p and a primtive in the
+    /// AABB
+    __host__ __device__ float min_max_dist(const float3 p) const
+    {
+        // project each component of p to the closest face of the AABB
+        const float3 c { get_centroid() };
+        const float3 rm { v3( //
+            p.x <= c.x ? mini.x : maxi.x, //
+            p.y <= c.y ? mini.y : maxi.y, //
+            p.z <= c.z ? mini.z : maxi.z) };
+        // also do the opposite along each axis
+        const float3 rM { v3( //
+            p.x >= c.x ? mini.x : maxi.x, //
+            p.y >= c.y ? mini.y : maxi.y, //
+            p.z >= c.z ? mini.z : maxi.z) };
+        // compute the squared distances from p to rm
+        const float3 p_rm { p - rm };
+        const float3 p_rm_sq { p_rm * p_rm };
+        // compute the squared distances from p to rM
+        const float3 p_rM { p - rM };
+        const float3 p_rM_sq { p_rM * p_rM };
+        // compute the minimum as described in the paper:
+        // each option is one component of p_rm_sq and the complementary two
+        // components of p_rM_sq
+        return min(min(
+                       // x-component
+                       p_rm_sq.x + p_rM_sq.y + p_rM_sq.z,
+                       // y-component
+                       p_rm_sq.y + p_rM_sq.x + p_rM_sq.z),
+            // z-component
+            p_rm_sq.z + p_rM_sq.x + p_rM_sq.y);
+    }
 };
 
 /// @brief Check if the left AABB is contained in the right AABB
@@ -148,7 +193,8 @@ struct ChildNode {
 };
 
 /// @brief Construct an AABB encompassing the three `double`-valued
-/// vertices of a triangle
+/// vertices of a triangle. Uses `FLT_EPSILON` to ensure non-zero volume of the
+/// resulting AABB.
 /// @param vert1 1st vertex
 /// @param vert2 2nd vertex
 /// @param vert3 3rd vertex
@@ -163,12 +209,11 @@ struct MortonCodeGenerator {
     const double* vzs;
     MortonCodeGenerator(double3 _bounds_min, double3 _volume, DeviceMesh* mesh)
         : bounds_min(_bounds_min)
-        , volume_inv(dv3(
-              (1024. / _volume.x), (1024. / _volume.y), (1024. / _volume.z)))
+        , volume_inv(dv3((1. / _volume.x), (1. / _volume.y), (1. / _volume.z)))
         , vxs(mesh->vxs.ptr())
         , vys(mesh->vys.ptr())
-        , vzs(mesh->vzs.ptr()) {};
-    __device__ uint32_t operator()(const uint3 face) const
+        , vzs(mesh->vzs.ptr()) { };
+    __device__ uint64_t operator()(const uint3 face) const
     {
         const double3 v1 { dv3(vxs[face.x], vys[face.x], vzs[face.x]) };
         const double3 v2 { dv3(vxs[face.y], vys[face.y], vzs[face.y]) };
@@ -180,7 +225,28 @@ struct MortonCodeGenerator {
         // volume of the overall AABB normalize the vertices
         const double3 centroid_normalized { centroid * volume_inv };
         const uint32_t morton_code { morton_3d(centroid_normalized) };
-        return morton_code;
+        return (uint64_t)morton_code;
+    }
+};
+
+///@brief Augment `uint64_t` Morton codes that only occupy the least significant
+/// 32 bits with the `uint32_t` index of the code, making it a unique 64 bit
+/// code while preserving the sorting of the array of codes.
+///
+/// The Morton code will take up the most significant 32 bits while the lower 32
+/// bits are taken up by the index
+struct MortonCodeExtender {
+    MortonCodeExtender() { };
+    __device__ uint64_t operator()(
+        const thrust::tuple<uint32_t, uint64_t>& tuple) const
+    {
+        const uint32_t i { thrust::get<0>(tuple) };
+        const uint64_t code { thrust::get<1>(tuple) };
+        // explicitly cast index to 64 bits unsigned
+        const uint64_t i_long { (uint64_t)i };
+        // shift the Morton code up and move the index into the gap using
+        // bitwise or
+        return (code << 32) | i_long;
     }
 };
 
@@ -193,10 +259,10 @@ struct MortonCodeGenerator {
 /// @param last last index into the codes (inclusive)
 /// @return index of the code to split on
 __device__ static inline int find_split(
-    const uint32_t* __restrict__ codes, const int first, const int last)
+    const uint64_t* __restrict__ codes, const int first, const int last)
 {
-    const uint32_t first_code { codes[first] };
-    const uint32_t last_code { codes[last] };
+    const uint64_t first_code { codes[first] };
+    const uint64_t last_code { codes[last] };
 
     // median split if codes are identical
     if (first_code == last_code) {
@@ -205,7 +271,7 @@ __device__ static inline int find_split(
 
     // count leading zeros (CLZ intrinsic) of XOR'ed codes to find the highest
     // differing bit
-    const int lcp { common_prefix(first_code, first, last_code, last) };
+    const int lcp { __clzll(first_code ^ last_code) };
 
     // binary search for split point, which is the highest id where more than
     // lcp bits are shared with the `first` code
@@ -215,8 +281,7 @@ __device__ static inline int find_split(
         step = (step + 1) >> 1; // exponential decrease
         const int new_split { split + step };
         if (new_split < last) {
-            const int new_lcp { common_prefix(
-                first_code, first, codes[new_split], new_split) };
+            const int new_lcp { __clzll(first_code ^ codes[new_split]) };
             if (new_lcp > lcp)
                 split = new_split;
         }
@@ -237,14 +302,14 @@ __device__ static inline int find_split(
 /// @param i current index
 /// @return range [lower, upper] of ndoes associated with node i
 __device__ static inline int2 determine_range(
-    const uint32_t* __restrict__ codes, const uint N, const int i)
+    const uint64_t* __restrict__ codes, const uint N, const int i)
 {
     if (i == 0) {
         return make_int2(0, N - 1);
     }
-    const uint32_t own_code { codes[i] };
-    const int delta_r { common_prefix(own_code, i, codes[i + 1], i + 1) };
-    const int delta_l { common_prefix(own_code, i, codes[i - 1], i - 1) };
+    const uint64_t own_code { codes[i] };
+    const int delta_l { __clzll(own_code ^ codes[i - 1]) };
+    const int delta_r { __clzll(own_code ^ codes[i + 1]) };
     const int d { delta_r > delta_l ? 1 : -1 }; // = sign(δᵣ - δₗ)
 
     // find one end of the range
@@ -253,8 +318,7 @@ __device__ static inline int2 determine_range(
 
     while (true) {
         const int j { i + d * lmax };
-        if (j < 0 || j >= N
-            || common_prefix(own_code, i, codes[j], j) <= delta_min) {
+        if (j < 0 || j >= N || __clzll(own_code ^ codes[j]) <= delta_min) {
             break;
         }
         lmax <<= 1; // lmax <- lmax * 2
@@ -265,7 +329,7 @@ __device__ static inline int2 determine_range(
     while (t >= 1) {
         const int j { i + d * (l + t) };
         if (j >= 0 && j < N) {
-            const int delta { common_prefix(own_code, i, codes[j], j) };
+            const int delta { __clzll(own_code ^ codes[j]) };
             if (delta > delta_min) {
                 l += t;
             }
@@ -292,7 +356,7 @@ __device__ static inline int2 determine_range(
 /// not
 /// @param parent index of the parent of the i-th internal node
 /// @param leaf_parent index of the parent of the i-th leaf node
-__global__ void generate_tree(const uint32_t* __restrict__ codes, const uint N,
+__global__ void generate_tree(const uint64_t* __restrict__ codes, const uint N,
     ChildNode* __restrict__ children_l, ChildNode* __restrict__ children_r,
     uint* __restrict__ parent, uint* __restrict__ leaf_parent);
 
@@ -328,31 +392,210 @@ __global__ void generate_tree(const uint32_t* __restrict__ codes, const uint N,
 /// @param aabbs_leaf the AABBs of each leaf node
 /// @param aabbs_internal the AABBs of each internal node
 /// @return
-__global__ void compute_aabbs(uint* __restrict__ parent,
-    uint* __restrict__ leaf_parent, uint* __restrict__ visited,
-    ChildNode* __restrict__ children_l, ChildNode* __restrict__ children_r,
-    uint N, double* __restrict__ vxs, double* __restrict__ vys,
-    double* __restrict__ vzs, uint3* __restrict__ faces,
+__global__ void compute_aabbs(const uint* __restrict__ parent,
+    const uint* __restrict__ leaf_parent, uint* __restrict__ visited,
+    const ChildNode* __restrict__ children_l,
+    const ChildNode* __restrict__ children_r, const uint N,
+    const double* __restrict__ vxs, const double* __restrict__ vys,
+    const double* __restrict__ vzs, const uint3* __restrict__ faces,
     AABB* __restrict__ aabbs_leaf, AABB* __restrict__ aabbs_internal);
 
+///@brief Compute the height of an LBVH binary radix tree by traversing upwards
+/// from all leaves and storing the number of edges encountered along each path
+/// in `depths`. A reduction over `depths` can then yield the maximum depth of
+/// the tree
+///@param N number of leaf nodes or primitives
+///@param leaf_parents parent indices of leaf nodes
+///@param parent parent indices of internal nodes
+///@param depths the output: number of edges from root to the respective node
+__global__ void compute_tree_height(const uint N,
+    const uint* __restrict__ leaf_parents, const uint* __restrict__ parent,
+    uint* __restrict__ depths);
+
+template <uint STACK_SIZE>
+__global__ void project_points(const uint N_ps, float* __restrict__ xs,
+    float* __restrict__ ys, float* __restrict__ zs,
+    const double* __restrict__ vxs, const double* __restrict__ vys,
+    const double* __restrict__ vzs, const uint3* __restrict__ faces,
+    const ChildNode* __restrict__ children_l,
+    const ChildNode* __restrict__ children_r,
+    const AABB* __restrict__ aabbs_leaf,
+    const AABB* __restrict__ aabbs_internal)
+{
+    uint i { blockIdx.x * blockDim.x + threadIdx.x };
+    if (i >= N_ps)
+        return;
+    // get query point
+    const float3 q { v3(i, xs, ys, zs) };
+
+    // construct stack that can hold sufficient entries for traversing the
+    // entire tree
+    uint32_t stack_idx[STACK_SIZE];
+    float stack_mindist[STACK_SIZE];
+    // initialize the first entry in the stack
+    stack_idx[0] = 0; // initial idx points to root node
+    stack_mindist[0]
+        = aabbs_internal[0].min_dist(q); // lower bound of dist to root AABB
+    // stack initially points to first empty element (at index 1)
+    int stack_ptr { 1 };
+
+    // initialize nearest object index and distance lower bound
+    float closest_point_dist_sq { FLT_MAX };
+    float3 closest_point { v3(0.f) };
+
+    // lambda function for traversing a child node
+    const auto traverse = [&] __device__(const float min_dist,
+                              const bool is_leaf, const uint32_t idx) {
+        // prune child nodes that at best (min_dist) are still further away than
+        // the current closest found point
+        if ( //
+             // l_min_dist <= r_min_max_dist &&
+            min_dist <= closest_point_dist_sq //
+        ) {
+            // check if the child is a leaf node, which may update the closest
+            // point, or an internal node that can be put on the stack
+            if (is_leaf) {
+                // compute actual squared distance to the primitive
+                const uint3 face { faces[idx] };
+                const float3 vert1 { v3(face.x, vxs, vys, vzs) };
+                const float3 vert2 { v3(face.y, vxs, vys, vzs) };
+                const float3 vert3 { v3(face.z, vxs, vys, vzs) };
+                const float3 projected_q { _closest_point_on_triangle(
+                    q, vert1, vert2, vert3) };
+                const float3 diff { projected_q - q };
+                const float dist_sq { dot(diff, diff) };
+                // if this distance is a new best, update the closest point so
+                // far
+                if (dist_sq <= closest_point_dist_sq) {
+                    closest_point_dist_sq = dist_sq;
+                    closest_point = projected_q;
+                }
+            } else {
+                // in this branch, the node is an internal node, put it on the
+                // stack
+                stack_idx[stack_ptr] = idx;
+                stack_mindist[stack_ptr] = min_dist;
+                stack_ptr++;
+            }
+        }
+    };
+
+    do {
+        // decrement stack pointer
+        stack_ptr--;
+
+        // if the AABB is at best further away than the current minimum
+        // point, prune this entry from the stack
+        if (stack_mindist[stack_ptr] > closest_point_dist_sq) {
+            continue;
+        }
+
+        // get index of the current node from the stack
+        const uint32_t idx { stack_idx[stack_ptr] };
+
+        // compute lower bound on squared distance to left child
+        const ChildNode l { children_l[idx] };
+        const bool l_is_leaf { l.is_leaf() };
+        const uint32_t l_idx { l.idx() };
+        const AABB l_aabb { (l_is_leaf ? aabbs_leaf : aabbs_internal)[l_idx] };
+        const float l_min_dist { l_aabb.min_dist(q) };
+        // const float l_min_max_dist { l_aabb.min_max_dist(q) };
+
+        // compute lower bound on squared distance to right child
+        const ChildNode r { children_r[idx] };
+        const bool r_is_leaf { r.is_leaf() };
+        const uint32_t r_idx { r.idx() };
+        const AABB r_aabb { (r_is_leaf ? aabbs_leaf : aabbs_internal)[r_idx] };
+        const float r_min_dist { r_aabb.min_dist(q) };
+        // const float r_min_max_dist { r_aabb.min_max_dist(q) };
+
+        // ordering matters! the closer children should be visited first, i.e.
+        // put on the stack last. use min_dist as an optimistic heuristic for
+        // actual distance to a primitive in the respective subtree
+        if (l_min_dist < r_min_dist) {
+            traverse(r_min_dist, r_is_leaf, r_idx);
+            traverse(l_min_dist, l_is_leaf, l_idx);
+        } else {
+            traverse(l_min_dist, l_is_leaf, l_idx);
+            traverse(r_min_dist, r_is_leaf, r_idx);
+        }
+
+        // assert(0 <= stack_ptr && stack_ptr < MAX_TREE_DEPTH);
+    } while (stack_ptr > 0); // repeat until stack is empty
+
+    // now, the entire stack is empty and the closest projected point was found,
+    // store it back
+    store_v3(closest_point, i, xs, ys, zs);
+};
+
+/// @brief Wrapper for launching the `project_points` kernel with a `STACK_SIZE`
+/// decided at runtime by `ListDispatcher` or similar
+/// @tparam STACK_SIZE stack size for BVH traversal
+template <unsigned STACK_SIZE> struct ProjectionLaunchFunctor {
+    void operator()(const uint N_ps, DeviceBuffer<float>& xs,
+        DeviceBuffer<float>& ys, DeviceBuffer<float>& zs,
+        const DeviceMesh* mesh, const DeviceBuffer<AABB>& aabbs_leaf,
+        const DeviceBuffer<AABB>& aabbs_internal,
+        const DeviceBuffer<ChildNode>& children_l,
+        const DeviceBuffer<ChildNode>& children_r) const
+    {
+        Log::InfoTagged(
+            "LBVH", "Projection launched with Stack Size {}", STACK_SIZE);
+        project_points<STACK_SIZE><<<BLOCKS(N_ps), BLOCK_SIZE>>>((uint)N_ps,
+            xs.ptr(), ys.ptr(), zs.ptr(), mesh->vxs.ptr(), mesh->vys.ptr(),
+            mesh->vzs.ptr(), mesh->faces.ptr(), children_l.ptr(),
+            children_r.ptr(), aabbs_leaf.ptr(), aabbs_internal.ptr());
+    };
+};
+
+///@brief A Linear Bounding Volume Hierarchy (LBVH) constructed bottom-up from
+/// Z-order/Morton-ordering of primitives to produce a balanced binary radix
+/// tree. Enables fast spatial queries such as finding the closest point on a
+/// triangular mesh to a query point (as used in the `project` method).
+///
+/// Stack-based traversal uses an optimistic heuristic for ordering of child
+/// nodes (minimum distance to AABB) and prunes the search tree using the
+/// closest squared distance observed so far during traversal.
+///
+/// Construction follows "Maximizing Parallelism in the Construction of BVHs,
+/// Octrees, and k-d Tree" by [Tero Karras] and traversal is inspired by
+/// "Nearest Neighbor Queries" by [Roussopoulos, Kelley, Vincent], similar to
+/// but not quite the same as the implementation by ToruNiina
+/// (https://github.com/ToruNiina/lbvh) which does not resort primitives by
+/// Morton code, uses a AoS layout, a different traversal method etc.
 class LBVH {
 private:
+    /// @brief pointer to the device mesh underlying the LBVH
     DeviceMesh* mesh;
+    ///@brief height of the binary radix tree built, which is also the stack
+    /// size required for traversal
+    uint max_tree_depth { 0 };
 
 public:
+    ///@brief number of primitives
     uint N_faces;
+    ///@brief AABBs of leaf nodes of the BVH
     DeviceBuffer<AABB> aabbs_leaf;
+    ///@brief AABBs of internal nodes of the BVH
     DeviceBuffer<AABB> aabbs_internal;
+    ///@brief for every internal node i, `children_l[i]` yields a struct that
+    /// contains a bitpacked representation of 1.) the index of the left child
+    /// of node i and a.) whether the left child is a leaf or internal node
     DeviceBuffer<ChildNode> children_l;
+    ///@brief for every internal node i, `children_r[i]` yields a struct that
+    /// contains a bitpacked representation of 1.) the index of the right child
+    /// of node i and a.) whether the right child is a leaf or internal node
     DeviceBuffer<ChildNode> children_r;
 
+    ///@brief Construct a new LBVH object
+    ///@param _mesh Mesh to construct an LBVH for
     LBVH(DeviceMesh* _mesh)
         : mesh(_mesh)
         , N_faces((uint)_mesh->faces.size())
         , aabbs_leaf(N_faces)
         , aabbs_internal(N_faces - 1)
-        , children_l(N_faces - 1)
-        , children_r(N_faces - 1)
+        , children_l(N_faces - 1, ChildNode { UINT32_MAX })
+        , children_r(N_faces - 1, ChildNode { UINT32_MAX })
     {
         Log::InfoTagged("LBVH", "Computing Bounds");
         // assemble or compute the minimum and maximum bounds of overall
@@ -363,16 +606,27 @@ public:
             mesh->vxs.max(), mesh->vys.max(), mesh->vzs.max()) };
 
         // compute morton codes for each face
-        Log::InfoTagged("LBVH", "Creating Morton Codes");
+        Log::InfoTagged(
+            "LBVH", "Creating Morton Codes for {} primitives", N_faces);
         const double3 volume { bounds_max - bounds_min };
         MortonCodeGenerator gen(bounds_min, volume, mesh);
-        DeviceBuffer<uint32_t> codes(N_faces);
+        DeviceBuffer<uint64_t> codes(N_faces);
         thrust::transform(mesh->faces.get().begin(), mesh->faces.get().end(),
             codes.get().begin(), gen);
         // sort the faces by morton code
         Log::InfoTagged("LBVH", "Sorting Primitives By Morton Codes");
         thrust::sort_by_key(
             codes.get().begin(), codes.get().end(), mesh->faces.get().begin());
+        // append indices to morton codes, now that the faces are sorted
+        // note that this preserves the sorting but should make keys unique even
+        // if morton codes coincide
+        auto codes_start = thrust::make_zip_iterator(thrust::make_tuple(
+            thrust::counting_iterator<uint32_t>(0), codes.get().begin()));
+        auto codes_end = thrust::make_zip_iterator(thrust::make_tuple(
+            thrust::counting_iterator<uint32_t>(codes.get().size()),
+            codes.get().end()));
+        thrust::transform(
+            codes_start, codes_end, codes.get().begin(), MortonCodeExtender {});
 
         // create the tree internal nodes as a SoA
         {
@@ -386,23 +640,45 @@ public:
                 leaf_parents.ptr());
 
             // create bounding boxes
-            Log::InfoTagged(
-                "LBVH", "Computing Bounding Boxes of internal nodes");
-            DeviceBuffer<uint> visited(N_faces - 1, 0);
+            Log::InfoTagged("LBVH", "Computing Bounding Boxes");
+            DeviceBuffer<uint> visited(N_faces, 0);
             compute_aabbs<<<BLOCKS(N_faces), BLOCK_SIZE>>>(parent.ptr(),
                 leaf_parents.ptr(), visited.ptr(), children_l.ptr(),
                 children_r.ptr(), N_faces, mesh->vxs.ptr(), mesh->vys.ptr(),
                 mesh->vzs.ptr(), mesh->faces.ptr(), aabbs_leaf.ptr(),
                 aabbs_internal.ptr());
 
+            // compute the tree height, reusing the `visited` buffer
+            Log::InfoTagged("LBVH", "Computing Tree height");
+            compute_tree_height<<<BLOCKS(N_faces), BLOCK_SIZE>>>(
+                N_faces, leaf_parents.ptr(), parent.ptr(), visited.ptr());
+            max_tree_depth = visited.max();
+            Log::InfoTagged(
+                "LBVH", "Height of the LBVH radix tree: {}", max_tree_depth);
+
             // end the current scope, which calls the destructors of the buffers
             // containing information about the parent node of each leaf and
             // internal node - this info is no longer needed after AABB
             // construction
         }
-
         CUDA_CHECK(cudaDeviceSynchronize());
         Log::SuccessTagged("LBVH", "Generated LBVH Tree");
+    };
+
+    void project(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
+        DeviceBuffer<float>& zs) const
+    {
+        // assert that coordinate buffers have the same size
+        size_t N_ps { xs.size() };
+        if (ys.size() != N_ps || zs.size() != N_ps) {
+            throw std::runtime_error("LBVH::project called with coordinate "
+                                     "buffers of differing sizes");
+        }
+        // perform the projection of each point to the closest point on the
+        // surface
+        ListDispatcher<ProjectionLaunchFunctor, 4, 8, 16, 24, 32, 48, 64,
+            128>::dispatch(max_tree_depth, (uint)N_ps, xs, ys, zs, mesh,
+            aabbs_leaf, aabbs_internal, children_l, children_r);
     };
 };
 

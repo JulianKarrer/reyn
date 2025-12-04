@@ -4,7 +4,7 @@
 #include "kernels.cuh"
 #include "solvers/PCISPH.cuh"
 #include "datastructure/uniformgrid.cuh"
-#include "vector_helper.cuh"
+#include "utils/vector.cuh"
 #include "scene/loader.h"
 #include "scene/sample_boundary.cuh"
 #include "scene/ply_io.cuh"

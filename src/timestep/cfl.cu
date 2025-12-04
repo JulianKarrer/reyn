@@ -1,6 +1,6 @@
 #include "cfl.cuh"
 #include <thrust/transform_reduce.h>
-#include <vector_helper.cuh>
+#include "utils/vector.cuh"
 
 float cfl_time_step(
     const float lambda, const float h, const Particles& state, const float3 g)

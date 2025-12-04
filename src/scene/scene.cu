@@ -1,6 +1,6 @@
 #include "scene/scene.cuh"
 #include "scene/sample_boundary.cuh"
-#include "vector_helper.cuh"
+#include "utils/vector.cuh"
 #include "scene/loader.h"
 #include <filesystem>
 #include <concepts>

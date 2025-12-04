@@ -156,7 +156,8 @@ set(REYN_HEADERS
     ${SRC_DIR}/scene/loader.h
     ${SRC_DIR}/scene/sample_boundary.cuh
     ${SRC_DIR}/scene/ply_io.cuh
-    ${SRC_DIR}/vector_helper.cuh
+    ${SRC_DIR}/utils/vector.cuh
+    ${SRC_DIR}/utils/geometry.cuh
     ${SRC_DIR}/kernels.cuh
     ${SRC_DIR}/solvers/SESPH.cuh
     ${SRC_DIR}/solvers/PCISPH.cuh

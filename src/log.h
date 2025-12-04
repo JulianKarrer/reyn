@@ -121,10 +121,29 @@ public:
             std::format(fmt, std::forward<Args>(args)...), tag);
     };
 
+    /// @brief From this call onwards, stop logging until it is resumed with
+    /// `start_logging`
+    static void stop_logging()
+    {
+        Log& inst = instance();
+        inst.logging = false;
+    };
+    /// @brief From this call onwards, start logging again after it was stopped
+    /// with `stop_logging`
+    static void start_logging()
+    {
+        Log& inst = instance();
+        inst.logging = true;
+    };
+
     ///@brief Flush the output stream in the destructor
     ~Log() { std::cout << std::flush; }
 
 private:
+    /// @brief Whether or not messages are currently being logged or simply
+    /// ignored
+    bool logging { true };
+
     /// @brief internal function used to implement the various public interfaces
     /// for the logger, since they share the same common structure: print some
     /// tag and a timestamp in some colour, then format the message and write it
@@ -140,6 +159,8 @@ private:
         const std::string_view bold, std::string msg, std::string_view tag = "")
     {
         Log& inst = instance();
+        if (!inst.logging)
+            return;
 
         using namespace std::chrono;
         auto now = system_clock::now();

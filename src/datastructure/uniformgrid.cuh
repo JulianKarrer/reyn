@@ -2,7 +2,7 @@
 #define DATASTRUCTURE_UNIFORMGRID_CUH_
 
 #include "buffer.cuh"
-#include "vector_helper.cuh"
+#include "utils/vector.cuh"
 #include "particles.cuh"
 #include <thrust/device_vector.h>
 

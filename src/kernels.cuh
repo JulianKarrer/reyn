@@ -1,7 +1,7 @@
 #ifndef KERNELS_CUH_
 #define KERNELS_CUH_
 
-#include "vector_helper.cuh"
+#include "utils/vector.cuh"
 #include <cmath>
 
 /// @brief Base class of kernel functions for static polymorphism using CRTP
