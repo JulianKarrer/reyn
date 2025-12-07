@@ -33,9 +33,8 @@ int main()
         DeviceBuffer<float> tmp3(1);
         DeviceBuffer<float> tmp4(1);
 
-        // initialize scene
-        Scene scene("scenes/cube.obj", 1000000, v3(-1.), v3(0.), 1., state,
-            tmp1, 3., 1.);
+        Scene scene { Scene::from_obj(
+            "scenes/dragonbox.obj", 1000000, 1., state, tmp1, 3., 1.) };
         gui.set_boundary_to_render(&scene.bdy);
 
         // initialize kernel function and solver

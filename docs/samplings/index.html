@@ -205,12 +205,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structChildNode.html">Struct ChildNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structCullPredicate.html">Struct CullPredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structDeviceLBVH.html">Struct DeviceLBVH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structGenJitter.html">Struct GenJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/structListDispatcher.html">Template Struct ListDispatcher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/structListDispatcher_3_01Launch_00_01Last_01_4.html">Template Struct ListDispatcher&lt; Launch, Last &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structhas__templated__call__operator.html">Template Struct has_templated_call_operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structhas__templated__call__operator_3_01T_00_01Tuple_00_01std_1_1void__t_3_01decltype_07std_1_1de6d0a016993f2cbb04a203bdb7b2b88.html">Template Struct has_templated_call_operator&lt; T, Tuple, std::void_t&lt; decltype(std::declval&lt; T &gt;, ().template operator()&lt; Tuple &gt;, (std::declval&lt; Tuple const &amp; &gt;, ())) &gt; &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structInsidePredicate.html">Template Struct InsidePredicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structLaunchInsidePredicate.html">Template Struct LaunchInsidePredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
@@ -218,6 +222,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/structMortonCodeExtender.html">Struct MortonCodeExtender</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structMortonCodeGenerator.html">Struct MortonCodeGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structProjectionLaunchFunctor.html">Template Struct ProjectionLaunchFunctor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structRuntimeTemplateSelectList.html">Template Struct RuntimeTemplateSelectList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structRuntimeTemplateSelectList_3_01Launch_00_01Last_01_4.html">Template Struct RuntimeTemplateSelectList&lt; Launch, Last &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structUniformGrid.html">Template Struct UniformGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/classB3.html">Class B3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/classC2.html">Class C2</a></li>
@@ -430,6 +436,7 @@
 <p>Algorithm:</p>
 <ul class="simple">
 <li><p>Build datastructure for fixed radius neighbourhood query</p></li>
+<li><p>Build LBVH for closest point on mesh queries</p></li>
 <li><p>Compute number density <span class="math notranslate nohighlight">\(\hat{\rho}_i = \sum_{j\in\mathcal{N}_i} W(\vec{x}_{ij})\)</span> (like density but with <span class="math notranslate nohighlight">\(\forall i: m_i=1\)</span>)</p></li>
 <li><p>Use symmetric gradient formula to shift particles in direction of negative number density gradient <span class="math notranslate nohighlight">\(-\nabla\hat{\rho}_i = - k \cdot h_{bdy}^2 \sum_{j\in\mathcal{N}_i} \left( \frac{\hat{\rho}_i}{\hat{\rho}_0^2} + \frac{\hat{\rho}_j}{\hat{\rho}_0^2}\right) \nabla W\left(\vec{x}_{ij}\right)\)</span></p>
 <ul>
@@ -438,17 +445,17 @@
 </ul>
 </li>
 <li><p>Relaxation Coefficient <span class="math notranslate nohighlight">\(k=1\)</span> appears close to optimal across all length scales, see plots below</p></li>
-<li><p>Project shifted particle to closest point on triangle it was sampled on (see “Real-Time Collision Detection” by Christer Ericson)</p></li>
+<li><p>Project shifted particle to closest point on triangle mesh (see “Real-Time Collision Detection” by Christer Ericson for closest point on triangle + stack-based LBVH traversal for finding the closest point on the entire mesh)</p></li>
 <li><p>Repeat for a few iterations (on the order of 10, a couple of milliseconds of runtime for millions of particles on consumer GPU)</p></li>
 </ul>
 <p>Caveats:</p>
 <ul class="simple">
 <li><p>For reasonable choice of <span class="math notranslate nohighlight">\(k\)</span>, quality improvement is lower-bound by initial, uniform random sampling.</p></li>
-<li><p>In cases where mesh resolution greatly exceeds the fluid resolution, projecting to respective triangles limits freedom of movement across the mesh. The issue can be circumvented by downsampling input meshes, which is unproblematic since the spatial resolution of the simulation upwards bounds the level of detail anyways. Alternatively, create datastructure for “nearest point on any triangle of this mesh” queries to generalize the algorithm to completely arbitrary meshes.</p></li>
+<li><p>Thanks to the LBVH, now works on meshes of any resolution, even resolutions mush greater than that of the fluid, and for near-degenerate triangles.</p></li>
 <li><p>Race conditions on write for particle shifts are not prevented via seperate write buffer (with memory cost) but seen as a perk (Gauss-Seidel &gt; Jacobi).</p></li>
 <li><p>Minimizing 3D, euclidean number density instead of maximizing geodesic distance on mesh is also not only faster but in this case might be desired.</p></li>
 </ul>
-<p>Appears to be a very cheap and effective way to get blue noise samplings with minimal memory cost, as shown for the Stanford dragon model (20.1k samples) with many small triangles and non-convex features and test cube (38.4k samples) with large, flat areas in the following.</p>
+<p>Appears to be a very cheap and effective way to get blue noise samplings with minimal memory cost, as shown for the Stanford dragon model (20.1k samples, 871.4k triangles) with many small triangles and non-convex features and test cube (38.4k samples, 12 triangles) with large, flat areas in the following.</p>
 <p>The following point clouds and graphs were auto-generated by REYN and exported using the script that constructed this website. Larger scenes with millions of samples were tested, but are less suitable for showcasing on the web.</p>
 </section>
 <section id="uniform-sampling">

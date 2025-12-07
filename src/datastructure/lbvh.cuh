@@ -212,7 +212,7 @@ struct MortonCodeGenerator {
         , volume_inv(dv3((1. / _volume.x), (1. / _volume.y), (1. / _volume.z)))
         , vxs(mesh->vxs.ptr())
         , vys(mesh->vys.ptr())
-        , vzs(mesh->vzs.ptr()) { };
+        , vzs(mesh->vzs.ptr()) {};
     __device__ uint64_t operator()(const uint3 face) const
     {
         const double3 v1 { dv3(vxs[face.x], vys[face.x], vzs[face.x]) };
@@ -236,7 +236,7 @@ struct MortonCodeGenerator {
 /// The Morton code will take up the most significant 32 bits while the lower 32
 /// bits are taken up by the index
 struct MortonCodeExtender {
-    MortonCodeExtender() { };
+    MortonCodeExtender() {};
     __device__ uint64_t operator()(
         const thrust::tuple<uint32_t, uint64_t>& tuple) const
     {
@@ -412,22 +412,13 @@ __global__ void compute_tree_height(const uint N,
     const uint* __restrict__ leaf_parents, const uint* __restrict__ parent,
     uint* __restrict__ depths);
 
-template <uint STACK_SIZE>
-__global__ void project_points(const uint N_ps, float* __restrict__ xs,
-    float* __restrict__ ys, float* __restrict__ zs,
-    const double* __restrict__ vxs, const double* __restrict__ vys,
-    const double* __restrict__ vzs, const uint3* __restrict__ faces,
+template <uint STACK_SIZE, typename TargetType, class F>
+__device__ inline static auto bvh_find_closest(float3 q,
     const ChildNode* __restrict__ children_l,
     const ChildNode* __restrict__ children_r,
     const AABB* __restrict__ aabbs_leaf,
-    const AABB* __restrict__ aabbs_internal)
+    const AABB* __restrict__ aabbs_internal, F f)
 {
-    uint i { blockIdx.x * blockDim.x + threadIdx.x };
-    if (i >= N_ps)
-        return;
-    // get query point
-    const float3 q { v3(i, xs, ys, zs) };
-
     // construct stack that can hold sufficient entries for traversing the
     // entire tree
     uint32_t stack_idx[STACK_SIZE];
@@ -441,7 +432,7 @@ __global__ void project_points(const uint N_ps, float* __restrict__ xs,
 
     // initialize nearest object index and distance lower bound
     float closest_point_dist_sq { FLT_MAX };
-    float3 closest_point { v3(0.f) };
+    TargetType closest_target {};
 
     // lambda function for traversing a child node
     const auto traverse = [&] __device__(const float min_dist,
@@ -456,19 +447,14 @@ __global__ void project_points(const uint N_ps, float* __restrict__ xs,
             // point, or an internal node that can be put on the stack
             if (is_leaf) {
                 // compute actual squared distance to the primitive
-                const uint3 face { faces[idx] };
-                const float3 vert1 { v3(face.x, vxs, vys, vzs) };
-                const float3 vert2 { v3(face.y, vxs, vys, vzs) };
-                const float3 vert3 { v3(face.z, vxs, vys, vzs) };
-                const float3 projected_q { _closest_point_on_triangle(
-                    q, vert1, vert2, vert3) };
-                const float3 diff { projected_q - q };
-                const float dist_sq { dot(diff, diff) };
+                const auto tup { f(idx) };
+                const float dist_sq { thrust::get<0>(tup) };
+                const TargetType acc { thrust::get<1>(tup) };
                 // if this distance is a new best, update the closest point so
                 // far
                 if (dist_sq <= closest_point_dist_sq) {
                     closest_point_dist_sq = dist_sq;
-                    closest_point = projected_q;
+                    closest_target = acc;
                 }
             } else {
                 // in this branch, the node is an internal node, put it on the
@@ -523,13 +509,56 @@ __global__ void project_points(const uint N_ps, float* __restrict__ xs,
         // assert(0 <= stack_ptr && stack_ptr < MAX_TREE_DEPTH);
     } while (stack_ptr > 0); // repeat until stack is empty
 
-    // now, the entire stack is empty and the closest projected point was found,
+    // now, the entire stack is empty and the closest target was found,
     // store it back
-    store_v3(closest_point, i, xs, ys, zs);
+    return closest_target;
+}
+
+template <uint STACK_SIZE>
+///@brief Kernel function to project points to the respectively closest point on
+/// a triangular mesh represented by an LBVH. Used in `LBVH::projection` via the
+/// `operator()` of the `ProjectionLaunchFunctor` functor
+__global__ void project_points(const uint N_ps, float* __restrict__ xs,
+    float* __restrict__ ys, float* __restrict__ zs,
+    const double* __restrict__ vxs, const double* __restrict__ vys,
+    const double* __restrict__ vzs, const uint3* __restrict__ faces,
+    const ChildNode* __restrict__ children_l,
+    const ChildNode* __restrict__ children_r,
+    const AABB* __restrict__ aabbs_leaf,
+    const AABB* __restrict__ aabbs_internal)
+{
+    uint i { blockIdx.x * blockDim.x + threadIdx.x };
+    if (i >= N_ps)
+        return;
+    // get query point
+    const float3 q { v3(i, xs, ys, zs) };
+
+    // traversal function must return squared distance to closest point on the
+    // primitive, as well as the target property of the closest point that
+    // should be kept track of, in this case the clsoest point itself
+    const auto traversal_func = [&] __device__(uint idx) {
+        // get closest point on idx-th triangle
+        const float3 projected_q { closest_point_on_triangle(
+            q, faces[idx], vxs, vys, vzs) };
+        // compute squared distance
+        const float3 diff { projected_q - q };
+        const float dist_sq { dot(diff, diff) };
+        // return tuple
+        return thrust::make_tuple(dist_sq, projected_q);
+    };
+
+    // pass `traversal_func` to a generic bvh traversal routine to keep track of
+    // closest points found so far, finally yielding the closest point to the
+    // mesh overall
+    const float3 closest_q { bvh_find_closest<STACK_SIZE, float3>(q, children_l,
+        children_r, aabbs_leaf, aabbs_internal, traversal_func) };
+
+    // store the closest point back to the buffer
+    store_v3(closest_q, i, xs, ys, zs);
 };
 
 /// @brief Wrapper for launching the `project_points` kernel with a `STACK_SIZE`
-/// decided at runtime by `ListDispatcher` or similar
+/// decided at runtime by `RuntimeTemplateSelectList` or similar
 /// @tparam STACK_SIZE stack size for BVH traversal
 template <unsigned STACK_SIZE> struct ProjectionLaunchFunctor {
     void operator()(const uint N_ps, DeviceBuffer<float>& xs,
@@ -539,13 +568,31 @@ template <unsigned STACK_SIZE> struct ProjectionLaunchFunctor {
         const DeviceBuffer<ChildNode>& children_l,
         const DeviceBuffer<ChildNode>& children_r) const
     {
-        Log::InfoTagged(
-            "LBVH", "Projection launched with Stack Size {}", STACK_SIZE);
+        Log::InfoTagged("LBVH", "Traversal Stack Size {}", STACK_SIZE);
         project_points<STACK_SIZE><<<BLOCKS(N_ps), BLOCK_SIZE>>>((uint)N_ps,
             xs.ptr(), ys.ptr(), zs.ptr(), mesh->vxs.ptr(), mesh->vys.ptr(),
             mesh->vzs.ptr(), mesh->faces.ptr(), children_l.ptr(),
             children_r.ptr(), aabbs_leaf.ptr(), aabbs_internal.ptr());
     };
+};
+
+///@brief POD struct containing raw pointers to buffers managed by an `LBVH`
+/// instance, for use in `__device__` functions and lambdas
+struct DeviceLBVH {
+    /// @brief underlying triangular mesh
+    const DeviceMesh* mesh;
+    ///@brief height of the binary tree
+    const uint tree_height;
+    ///@brief AABBs of leaf nodes of the tree
+    const AABB* aabbs_leaf;
+    ///@brief AABBs of internal nodes of the tree
+    const AABB* aabbs_internal;
+    ///@brief index and leaf vs. internal node info for left child of each
+    /// internal node
+    const ChildNode* children_l;
+    ///@brief index and leaf vs. internal node info for right child of each
+    /// internal node
+    const ChildNode* children_r;
 };
 
 ///@brief A Linear Bounding Volume Hierarchy (LBVH) constructed bottom-up from
@@ -569,7 +616,7 @@ private:
     DeviceMesh* mesh;
     ///@brief height of the binary radix tree built, which is also the stack
     /// size required for traversal
-    uint max_tree_depth { 0 };
+    uint tree_height { 0 };
 
 public:
     ///@brief number of primitives
@@ -586,6 +633,14 @@ public:
     /// contains a bitpacked representation of 1.) the index of the right child
     /// of node i and a.) whether the right child is a leaf or internal node
     DeviceBuffer<ChildNode> children_r;
+    ///@brief overall lower bound along each axis of the extent of all vertices
+    /// in the underlying mesh, together with `bounds_max` forms the
+    /// AABB encompassing the LBVH
+    double3 bounds_min;
+    ///@brief overall upper bound along each axis of the extent of all vertices
+    /// in the underlying mesh, together with `bounds_min` forms the
+    /// AABB encompassing the LBVH
+    double3 bounds_max;
 
     ///@brief Construct a new LBVH object
     ///@param _mesh Mesh to construct an LBVH for
@@ -596,27 +651,27 @@ public:
         , aabbs_internal(N_faces - 1)
         , children_l(N_faces - 1, ChildNode { UINT32_MAX })
         , children_r(N_faces - 1, ChildNode { UINT32_MAX })
+        , bounds_min(dv3(mesh->vxs.min(), mesh->vys.min(), mesh->vzs.min()))
+        , bounds_max(dv3(mesh->vxs.max(), mesh->vys.max(), mesh->vzs.max()))
     {
-        Log::InfoTagged("LBVH", "Computing Bounds");
-        // assemble or compute the minimum and maximum bounds of overall
-        // AABB encompassing all vertices
-        double3 bounds_min { dv3(
-            mesh->vxs.min(), mesh->vys.min(), mesh->vzs.min()) };
-        double3 bounds_max { dv3(
-            mesh->vxs.max(), mesh->vys.max(), mesh->vzs.max()) };
-
         // compute morton codes for each face
         Log::InfoTagged(
             "LBVH", "Creating Morton Codes for {} primitives", N_faces);
         const double3 volume { bounds_max - bounds_min };
         MortonCodeGenerator gen(bounds_min, volume, mesh);
+
+        // allocate buffer for morton codes
         DeviceBuffer<uint64_t> codes(N_faces);
+
+        // compute codes
         thrust::transform(mesh->faces.get().begin(), mesh->faces.get().end(),
             codes.get().begin(), gen);
+
         // sort the faces by morton code
         Log::InfoTagged("LBVH", "Sorting Primitives By Morton Codes");
         thrust::sort_by_key(
             codes.get().begin(), codes.get().end(), mesh->faces.get().begin());
+
         // append indices to morton codes, now that the faces are sorted
         // note that this preserves the sorting but should make keys unique even
         // if morton codes coincide
@@ -652,9 +707,9 @@ public:
             Log::InfoTagged("LBVH", "Computing Tree height");
             compute_tree_height<<<BLOCKS(N_faces), BLOCK_SIZE>>>(
                 N_faces, leaf_parents.ptr(), parent.ptr(), visited.ptr());
-            max_tree_depth = visited.max();
+            tree_height = visited.max();
             Log::InfoTagged(
-                "LBVH", "Height of the LBVH radix tree: {}", max_tree_depth);
+                "LBVH", "Height of the LBVH radix tree: {}", tree_height);
 
             // end the current scope, which calls the destructors of the buffers
             // containing information about the parent node of each leaf and
@@ -676,9 +731,24 @@ public:
         }
         // perform the projection of each point to the closest point on the
         // surface
-        ListDispatcher<ProjectionLaunchFunctor, 4, 8, 16, 24, 32, 48, 64,
-            128>::dispatch(max_tree_depth, (uint)N_ps, xs, ys, zs, mesh,
+        RuntimeTemplateSelectList<ProjectionLaunchFunctor, 4, 8, 16, 24, 32, 48,
+            64, 128>::dispatch(tree_height, (uint)N_ps, xs, ys, zs, mesh,
             aabbs_leaf, aabbs_internal, children_l, children_r);
+    };
+
+    ///@brief Get a POD struct with raw pointers to the buffers underlying the
+    /// LBVH, for use in `__device__` side functions, lambdas and kernels
+    ///@return `DeviceLBVH`
+    DeviceLBVH get_pod() const
+    {
+        return DeviceLBVH {
+            mesh,
+            tree_height,
+            aabbs_leaf.ptr(),
+            aabbs_internal.ptr(),
+            children_l.ptr(),
+            children_r.ptr(),
+        };
     };
 };
 

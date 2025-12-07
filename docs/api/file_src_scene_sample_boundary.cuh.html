@@ -205,12 +205,16 @@
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structChildNode.html">Struct ChildNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structCullPredicate.html">Struct CullPredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceLBVH.html">Struct DeviceLBVH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGenJitter.html">Struct GenJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structListDispatcher.html">Template Struct ListDispatcher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structListDispatcher_3_01Launch_00_01Last_01_4.html">Template Struct ListDispatcher&lt; Launch, Last &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator.html">Template Struct has_templated_call_operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator_3_01T_00_01Tuple_00_01std_1_1void__t_3_01decltype_07std_1_1de6d0a016993f2cbb04a203bdb7b2b88.html">Template Struct has_templated_call_operator&lt; T, Tuple, std::void_t&lt; decltype(std::declval&lt; T &gt;, ().template operator()&lt; Tuple &gt;, (std::declval&lt; Tuple const &amp; &gt;, ())) &gt; &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structInsidePredicate.html">Template Struct InsidePredicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structLaunchInsidePredicate.html">Template Struct LaunchInsidePredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
@@ -218,6 +222,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structMortonCodeExtender.html">Struct MortonCodeExtender</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMortonCodeGenerator.html">Struct MortonCodeGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structProjectionLaunchFunctor.html">Template Struct ProjectionLaunchFunctor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structRuntimeTemplateSelectList.html">Template Struct RuntimeTemplateSelectList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structRuntimeTemplateSelectList_3_01Launch_00_01Last_01_4.html">Template Struct RuntimeTemplateSelectList&lt; Launch, Last &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structUniformGrid.html">Template Struct UniformGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classB3.html">Class B3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classC2.html">Class C2</a></li>
@@ -437,6 +443,7 @@
 <li><p><a class="reference internal" href="file_src_main.cu.html#file-src-main-cu"><span class="std std-ref">File main.cu</span></a></p></li>
 <li><p><a class="reference internal" href="file_src_scene_sample_boundary.cu.html#file-src-scene-sample-boundary-cu"><span class="std std-ref">File sample_boundary.cu</span></a></p></li>
 <li><p><a class="reference internal" href="file_src_scene_scene.cu.html#file-src-scene-scene-cu"><span class="std std-ref">File scene.cu</span></a></p></li>
+<li><p><a class="reference internal" href="file_src_scene_scene.cuh.html#file-src-scene-scene-cuh"><span class="std std-ref">File scene.cuh</span></a></p></li>
 </ul>
 </section>
 <section id="classes">
@@ -449,9 +456,9 @@
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="function_sample__boundary_8cuh_1a8701a5f5008dd47f66bdc44cadb6bae7.html#exhale-function-sample-boundary-8cuh-1a8701a5f5008dd47f66bdc44cadb6bae7"><span class="std std-ref">Function calculate_boundary_masses(BoundarySamples&amp;, const float, const float, const float, const uint)</span></a></p></li>
-<li><p><a class="reference internal" href="function_sample__boundary_8cuh_1a1daf4f17245cde3db1f6956cefb2284f.html#exhale-function-sample-boundary-8cuh-1a1daf4f17245cde3db1f6956cefb2284f"><span class="std std-ref">Function relax_sampling(DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, const DeviceMesh&amp;, const float, const DeviceBuffer&lt;int&gt;&amp;, std::ostream *, const float, const uint)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cuh_1ad1cb0d62f7e1fc5d18f185a082387e12.html#exhale-function-sample-boundary-8cuh-1ad1cb0d62f7e1fc5d18f185a082387e12"><span class="std std-ref">Function relax_sampling(DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, DeviceMesh&amp;, const float, std::ostream *, const float, const uint)</span></a></p></li>
 <li><p><a class="reference internal" href="function_sample__boundary_8cuh_1ab2735d75bf30143f6e7d52fd7f1203e9.html#exhale-function-sample-boundary-8cuh-1ab2735d75bf30143f6e7d52fd7f1203e9"><span class="std std-ref">Function sample_mesh(const Mesh, const float, const float, const float, std::ostream *, const int, const float, const uint)</span></a></p></li>
-<li><p><a class="reference internal" href="function_sample__boundary_8cuh_1a041c5f89eb12ff341271afbc3f8a263f.html#exhale-function-sample-boundary-8cuh-1a041c5f89eb12ff341271afbc3f8a263f"><span class="std std-ref">Function uniform_sample_mesh(DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, DeviceMesh&amp;, const float, const float, DeviceBuffer&lt;int&gt; *)</span></a></p></li>
+<li><p><a class="reference internal" href="function_sample__boundary_8cuh_1a74296957d4ec85e2ecb7527fe2d2b991.html#exhale-function-sample-boundary-8cuh-1a74296957d4ec85e2ecb7527fe2d2b991"><span class="std std-ref">Function uniform_sample_mesh(DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, DeviceBuffer&lt;float&gt;&amp;, DeviceMesh&amp;, const float, const float)</span></a></p></li>
 </ul>
 </section>
 <section id="defines">

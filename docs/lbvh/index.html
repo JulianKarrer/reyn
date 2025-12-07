@@ -205,12 +205,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structChildNode.html">Struct ChildNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structCullPredicate.html">Struct CullPredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structDeviceLBVH.html">Struct DeviceLBVH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structGenJitter.html">Struct GenJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/structListDispatcher.html">Template Struct ListDispatcher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/structListDispatcher_3_01Launch_00_01Last_01_4.html">Template Struct ListDispatcher&lt; Launch, Last &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structhas__templated__call__operator.html">Template Struct has_templated_call_operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structhas__templated__call__operator_3_01T_00_01Tuple_00_01std_1_1void__t_3_01decltype_07std_1_1de6d0a016993f2cbb04a203bdb7b2b88.html">Template Struct has_templated_call_operator&lt; T, Tuple, std::void_t&lt; decltype(std::declval&lt; T &gt;, ().template operator()&lt; Tuple &gt;, (std::declval&lt; Tuple const &amp; &gt;, ())) &gt; &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structInsidePredicate.html">Template Struct InsidePredicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structLaunchInsidePredicate.html">Template Struct LaunchInsidePredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
@@ -218,6 +222,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/structMortonCodeExtender.html">Struct MortonCodeExtender</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structMortonCodeGenerator.html">Struct MortonCodeGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structProjectionLaunchFunctor.html">Template Struct ProjectionLaunchFunctor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structRuntimeTemplateSelectList.html">Template Struct RuntimeTemplateSelectList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/structRuntimeTemplateSelectList_3_01Launch_00_01Last_01_4.html">Template Struct RuntimeTemplateSelectList&lt; Launch, Last &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/structUniformGrid.html">Template Struct UniformGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/classB3.html">Class B3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/classC2.html">Class C2</a></li>
@@ -450,6 +456,17 @@ Octrees, and k-d Trees”</a> by Tero Karras and the accompanying blog post <a c
     </div>
 </div>
 <div id="lbvhboxes"></div>
+</section>
+<section id="implementation-details">
+<h2>Implementation Details<a class="headerlink" href="#implementation-details" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Instead of storing the binary radix tree as an array of nodes, a SoA layout was preferred with <code class="docutils literal notranslate"><span class="pre">children_l</span></code> and <code class="docutils literal notranslate"><span class="pre">children_r</span></code> buffers that each contain, bitpacked into a single 32bit unsigned integer, the index of the corresponding child node and a 1 bit flag in the LSB indicating if the child is a leaf node or not. This saves bandwdth during the memory-bound traversal</p></li>
+<li><p>If primitives are resorted in Morton-order, no object IDs are required since the index of a leaf node may point directly into the underlying primtive buffer</p></li>
+<li><p>Traversal uses the minimum squared distance to the AABB (<code class="docutils literal notranslate"><span class="pre">min(maxi,</span> <span class="pre">max(mini,</span> <span class="pre">p))</span> <span class="pre">-</span> <span class="pre">p</span></code> component-wise for AABB <code class="docutils literal notranslate"><span class="pre">mini,maxi</span></code>, then dot product with itself, see “Nearest Neighbor Queries” by [Roussopoulos, Kelley, Vincent]) to cull the search tree AND get an optimistic distance estimate for branch ordering, which is crucial for performance (put further child on the stack first -&gt; traverse the closer child first -&gt; more nodes can potentially be culled since the best result so far gets better faster)</p></li>
+<li><p>Using <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> Morton codes with tie-breaking using primitive indices or directly baking the primitive index into the least significant 32 bits of a <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> makes no difference in terms of peak memory consumption, since the buffer can be released before the much larger AABB buffers are filled. However, using <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> is more robust in implementation since uniqueness of keys can easily be tested when debugging, which is important since Karras’ algorithm <em><strong>REQUIRES</strong></em> unique codes or correct tiebreaking. Using incorrect tiebreaking or non-unique keys can produce subtle bugs that are a nightmare to debug.</p></li>
+<li><p>Factoring out the BVH traversal into a higher order function means that the same code can be reused for variations of “closest point to mesh” queries by providing different <code class="docutils literal notranslate"><span class="pre">__device__</span></code> lambdas. The squared distance to the closest point on the mesh must always be returned, but a second tuple entry can hold a quantity of interest, like the projected point itself <code class="docutils literal notranslate"><span class="pre">(uint32_t</span> <span class="pre">idx)-&gt;thrust::tuple&lt;float,</span> <span class="pre">float3&gt;</span></code>. Similarly <code class="docutils literal notranslate"><span class="pre">(uint32_t</span> <span class="pre">idx)-&gt;thrust::tuple&lt;float,</span> <span class="pre">bool&gt;</span></code> can then be used for checking if the query point is inside or outside the mesh by projecting the vector from query point to closest point on the mesh onto the normal of the corresponding triangle using a triple product <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">·</span> <span class="pre">(b</span> <span class="pre">⨉</span> <span class="pre">c)</span></code> (if winding order is consistent). This can be used to e.g. initialize fluid within some watertight mesh.</p></li>
+<li><p>Using recursion on variadic template arguments like a list construction in a functional language, a number of possible stack sizes for the fixed-size stack in BVH traversal can be given, and the specialization that gives the smallest stack size that fits the tree can be selected at runtime. Usage then looks like <code class="docutils literal notranslate"><span class="pre">RuntimeTemplateSelectList&lt;ProjectionLaunchFunctor,</span> <span class="pre">4,</span> <span class="pre">8,</span> <span class="pre">16,</span> <span class="pre">24,</span> <span class="pre">32,</span> <span class="pre">48,</span> <span class="pre">64,</span> <span class="pre">128&gt;::dispatch(tree_height,</span> <span class="pre">...args);</span></code></p></li>
+</ul>
 <script type="importmap">
 {
     "imports": {
@@ -732,6 +749,7 @@ Octrees, and k-d Trees”</a> by Tero Karras and the accompanying blog post <a c
             <ul>
 <li><a class="reference internal" href="#">LBVH</a><ul>
 <li><a class="reference internal" href="#visualization">Visualization</a></li>
+<li><a class="reference internal" href="#implementation-details">Implementation Details</a></li>
 </ul>
 </li>
 </ul>

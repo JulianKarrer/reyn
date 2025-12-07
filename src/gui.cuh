@@ -124,6 +124,9 @@ public:
     // move some camera and visualization settings to the public section so they
     // can be controlled when automatically creating videos or screenshots
 
+    /// @brief Whether or not the simulation should be paused, stalling in the
+    /// GUI update instead
+    bool stopped { true };
     /// @brief The initial or base radius of the camera around the
     /// `camera_target` position in spherical cooridnates, before scrolling
     float camera_radius_init { 4.f };
@@ -134,7 +137,7 @@ public:
     /// @brief An offset to the position of the camera
     glm::vec3 camera_offset { glm::vec3(0., 0., 0.) };
     /// @brief whether or not to render boundary particles, if present
-    bool show_boundary { false };
+    bool show_boundary { true };
     /// @brief The scalar used for colour mapping is scaled by the inverse of
     /// this value, to be adjusted intuitively to the maximum value of whatever
     /// quantity should be visualized.
@@ -185,9 +188,6 @@ private:
     // internals for GUI
     /// @brief Query whether the GUI has requested the application to close
     std::atomic<bool> exit_requested { ATOMIC_VAR_INIT(false) };
-    /// @brief Whether or not the simulation should be paused, stalling in the
-    /// GUI update instead
-    bool stopped { false };
     /// @brief Whether the GUI should run at the maximum frame rate,
     /// unthrottled. This is generally not recommended for computationally
     /// undemanding scenes since the simulation and rendering will essentially

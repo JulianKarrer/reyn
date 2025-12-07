@@ -29,6 +29,40 @@ struct DeviceMesh {
             DeviceBuffer<uint3>(mesh.faces.begin(), mesh.faces.end())
         };
     }
+
+    ///@brief Compute the volume of the Mesh using signed volumes, which assumes
+    /// a watertight mesh with well-defined bounded interior and a consistent
+    /// triangle winding.
+    ///
+    /// Uses the method described in "A Symbolic Method for Calculating the
+    /// Integral Properties of Arbitrary Nonconvex Polyhedra" [Sheue-ling Lien
+    /// and James T. Kajiya]
+    ///@return Volume of the mesh
+    double get_volume() const
+    {
+        const auto vxs_d { vxs.ptr() };
+        const auto vys_d { vys.ptr() };
+        const auto vzs_d { vzs.ptr() };
+        const double determinants { thrust::transform_reduce(
+            faces.get().begin(), faces.get().end(),
+            [vxs_d, vys_d, vzs_d] __device__(const uint3& face) -> double {
+                // load the three vertices of each triangle
+                const double3 a { dv3(face.x, vxs_d, vys_d, vzs_d) };
+                const double3 b { dv3(face.y, vxs_d, vys_d, vzs_d) };
+                const double3 c { dv3(face.z, vxs_d, vys_d, vzs_d) };
+                // compute the signed volume of the tetrahedron formed by the
+                // triangle and the origin, or the determinant of the matrix T
+                // in the paper, formed by the vertex positions as column
+                // vectors
+
+                // implemented using a triple product a · (b x c)
+                return dot(a, cross(b, c));
+            },
+            0.,
+            [] __device__(
+                const double a, const double b) -> double { return a + b; }) };
+        return abs(determinants) / 6.;
+    };
 };
 
 /// @brief Given boundary particle positions, fluid and boundary spacing,
@@ -58,17 +92,13 @@ void calculate_boundary_masses(BoundarySamples& bdy, const float h,
 /// "pressure" is allowed, stiffness is one, all masses are one and instead of a
 /// time step that is integrated over, a scale-dependent particle shift is
 /// calculated, before that shift is projected back onto the closest point on
-/// the triangle that each sample was created on. This may lead to problems with
-/// meshes that consist of triangles much smaller than the boundary sampling,
-/// since their ability to spread out is limited by the projection step.
+/// the triangular mesh using an LBVH for efficient distance queries.
 /// @param xs x-component of the samples to relax
 /// @param ys y-component of the samples to relax
 /// @param zs z-component of the samples to relax
 /// @param mesh device-side representation of the triangular mesh to sample
 /// @param h_bdy desired spacing of boundary particles
 /// boundary particles
-/// @param tri_ids the indices of the faces that each boundary sample was
-/// created on
 /// @param stream output stream to print debug information in CSV format to, if
 /// any
 /// @param relaxation_factor factor akin to the stiffness in the pressure solver
@@ -77,14 +107,13 @@ void calculate_boundary_masses(BoundarySamples& bdy, const float h,
 /// @param relaxation_iters maximum number of iterations of the relaxation
 /// procedure
 void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
-    DeviceBuffer<float>& zs, const DeviceMesh& mesh, const float h_bdy,
-    const DeviceBuffer<int>& tri_ids, std::ostream* debug_stream,
-    const float relaxation_factor, const uint relaxation_iters);
+    DeviceBuffer<float>& zs, DeviceMesh& mesh, const float h_bdy,
+    std::ostream* debug_stream, const float relaxation_factor,
+    const uint relaxation_iters);
 
 /// @brief Uniformly randomly sample a mesh. Uses stratified sampling of
 /// triangles by area using a discrete CDF from the prefix sum of triangle
-/// areas, then a uniform sampling within each triangle. Optionally remember
-/// which face each sample was placed on for later post-processing
+/// areas, then a uniform sampling within each triangle.
 /// @param xs buffer for x-components of the samples, resized by this function
 /// @param ys buffer for y-components of the samples, resized by this function
 /// @param zs buffer for z-components of the samples, resized by this function
@@ -92,12 +121,9 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
 /// @param h fluid particle spacing
 /// @param oversampling_factor ratio of boundary sample spacing to fluid spacing
 /// h
-/// @param tri_ids optional pointer to a buffer that assigns a face to each
-/// boundary sample, referencing the `faces` buffer in the `DeviceMesh` by
-/// index
 void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     DeviceBuffer<float>& zs, DeviceMesh& mesh, const float h,
-    const float oversampling_factor, DeviceBuffer<int>* tri_ids = nullptr);
+    const float oversampling_factor);
 
 /// @brief Place boundary samples uniformly randomly on the surface of the
 /// given `Mesh` with a spacing indicated by `h / oversampling_factor`.

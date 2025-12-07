@@ -205,12 +205,16 @@
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structChildNode.html">Struct ChildNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structCullPredicate.html">Struct CullPredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceLBVH.html">Struct DeviceLBVH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGenJitter.html">Struct GenJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structListDispatcher.html">Template Struct ListDispatcher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structListDispatcher_3_01Launch_00_01Last_01_4.html">Template Struct ListDispatcher&lt; Launch, Last &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator.html">Template Struct has_templated_call_operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator_3_01T_00_01Tuple_00_01std_1_1void__t_3_01decltype_07std_1_1de6d0a016993f2cbb04a203bdb7b2b88.html">Template Struct has_templated_call_operator&lt; T, Tuple, std::void_t&lt; decltype(std::declval&lt; T &gt;, ().template operator()&lt; Tuple &gt;, (std::declval&lt; Tuple const &amp; &gt;, ())) &gt; &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structInsidePredicate.html">Template Struct InsidePredicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structLaunchInsidePredicate.html">Template Struct LaunchInsidePredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
@@ -218,6 +222,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structMortonCodeExtender.html">Struct MortonCodeExtender</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMortonCodeGenerator.html">Struct MortonCodeGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structProjectionLaunchFunctor.html">Template Struct ProjectionLaunchFunctor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structRuntimeTemplateSelectList.html">Template Struct RuntimeTemplateSelectList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structRuntimeTemplateSelectList_3_01Launch_00_01Last_01_4.html">Template Struct RuntimeTemplateSelectList&lt; Launch, Last &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structUniformGrid.html">Template Struct UniformGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classB3.html">Class B3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classC2.html">Class C2</a></li>
@@ -416,13 +422,17 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;format&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
 
 <span class="cp">#define TINYOBJLOADER_USE_DOUBLE</span>
 <span class="cp">#define TINYOBJLOADER_IMPLEMENTATION</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;tiny_obj_loader.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;log.h&quot;</span>
 <span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">tinyobj</span><span class="p">;</span>
 
-<span class="n">Mesh</span><span class="w"> </span><span class="nf">load_mesh_from_obj</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">)</span>
+<span class="n">Mesh</span><span class="w"> </span><span class="nf">load_mesh_from_obj</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ignore</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">only_this_name</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">pathstr</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="n">string</span><span class="p">()</span><span class="w"> </span><span class="p">};</span>
 <span class="w">    </span><span class="n">tinyobj</span><span class="o">::</span><span class="n">attrib_t</span><span class="w"> </span><span class="n">attrib</span><span class="p">;</span>
@@ -443,15 +453,39 @@
 <span class="w">    </span><span class="c1">// iterate all shapes in file to find faces</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">uint3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">faces</span><span class="p">;</span>
 <span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">shape</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">shapes</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="c1">// skip shapes containing &quot;fluid&quot; or &quot;bounds&quot; in the name</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">shape</span><span class="p">.</span><span class="n">name</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;fluid&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">::</span><span class="n">npos</span>
-<span class="w">            </span><span class="o">||</span><span class="w"> </span><span class="n">shape</span><span class="p">.</span><span class="n">name</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;bounds&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">// skip shapes containing a string in their names that is included in</span>
+<span class="w">        </span><span class="c1">// the `skip` parameter</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">lower_name</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">shape</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">};</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span><span class="n">lower_name</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span><span class="w"> </span><span class="n">lower_name</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span><span class="w"> </span><span class="n">lower_name</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span>
+<span class="w">            </span><span class="p">[](</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tolower</span><span class="p">(</span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="p">});</span>
+
+<span class="w">        </span><span class="kt">bool</span><span class="w"> </span><span class="n">skip_shape</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="w"> </span><span class="p">};</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ignore</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">skip_shape</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">lower_name</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">c_str</span><span class="p">())</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">skip_shape</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">Log</span><span class="o">::</span><span class="n">WarnTagged</span><span class="p">(</span><span class="s">&quot;OBJ Load&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s">&quot;Skipping Shape {} while loading {}: forbidden by `ignore` &quot;</span>
+<span class="w">                </span><span class="s">&quot;list&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="n">lower_name</span><span class="p">,</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
 <span class="w">            </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="c1">// if an `only_this_name` name was specified, skip if that name is NOT</span>
+<span class="w">        </span><span class="c1">// found in the shape name</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">only_this_name</span>
+<span class="w">            </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">lower_name</span><span class="p">.</span><span class="n">find</span><span class="p">((</span><span class="o">*</span><span class="n">only_this_name</span><span class="p">).</span><span class="n">c_str</span><span class="p">())</span>
+<span class="w">                </span><span class="o">==</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">::</span><span class="n">npos</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">Log</span><span class="o">::</span><span class="n">WarnTagged</span><span class="p">(</span><span class="s">&quot;OBJ Load&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s">&quot;Skipping Shape {} while loading {}: Only {} should be loaded&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="n">lower_name</span><span class="p">,</span><span class="w"> </span><span class="n">path</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">only_this_name</span><span class="p">));</span>
+<span class="w">            </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
 <span class="w">        </span><span class="c1">// for each face in the respective mesh</span>
 <span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">mesh_t</span><span class="w"> </span><span class="n">mesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shape</span><span class="p">.</span><span class="n">mesh</span><span class="p">;</span>
 <span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">uint</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">mesh</span><span class="p">.</span><span class="n">num_face_vertices</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="c1">// if any of the faces are not triangulated, abort</span>
+
 <span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mesh</span><span class="p">.</span><span class="n">num_face_vertices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">                </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">runtime_error</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">format</span><span class="p">(</span>
 <span class="w">                    </span><span class="s">&quot;Non-triangulated face encountered in loading of mesh {}&quot;</span><span class="p">,</span>

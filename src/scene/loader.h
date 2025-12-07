@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <cuda_runtime.h>
 #include <vector>
+#include <optional>
 
 /// @brief Structure containing x,y,z components of vertices as `double`
 /// respectively and `uint3` of indices into those buffers representing the
@@ -21,6 +22,8 @@ struct Mesh {
 /// @brief Load a `Mesh` from a Wavefront OBJ file using `tinyobjloader`
 /// @param path path to the OBJ file
 /// @return a `Mesh` instance
-Mesh load_mesh_from_obj(const std::filesystem::path& path);
+Mesh load_mesh_from_obj(const std::filesystem::path& path,
+    const std::vector<std::string> ignore = {},
+    const std::optional<std::string> only_this_name = std::nullopt);
 
 #endif // SCENE_LOADER_CUH_

@@ -19,6 +19,12 @@ inline __host__ __device__ float3 v3(const float& x)
     return make_float3(x, x, x);
 };
 
+/// A shorthand for converting a `double3` to a `float3`
+inline __host__ __device__ float3 v3(const double3& v)
+{
+    return make_float3((float)v.x, (float)v.y, (float)v.z);
+};
+
 /// A shorthand constructor for `double3`, alias for `make_double3`
 inline __host__ __device__ double3 dv3(
     const double& x, const double& y, const double& z)

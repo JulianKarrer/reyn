@@ -2,6 +2,7 @@
 #include "gui.cuh"
 #include "common.h"
 #include "datastructure/uniformgrid.cuh"
+#include "scene/sample_boundary.cuh"
 #include <cuda_gl_interop.h>
 #include <filesystem>
 
@@ -56,10 +57,10 @@ public:
     const BoundarySamples bdy;
     /// @brief Point marking the lowest extend of the bounding box of the scene
     /// along each coordinate axis
-    const float3 bound_min;
+    float3 bound_min;
     /// @brief Point marking the highest extend of the bounding box of the scene
     /// along each coordinate axis
-    const float3 bound_max;
+    float3 bound_max;
 
 private:
     // list the grid builder now, since its constructor must follow those above
@@ -67,6 +68,19 @@ private:
     /// @brief Used to obtain a `UniformGrid` enabling fast fixed radius
     /// neighbourhood queries
     UniformGridBuilder grid_builder;
+
+    ///@brief Private constructor used by static Scene-building methods, which
+    /// takes the required values directly and returns a scene but does not take
+    /// care of constructing the required values.
+    Scene(const float _ρ₀, const float _h, const uint _N, BoundarySamples _bdy,
+        const float3 _bound_min, const float3 _bound_max)
+        : ρ₀(_ρ₀)
+        , h(_h)
+        , N(_N)
+        , bdy(std::move(_bdy))
+        , bound_min(_bound_min)
+        , bound_max(_bound_max)
+        , grid_builder(UniformGridBuilder(_bound_min, _bound_max, 2.f * _h)) {};
 
 public:
     /// @brief Construct a scene with a box filled with fluid at as close as
@@ -88,6 +102,30 @@ public:
     /// of particle spacing h
     Scene(const std::filesystem::path& path, const uint N_desired,
         const float3 min, const float3 max, const float ρ₀, Particles& state,
+        DeviceBuffer<float>& tmp, const float bdy_oversampling_factor = 2.f,
+        const float cull_bdy_radius = 1.f, const float jitter_stddev = 0.01);
+
+    /// @brief Construct a scene from a given OBJ file containing some
+    /// watertight mesh the name of which includes "fluid", which is to be
+    /// filled, as well as other objects representing static boundary geometry.
+    ///
+    /// This fluid volume is then sampled at as close as
+    /// possible to the desired number of particles within the bounding box
+    /// defined by `min` and `max` and at rest density `ρ₀`.
+    /// @param path path to the OBJ file specifying the scene
+    /// @param N_desired desired number of dynamic particles
+    /// @param ρ₀ rest density
+    /// @param state current state of the particles
+    /// @param bdy_oversampling_factor ratio of spacing of fluid samples to
+    /// spacing of boundary samples
+    /// @param cull_bdy_radius radius in units of fluid particle spacing `h`
+    /// around any boundary particle in which fluid particles should be culled
+    /// to prevent intersections
+    /// @param jitter_stddev standard deviation of normal distribution for
+    /// jittering initial fluid positions to reduce initial aliasing, in units
+    /// of particle spacing h
+    static Scene from_obj(const std::filesystem::path& path,
+        const uint N_desired, const float ρ₀, Particles& state,
         DeviceBuffer<float>& tmp, const float bdy_oversampling_factor = 2.f,
         const float cull_bdy_radius = 1.f, const float jitter_stddev = 0.01);
 

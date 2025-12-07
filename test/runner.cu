@@ -28,7 +28,8 @@ TEST_CASE("Generate Docs Video")
     gui.theta = M_PI / 2.0f * 0.75;
     gui.camera_offset = glm::vec3(0., -.2, 0.);
     gui.camera_radius_init = 4.f;
-    gui.show_boundary = false;
+    gui.show_boundary = true;
+    gui.stopped = false;
     gui.colour_scale = 10.;
     gui.colour_map_selector = 0;
     gui.attribute_visualized = 1;
@@ -38,8 +39,8 @@ TEST_CASE("Generate Docs Video")
     DeviceBuffer<float> tmp2(1);
     DeviceBuffer<float> tmp3(1);
     DeviceBuffer<float> tmp4(1);
-    Scene scene(
-        "scenes/cube.obj", 1000000, v3(-1.), v3(0.), 1., state, tmp1, 3., 1.);
+    Scene scene { Scene::from_obj(
+        "scenes/dragonbox.obj", 1000000, 1., state, tmp1, 3., 1.) };
     gui.set_boundary_to_render(&scene.bdy);
     const B3 W(2.f * scene.h);
     const uint N { scene.N };

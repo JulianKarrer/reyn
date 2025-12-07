@@ -205,12 +205,16 @@
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structChildNode.html">Struct ChildNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structCullPredicate.html">Struct CullPredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceLBVH.html">Struct DeviceLBVH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGenJitter.html">Struct GenJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structListDispatcher.html">Template Struct ListDispatcher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structListDispatcher_3_01Launch_00_01Last_01_4.html">Template Struct ListDispatcher&lt; Launch, Last &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator.html">Template Struct has_templated_call_operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator_3_01T_00_01Tuple_00_01std_1_1void__t_3_01decltype_07std_1_1de6d0a016993f2cbb04a203bdb7b2b88.html">Template Struct has_templated_call_operator&lt; T, Tuple, std::void_t&lt; decltype(std::declval&lt; T &gt;, ().template operator()&lt; Tuple &gt;, (std::declval&lt; Tuple const &amp; &gt;, ())) &gt; &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structInsidePredicate.html">Template Struct InsidePredicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structLaunchInsidePredicate.html">Template Struct LaunchInsidePredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
@@ -218,6 +222,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structMortonCodeExtender.html">Struct MortonCodeExtender</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMortonCodeGenerator.html">Struct MortonCodeGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structProjectionLaunchFunctor.html">Template Struct ProjectionLaunchFunctor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structRuntimeTemplateSelectList.html">Template Struct RuntimeTemplateSelectList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structRuntimeTemplateSelectList_3_01Launch_00_01Last_01_4.html">Template Struct RuntimeTemplateSelectList&lt; Launch, Last &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structUniformGrid.html">Template Struct UniformGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classB3.html">Class B3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classC2.html">Class C2</a></li>
@@ -416,22 +422,27 @@
 <span class="cp">#define UTILS_DISPATCH_CUH_</span>
 
 <span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="o">&gt;</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="n">Launch</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">Elem</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="p">...</span><span class="w"> </span><span class="n">Cons</span><span class="o">&gt;</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">ListDispatcher</span><span class="w"> </span><span class="p">{</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">RuntimeTemplateSelectList</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
-<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">dispatch</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="n">desired</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">dispatch</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="n">lower_bound</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">desired</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">Elem</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">static_assert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">is_trivially_default_constructible_v</span><span class="o">&lt;</span><span class="n">Launch</span><span class="o">&lt;</span><span class="n">Elem</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+<span class="w">            </span><span class="s">&quot;When using RuntimeTemplateSelectList::dispatch the functor passed &quot;</span>
+<span class="w">            </span><span class="s">&quot;in as the Launch template parameter must be trivially &quot;</span>
+<span class="w">            </span><span class="s">&quot;constructible.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lower_bound</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">Elem</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">            </span><span class="n">Launch</span><span class="o">&lt;</span><span class="n">Elem</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{}(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
 <span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="n">ListDispatcher</span><span class="o">&lt;</span><span class="n">Launch</span><span class="p">,</span><span class="w"> </span><span class="n">Cons</span><span class="p">...</span><span class="o">&gt;::</span><span class="n">dispatch</span><span class="p">(</span>
-<span class="w">                </span><span class="n">desired</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
+<span class="w">            </span><span class="c1">// pop the first template</span>
+<span class="w">            </span><span class="n">RuntimeTemplateSelectList</span><span class="o">&lt;</span><span class="n">Launch</span><span class="p">,</span><span class="w"> </span><span class="n">Cons</span><span class="p">...</span><span class="o">&gt;::</span><span class="n">dispatch</span><span class="p">(</span>
+<span class="w">                </span><span class="n">lower_bound</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">};</span>
 <span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="o">&gt;</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="n">Launch</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">Last</span><span class="o">&gt;</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">ListDispatcher</span><span class="o">&lt;</span><span class="n">Launch</span><span class="p">,</span><span class="w"> </span><span class="n">Last</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">RuntimeTemplateSelectList</span><span class="o">&lt;</span><span class="n">Launch</span><span class="p">,</span><span class="w"> </span><span class="n">Last</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">typename</span><span class="p">...</span><span class="w"> </span><span class="n">Args</span><span class="o">&gt;</span>
-<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">dispatch</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="n">runtime_depth</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">dispatch</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="n">lower_bound</span><span class="p">,</span><span class="w"> </span><span class="n">Args</span><span class="o">&amp;&amp;</span><span class="p">...</span><span class="w"> </span><span class="n">args</span><span class="p">)</span>
 <span class="w">    </span><span class="p">{</span>
 <span class="w">        </span><span class="n">Launch</span><span class="o">&lt;</span><span class="n">Last</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{}(</span><span class="n">std</span><span class="o">::</span><span class="n">forward</span><span class="o">&lt;</span><span class="n">Args</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">)...);</span>
 <span class="w">    </span><span class="p">}</span>

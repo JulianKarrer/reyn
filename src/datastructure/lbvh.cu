@@ -293,7 +293,7 @@ __global__ void test_brute_force_project(const uint N_ps, const uint N_faces,
         const float3 vert1 { v3(face.x, vxs, vys, vzs) };
         const float3 vert2 { v3(face.y, vxs, vys, vzs) };
         const float3 vert3 { v3(face.z, vxs, vys, vzs) };
-        const float3 projected_q { _closest_point_on_triangle(
+        const float3 projected_q { closest_point_on_triangle(
             q, vert1, vert2, vert3) };
         const float3 diff { projected_q - q };
         const float dist_sq { dot(diff, diff) };

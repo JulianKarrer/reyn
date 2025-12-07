@@ -205,12 +205,16 @@
 <li class="toctree-l2"><a class="reference internal" href="structBoundary.html">Struct Boundary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBoundarySamples.html">Struct BoundarySamples</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structChildNode.html">Struct ChildNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structCullPredicate.html">Struct CullPredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceBuffer_1_1ExternallyManagedBuffer.html">Struct DeviceBuffer::ExternallyManagedBuffer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structDeviceLBVH.html">Struct DeviceLBVH</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGenJitter.html">Struct GenJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structListDispatcher.html">Template Struct ListDispatcher</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structListDispatcher_3_01Launch_00_01Last_01_4.html">Template Struct ListDispatcher&lt; Launch, Last &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator.html">Template Struct has_templated_call_operator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator_3_01T_00_01Tuple_00_01std_1_1void__t_3_01decltype_07std_1_1de6d0a016993f2cbb04a203bdb7b2b88.html">Template Struct has_templated_call_operator&lt; T, Tuple, std::void_t&lt; decltype(std::declval&lt; T &gt;, ().template operator()&lt; Tuple &gt;, (std::declval&lt; Tuple const &amp; &gt;, ())) &gt; &gt;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structInsidePredicate.html">Template Struct InsidePredicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structLaunchInsidePredicate.html">Template Struct LaunchInsidePredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
@@ -218,6 +222,8 @@
 <li class="toctree-l2"><a class="reference internal" href="structMortonCodeExtender.html">Struct MortonCodeExtender</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMortonCodeGenerator.html">Struct MortonCodeGenerator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structProjectionLaunchFunctor.html">Template Struct ProjectionLaunchFunctor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structRuntimeTemplateSelectList.html">Template Struct RuntimeTemplateSelectList</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structRuntimeTemplateSelectList_3_01Launch_00_01Last_01_4.html">Template Struct RuntimeTemplateSelectList&lt; Launch, Last &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structUniformGrid.html">Template Struct UniformGrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classB3.html">Class B3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classC2.html">Class C2</a></li>
@@ -416,6 +422,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;gui.cuh&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;common.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;datastructure/uniformgrid.cuh&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scene/sample_boundary.cuh&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cuda_gl_interop.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;filesystem&gt;</span>
 
@@ -451,17 +458,32 @@
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">h</span><span class="p">;</span>
 <span class="w">    </span><span class="n">uint</span><span class="w"> </span><span class="n">N</span><span class="p">;</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">BoundarySamples</span><span class="w"> </span><span class="n">bdy</span><span class="p">;</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">bound_min</span><span class="p">;</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">bound_max</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float3</span><span class="w"> </span><span class="n">bound_min</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float3</span><span class="w"> </span><span class="n">bound_max</span><span class="p">;</span>
 
 <span class="n">private</span><span class="o">:</span>
 <span class="w">    </span><span class="c1">// list the grid builder now, since its constructor must follow those above</span>
 
 <span class="w">    </span><span class="n">UniformGridBuilder</span><span class="w"> </span><span class="n">grid_builder</span><span class="p">;</span>
 
+<span class="w">    </span><span class="n">Scene</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">_ρ₀</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">_h</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">uint</span><span class="w"> </span><span class="n">_N</span><span class="p">,</span><span class="w"> </span><span class="n">BoundarySamples</span><span class="w"> </span><span class="n">_bdy</span><span class="p">,</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">_bound_min</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">_bound_max</span><span class="p">)</span>
+<span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="n">ρ₀</span><span class="p">(</span><span class="n">_ρ₀</span><span class="p">)</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">(</span><span class="n">_h</span><span class="p">)</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">N</span><span class="p">(</span><span class="n">_N</span><span class="p">)</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">bdy</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">_bdy</span><span class="p">))</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">bound_min</span><span class="p">(</span><span class="n">_bound_min</span><span class="p">)</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">bound_max</span><span class="p">(</span><span class="n">_bound_max</span><span class="p">)</span>
+<span class="w">        </span><span class="p">,</span><span class="w"> </span><span class="n">grid_builder</span><span class="p">(</span><span class="n">UniformGridBuilder</span><span class="p">(</span><span class="n">_bound_min</span><span class="p">,</span><span class="w"> </span><span class="n">_bound_max</span><span class="p">,</span><span class="w"> </span><span class="mf">2.f</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">_h</span><span class="p">))</span><span class="w"> </span><span class="p">{};</span>
+
 <span class="n">public</span><span class="o">:</span>
 <span class="w">    </span><span class="n">Scene</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">uint</span><span class="w"> </span><span class="n">N_desired</span><span class="p">,</span>
 <span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">min</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">max</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">ρ₀</span><span class="p">,</span><span class="w"> </span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">,</span>
+<span class="w">        </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">tmp</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">bdy_oversampling_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.f</span><span class="p">,</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">cull_bdy_radius</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">jitter_stddev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">Scene</span><span class="w"> </span><span class="nf">from_obj</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path</span><span class="p">,</span>
+<span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">uint</span><span class="w"> </span><span class="n">N_desired</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">ρ₀</span><span class="p">,</span><span class="w"> </span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">,</span>
 <span class="w">        </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">tmp</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">bdy_oversampling_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.f</span><span class="p">,</span>
 <span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">cull_bdy_radius</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.f</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">jitter_stddev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span><span class="p">);</span>
 

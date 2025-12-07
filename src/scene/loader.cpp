@@ -2,13 +2,17 @@
 
 #include <format>
 #include <iostream>
+#include <algorithm>
 
 #define TINYOBJLOADER_USE_DOUBLE
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+#include "log.h"
 using namespace tinyobj;
 
-Mesh load_mesh_from_obj(const std::filesystem::path& path)
+Mesh load_mesh_from_obj(const std::filesystem::path& path,
+    const std::vector<std::string> ignore,
+    const std::optional<std::string> only_this_name)
 {
     const std::string pathstr { path.string() };
     tinyobj::attrib_t attrib;
@@ -29,15 +33,39 @@ Mesh load_mesh_from_obj(const std::filesystem::path& path)
     // iterate all shapes in file to find faces
     std::vector<uint3> faces;
     for (const auto& shape : shapes) {
-        // skip shapes containing "fluid" or "bounds" in the name
-        if (shape.name.find("fluid") != std::string::npos
-            || shape.name.find("bounds") != std::string::npos)
+        // skip shapes containing a string in their names that is included in
+        // the `skip` parameter
+        std::string lower_name { shape.name };
+        std::transform(lower_name.begin(), lower_name.end(), lower_name.begin(),
+            [](unsigned char c) { return std::tolower(c); });
+
+        bool skip_shape { false };
+        for (const auto s : ignore) {
+            skip_shape |= lower_name.find(s.c_str()) != std::string::npos;
+        }
+        if (skip_shape) {
+            Log::WarnTagged("OBJ Load",
+                "Skipping Shape {} while loading {}: forbidden by `ignore` "
+                "list",
+                lower_name, path.c_str());
             continue;
+        }
+        // if an `only_this_name` name was specified, skip if that name is NOT
+        // found in the shape name
+        if (only_this_name
+            && lower_name.find((*only_this_name).c_str())
+                == std::string::npos) {
+            Log::WarnTagged("OBJ Load",
+                "Skipping Shape {} while loading {}: Only {} should be loaded",
+                lower_name, path.c_str(), (*only_this_name));
+            continue;
+        }
 
         // for each face in the respective mesh
         const mesh_t mesh = shape.mesh;
         for (uint i { 0 }; i < mesh.num_face_vertices.size(); ++i) {
             // if any of the faces are not triangulated, abort
+
             if (mesh.num_face_vertices[i] != 3) {
                 throw std::runtime_error(std::format(
                     "Non-triangulated face encountered in loading of mesh {}",
