@@ -339,7 +339,8 @@ GLuint GUI::compile_shaders(
 void GUI::_update_proj()
 {
     proj = glm::perspective(glm::radians(fov), // fov
-        (float)_window_width / (float)_window_height, // aspect ratio
+        static_cast<float>(_window_width)
+            / static_cast<float>(_window_height), // aspect ratio
         1e-3f, // near plane
         1e3f // far plane
     );
@@ -409,12 +410,44 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     const auto gui = (GUI*)glfwGetWindowUserPointer(window);
-    if (gui) {
+    const ImGuiIO& io = ImGui::GetIO();
+    if (gui && !io.WantCaptureMouse) {
         gui->_radius_scroll_factor = std::clamp(gui->_radius_scroll_factor
-                * (1.0f - (float)yoffset * gui->_scroll_speed),
+                * (1.0f - static_cast<float>(yoffset) * gui->_scroll_speed),
             0.01f, 100.f);
         // update the camera
         gui->update_view();
+    }
+}
+
+/// Callback reacting to user key presses
+void keypress_callback(
+    GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    GUI* gui = (GUI*)glfwGetWindowUserPointer(window);
+    const ImGuiIO& io = ImGui::GetIO();
+    if (gui && !io.WantCaptureKeyboard) {
+        // spacebar pressed
+        if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+            // pause or unpause simulation
+            gui->stopped = !gui->stopped;
+        }
+        // c pressed
+        if (key == GLFW_KEY_C && action == GLFW_PRESS) {
+            // reset camera offset
+            gui->camera_offset = glm::vec3(0., 0., 0.);
+            gui->update_view();
+        }
+        // b pressed
+        if (key == GLFW_KEY_B && action == GLFW_PRESS) {
+            // toggle boundary particle display
+            gui->show_boundary = !gui->show_boundary;
+        }
+        // f pressed
+        if (key == GLFW_KEY_F && action == GLFW_PRESS) {
+            // toggle fluid particle display
+            gui->show_fluid = !gui->show_fluid;
+        }
     }
 }
 
@@ -481,8 +514,8 @@ GUI::GUI(
     // create a window
     const float main_scale { ImGui_ImplGlfw_GetContentScaleForMonitor(
         glfwGetPrimaryMonitor()) };
-    this->window = glfwCreateWindow((int)(init_w * main_scale),
-        (int)(init_h * main_scale), "REYN", NULL, NULL);
+    this->window = glfwCreateWindow(static_cast<int>(init_w * main_scale),
+        static_cast<int>(init_h * main_scale), "REYN", NULL, NULL);
 
     if (!window) {
         glfwTerminate();
@@ -495,9 +528,10 @@ GUI::GUI(
     // save the pointer to this gui object in the window instance for access via
     // `glfwGetWindowUserPointer` in callbacks
     glfwSetWindowUserPointer(window, (void*)(this));
-    // set callbacks for resizeing and scrolling
+    // set callbacks for resizing, scrolling and typing
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    glfwSetKeyCallback(window, keypress_callback);
     if (maximize) {
         // maximize the window
         glfwMaximizeWindow(window);
@@ -919,7 +953,7 @@ bool GUI::update_or_exit(Particles& state, const float h, const float dt,
     unmap_buffers();
 
     // add data to plots
-    plot_dts.push_back(dt);
+    plot_dts.push_back(dt * 1000.f);
     plot_iters.push_back(iters);
 
     // now the main update to the GUI can happen, drawing to the screen,
@@ -988,8 +1022,8 @@ void GUI::update(float h)
         );
         glUniform2f(
             glGetUniformLocation(shader_program_fld, "viewport"), // location
-            (float)_window_width, // value 1
-            (float)_window_height // value 2
+            static_cast<float>(_window_width), // value 1
+            static_cast<float>(_window_height) // value 2
         );
         glUniform1f(
             glGetUniformLocation(shader_program_fld, "radius"), // location
@@ -1025,7 +1059,8 @@ void GUI::update(float h)
         glUniformMatrix4fv(glGetUniformLocation(shader_program_bdy, "proj"), 1,
             GL_FALSE, glm::value_ptr(proj));
         glUniform2f(glGetUniformLocation(shader_program_bdy, "viewport"),
-            (float)_window_width, (float)_window_height);
+            static_cast<float>(_window_width),
+            static_cast<float>(_window_height));
         glUniform1f(glGetUniformLocation(shader_program_bdy, "radius"),
             h / 2.f * bdy_particle_display_size_factor);
         glUniform4f(glGetUniformLocation(shader_program_bdy, "colour"),
@@ -1077,6 +1112,7 @@ void GUI::imgui_draw()
     // ImGui::ShowDemoWindow();
 
     // start of contents ~~~~~
+    // add general settings and info
     ImGui::Begin("SETTINGS");
     ImGui::Text("N=%u Nbdy=%u", N, N_bdy);
     if (ImGui::Button("Exit")) {
@@ -1087,6 +1123,7 @@ void GUI::imgui_draw()
     ImGui::Text("GUI interval %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
         io->Framerate);
     ImGui::Text("SIM interval %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
+    ImGui::Text("Δt = %.3fms", 1000.0f * plot_dts.back());
     if (ImGui::Button("SCREENSHOT")) {
         char filename[50];
         time_t t = time(NULL);
@@ -1094,6 +1131,7 @@ void GUI::imgui_draw()
         screenshot(filename);
     }
 
+    // add visualization settings
     const float slider_width { 0.4f };
     if (ImGui::CollapsingHeader(
             "Visualization", ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -1119,15 +1157,26 @@ void GUI::imgui_draw()
         ImGui::ColorEdit4("boundary colour", bdy_colour);
     }
 
-    ImPlot::SetNextAxesToFit();
-    if (ImPlot::BeginPlot("Timestep Sizes")) {
-        ImPlot::PlotLine("Δt", plot_dts.data(), plot_dts.size());
-        ImPlot::EndPlot();
-    }
-    ImPlot::SetNextAxesToFit();
-    if (ImPlot::BeginPlot("Pressure Solver Iteration Count")) {
-        ImPlot::PlotLine("k", plot_iters.data(), plot_iters.size());
-        ImPlot::EndPlot();
+    // add plots
+    if (ImGui::CollapsingHeader("Plots", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+        ImPlot::SetNextAxesToFit();
+        if (ImPlot::BeginPlot("Solver Performance")) {
+
+            // setup axes and autofit
+            ImPlot::SetupAxes("Time Step Count", "ms");
+            ImPlot::SetupAxis(ImAxis_Y2, "N", ImPlotAxisFlags_AuxDefault);
+
+            // then plot iterations count on the second y-axis
+            ImPlot::SetAxes(ImAxis_X1, ImAxis_Y2);
+            ImPlot::PlotLine("l", plot_iters.data(), plot_iters.size());
+
+            // plot time step sizes on first y-axis
+            ImPlot::SetAxes(ImAxis_X1, ImAxis_Y1);
+            ImPlot::PlotLine("Δt", plot_dts.data(), plot_dts.size());
+
+            ImPlot::EndPlot();
+        }
     }
 
     // end of contents ~~~~~~~

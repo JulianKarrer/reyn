@@ -35,12 +35,12 @@ __device__ static inline uint32_t morton_3d(double3 v)
     assert(0. <= v.x && v.x <= 1.);
     assert(0. <= v.y && v.y <= 1.);
     assert(0. <= v.z && v.z <= 1.);
-    const float x = (float)min(max(v.x * 1024., 0.), 1023.);
-    const float y = (float)min(max(v.y * 1024., 0.), 1023.);
-    const float z = (float)min(max(v.z * 1024., 0.), 1023.);
-    unsigned int xx = expand_bits((unsigned int)x);
-    unsigned int yy = expand_bits((unsigned int)y);
-    unsigned int zz = expand_bits((unsigned int)z);
+    const float x = static_cast<float>(min(max(v.x * 1024., 0.), 1023.));
+    const float y = static_cast<float>(min(max(v.y * 1024., 0.), 1023.));
+    const float z = static_cast<float>(min(max(v.z * 1024., 0.), 1023.));
+    uint32_t xx = expand_bits(static_cast<uint32_t>(x));
+    uint32_t yy = expand_bits(static_cast<uint32_t>(y));
+    uint32_t zz = expand_bits(static_cast<uint32_t>(z));
     return xx * 4 + yy * 2 + zz;
 }
 
@@ -568,11 +568,12 @@ template <unsigned STACK_SIZE> struct ProjectionLaunchFunctor {
         const DeviceBuffer<ChildNode>& children_l,
         const DeviceBuffer<ChildNode>& children_r) const
     {
-        Log::InfoTagged("LBVH", "Traversal Stack Size {}", STACK_SIZE);
-        project_points<STACK_SIZE><<<BLOCKS(N_ps), BLOCK_SIZE>>>((uint)N_ps,
-            xs.ptr(), ys.ptr(), zs.ptr(), mesh->vxs.ptr(), mesh->vys.ptr(),
-            mesh->vzs.ptr(), mesh->faces.ptr(), children_l.ptr(),
-            children_r.ptr(), aabbs_leaf.ptr(), aabbs_internal.ptr());
+        // Log::InfoTagged("LBVH", "Traversal Stack Size {}", STACK_SIZE);
+        project_points<STACK_SIZE>
+            <<<BLOCKS(N_ps), BLOCK_SIZE>>>(static_cast<uint>(N_ps), xs.ptr(),
+                ys.ptr(), zs.ptr(), mesh->vxs.ptr(), mesh->vys.ptr(),
+                mesh->vzs.ptr(), mesh->faces.ptr(), children_l.ptr(),
+                children_r.ptr(), aabbs_leaf.ptr(), aabbs_internal.ptr());
     };
 };
 
@@ -646,7 +647,7 @@ public:
     ///@param _mesh Mesh to construct an LBVH for
     LBVH(DeviceMesh* _mesh)
         : mesh(_mesh)
-        , N_faces((uint)_mesh->faces.size())
+        , N_faces(static_cast<uint>(_mesh->faces.size()))
         , aabbs_leaf(N_faces)
         , aabbs_internal(N_faces - 1)
         , children_l(N_faces - 1, ChildNode { UINT32_MAX })
@@ -732,8 +733,8 @@ public:
         // perform the projection of each point to the closest point on the
         // surface
         RuntimeTemplateSelectList<ProjectionLaunchFunctor, 4, 8, 16, 24, 32, 48,
-            64, 128>::dispatch(tree_height, (uint)N_ps, xs, ys, zs, mesh,
-            aabbs_leaf, aabbs_internal, children_l, children_r);
+            64, 128>::dispatch(tree_height, static_cast<uint>(N_ps), xs, ys, zs,
+            mesh, aabbs_leaf, aabbs_internal, children_l, children_r);
     };
 
     ///@brief Get a POD struct with raw pointers to the buffers underlying the

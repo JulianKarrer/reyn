@@ -163,6 +163,7 @@ set(REYN_SOURCES
     ${SRC_DIR}/kernels.cu
     ${SRC_DIR}/solvers/SESPH.cu
     ${SRC_DIR}/solvers/PCISPH.cu
+    ${SRC_DIR}/solvers/IISPH.cu
     ${SRC_DIR}/solvers/solver.cu
     ${SRC_DIR}/datastructure/uniformgrid.cu
     ${SRC_DIR}/datastructure/lbvh.cu
@@ -182,6 +183,7 @@ set(REYN_HEADERS
     ${SRC_DIR}/kernels.cuh
     ${SRC_DIR}/solvers/SESPH.cuh
     ${SRC_DIR}/solvers/PCISPH.cuh
+    ${SRC_DIR}/solvers/IISPH.cuh
     ${SRC_DIR}/solvers/solver.cuh
     ${SRC_DIR}/datastructure/uniformgrid.cuh
     ${SRC_DIR}/datastructure/lbvh.cuh

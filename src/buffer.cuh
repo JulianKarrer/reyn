@@ -191,7 +191,7 @@ public:
 
         if (this->is_externally_managed()) {
             // manually reorder and copy
-            uint N { (uint)this->size() };
+            uint N { static_cast<uint>(this->size()) };
             auto data_d { this->ptr() };
             thrust::transform(sorted.get().begin(), sorted.get().end(),
                 tmp.get().begin(),
@@ -253,7 +253,7 @@ public:
             throw std::runtime_error("avg operation is not supported on "
                                      "externally managed DeviceBuffer");
         } else {
-            return (float)sum() / ((float)size());
+            return static_cast<float>(sum()) / static_cast<float>(size());
         }
     }
 

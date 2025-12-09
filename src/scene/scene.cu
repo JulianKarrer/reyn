@@ -244,7 +244,7 @@ Scene::Scene(const std::filesystem::path& path, const uint N_desired,
     DeviceBuffer<float>& tmp, const float bdy_oversampling_factor,
     const float cull_bdy_radius, const float jitter_stddev)
     : ρ₀(_ρ₀)
-    , h(cbrtf(prod(max - min) / (float)N_desired))
+    , h(cbrtf(prod(max - min) / static_cast<float>(N_desired)))
     , bdy(sample_mesh(load_mesh_from_obj(path, { "fluid" }), h, _ρ₀,
           bdy_oversampling_factor))
     // ensure the scene bounds are those of the boundary samples
@@ -255,7 +255,8 @@ Scene::Scene(const std::filesystem::path& path, const uint N_desired,
     // compute preliminary particle count and save it
     const float3 dxyz { max - min };
     const int3 nxyz { floor_div(dxyz, h) };
-    N = { (uint)abs(nxyz.x) * (uint)abs(nxyz.y) * (uint)abs(nxyz.z) };
+    N = { static_cast<uint>(abs(nxyz.x)) * static_cast<uint>(abs(nxyz.y))
+        * static_cast<uint>(abs(nxyz.z)) };
     // exit early if the fluid domain is empty
     if (N == 0)
         throw std::domain_error(
@@ -310,7 +311,8 @@ Scene Scene::from_obj(const std::filesystem::path& path, const uint N_desired,
 
     // calculate particle spacing from fluid volume to achieve desired particle
     // count
-    const float h { (float)cbrt(fluid_mesh.get_volume() / (double)N_desired) };
+    const float h { static_cast<float>(
+        cbrt(fluid_mesh.get_volume() / static_cast<double>(N_desired))) };
 
     // build an lbvh to accelerate closest point queries to the fluid
     // boundary mesh
@@ -330,7 +332,8 @@ Scene Scene::from_obj(const std::filesystem::path& path, const uint N_desired,
     // compute an upper bound of the fluid particle count from LBVH bounds
     const float3 dxyz { fluid_max - fluid_min };
     const int3 nxyz { floor_div(dxyz, h) };
-    uint N { (uint)abs(nxyz.x) * (uint)abs(nxyz.y) * (uint)abs(nxyz.z) };
+    uint N { static_cast<uint>(abs(nxyz.x)) * static_cast<uint>(abs(nxyz.y))
+        * static_cast<uint>(abs(nxyz.z)) };
     // exit early if the fluid domain is empty
     if (N == 0)
         throw std::domain_error(
@@ -368,7 +371,7 @@ Scene Scene::from_obj(const std::filesystem::path& path, const uint N_desired,
 
     if (new_N != N) {
         Log::Warn("Culled particles closer than {}h to boundary: {} -> {}",
-            cull_bdy_radius, N, new_N);
+            cull_bdy_radius, new_N_inside, new_N);
     }
     N = new_N;
 

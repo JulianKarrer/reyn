@@ -45,12 +45,15 @@ TEST_CASE("Generate Docs Video")
     const B3 W(2.f * scene.h);
     const uint N { scene.N };
     double time { 0. };
+    uint iters { 0 };
+    float dt { 0.0005 };
     auto solver { PCISPH<B3, Resort::yes>(
         W, N, 0.001f, scene.h, scene.ρ₀, tmp1, tmp2, tmp3, tmp4) };
-    while (gui.update_or_exit(state, scene.h, &tmp1)) {
-        const float dt { 0.0005 };
+    while (gui.update_or_exit(state, scene.h, dt, iters, &tmp1)) {
+        dt = simple_dt_controller(
+            iters, dt, 1.0, scene.h, state, v3(0., -9.81, 0.), 5);
         const auto grid { scene.get_grid(state, tmp1) };
-        solver.step(state, grid, scene.bdy, dt);
+        iters = solver.step(state, grid, scene.bdy, dt);
         scene.hard_enforce_bounds(state);
         time += dt;
         std::cout << time << " / " << total_time << std::endl;

@@ -140,6 +140,8 @@ public:
     glm::vec3 camera_offset { glm::vec3(0., 0., 0.) };
     /// @brief whether or not to render boundary particles, if present
     bool show_boundary { true };
+    /// @brief Whether to draw all particles or not (i.e. only render UI etc.)
+    bool show_fluid { true };
     /// @brief The scalar used for colour mapping is scaled by the inverse of
     /// this value, to be adjusted intuitively to the maximum value of whatever
     /// quantity should be visualized.
@@ -206,8 +208,6 @@ private:
     std::atomic<bool> should_render { false };
     /// @brief Timer thread used to request a re-render at regular intervals
     std::thread timer;
-    /// @brief Whether to draw all particles or not (i.e. only render UI etc.)
-    bool show_fluid { true };
 
     /// @brief a private struct to represent the state of clicking a holding a
     /// mouse button to drag

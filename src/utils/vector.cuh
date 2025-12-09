@@ -22,7 +22,8 @@ inline __host__ __device__ float3 v3(const float& x)
 /// A shorthand for converting a `double3` to a `float3`
 inline __host__ __device__ float3 v3(const double3& v)
 {
-    return make_float3((float)v.x, (float)v.y, (float)v.z);
+    return make_float3(static_cast<float>(v.x), static_cast<float>(v.y),
+        static_cast<float>(v.z));
 };
 
 /// A shorthand constructor for `double3`, alias for `make_double3`
@@ -82,7 +83,8 @@ inline __host__ __device__ float3 v3(const uint& i,
     const double* __restrict__ x, const double* __restrict__ y,
     const double* __restrict__ z)
 {
-    return make_float3((float)x[i], (float)y[i], (float)z[i]);
+    return make_float3(static_cast<float>(x[i]), static_cast<float>(y[i]),
+        static_cast<float>(z[i]));
 };
 
 // BINARY ARITHMATIC OPERATORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,16 +136,16 @@ inline __host__ __device__ float3& operator-=(float3& a, const float3& b)
 /// with `floorf` and casting to integers in each component.
 inline __host__ __device__ int3 floor_div(const float3& a, const float& b)
 {
-    return make_int3(
-        (int)floorf(a.x / b), (int)floorf(a.y / b), (int)floorf(a.z / b));
+    return make_int3(static_cast<int>(floorf(a.x / b)),
+        static_cast<int>(floorf(a.y / b)), static_cast<int>(floorf(a.z / b)));
 };
 
 /// divide a 3-vector by a float to obtain an integer 3-vector by rounding up
 /// with `ceilf` and casting to integers in each component.
 inline __host__ __device__ int3 ceil_div(const float3& a, const float& b)
 {
-    return make_int3(
-        (int)ceilf(a.x / b), (int)ceilf(a.y / b), (int)ceilf(a.z / b));
+    return make_int3(static_cast<int>(ceilf(a.x / b)),
+        static_cast<int>(ceilf(a.y / b)), static_cast<int>(ceilf(a.z / b)));
 };
 
 /// @brief compute the dot product of two vectors

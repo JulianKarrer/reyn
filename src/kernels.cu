@@ -53,7 +53,7 @@ TEST_CASE_TEMPLATE("Kernel function properties", K, B3, C2, W6, COS)
 
     // also construct positions on a regular grid
     std::vector<float3> x_grid_h(N);
-    const float spacing { h_bar * 2. / ((float)SAMPLE_COUNT) };
+    const float spacing { h_bar * 2. / static_cast<float>(SAMPLE_COUNT) };
     uint j { 0 };
     for (uint xi = 0; xi < SAMPLE_COUNT; ++xi) {
         for (uint yi = 0; yi < SAMPLE_COUNT; ++yi) {

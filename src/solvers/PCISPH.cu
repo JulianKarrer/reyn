@@ -10,7 +10,7 @@
 ///
 
 #include "PCISPH.cuh"
-#include "solvers/solver.cuh"
+#include "solver.cuh"
 
 __device__ inline static float _eos_pcisph(
     const float rho_i, const float k, const float rho_0)
@@ -60,19 +60,22 @@ uint PCISPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
     const BoundarySamples& bdy, const float dt)
 {
     const Boundary bdy_d { bdy.get() };
+
     // compute PCISPH stiffness coefficient now that Δt is known
     float k = (float)((δΔt² / dt) / dt);
-    // float k = 25.f;
+
     // compute densities, since they are required for computation of viscosity
     compute_densities<K, R><<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(),
         state.xy.ptr(), state.xz.ptr(), state.m.ptr(), ρ.ptr(), N, W, grid,
         bdy_d);
     CUDA_CHECK(cudaGetLastError());
+
     // compute non-pressure accelerations (gravity, fluid-fluid viscosity)
     write_non_prs_acc_ff<K, R><<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(),
         state.xy.ptr(), state.xz.ptr(), state.vx.ptr(), state.vy.ptr(),
         state.vz.ptr(), ax.ptr(), ay.ptr(), az.ptr(), h, nu, g, state.m.ptr(),
         ρ.ptr(), N, W, grid);
+
     CUDA_CHECK(cudaGetLastError());
     uint l { 0 };
     do {
@@ -81,18 +84,22 @@ uint PCISPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
             state.vy.ptr(), state.vz.ptr(), ax.ptr(), ay.ptr(), az.ptr(), N,
             dt);
         CUDA_CHECK(cudaGetLastError());
+
         // compute predicted densities (current + velocity divergence)
         predict_rho<K, R><<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(),
             state.xy.ptr(), state.xz.ptr(), state.vx.ptr(), state.vy.ptr(),
             state.vz.ptr(), dt, ρ₀, state.m.ptr(), ρ.ptr(), N, W, grid, bdy_d);
         CUDA_CHECK(cudaGetLastError());
+
         // compute pressure acceleration
         _write_pcisph_prs_acc<K, R><<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(),
             state.xy.ptr(), state.xz.ptr(), ax.ptr(), ay.ptr(), az.ptr(),
             state.m.ptr(), ρ.ptr(), N, W, k, ρ₀, 1.f / (ρ₀ * ρ₀), grid, bdy_d);
+
         // repeat while maximum density is above target threshold
         l += 1;
     } while (l < min_iter || ρ.avg() > eta_rho_max * ρ₀);
+
     // incorporate pressure accelerations and update positions from accumulated
     // velocity
     integrate<<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(), state.xy.ptr(),

@@ -9,12 +9,14 @@
 __host__ __device__ inline static AABB AABB_from_verts(
     double3 vert1, double3 vert2, double3 vert3)
 {
-    const float3 mini { v3((float)fmin(fmin(vert1.x, vert2.x), vert3.x),
-        (float)fmin(fmin(vert1.y, vert2.y), vert3.y),
-        (float)fmin(fmin(vert1.z, vert2.z), vert3.z)) };
-    const float3 maxi { v3((float)fmax(fmax(vert1.x, vert2.x), vert3.x),
-        (float)fmax(fmax(vert1.y, vert2.y), vert3.y),
-        (float)fmax(fmax(vert1.z, vert2.z), vert3.z)) };
+    const float3 mini { v3(
+        static_cast<float>(fmin(fmin(vert1.x, vert2.x), vert3.x)),
+        static_cast<float>(fmin(fmin(vert1.y, vert2.y), vert3.y)),
+        static_cast<float>(fmin(fmin(vert1.z, vert2.z), vert3.z))) };
+    const float3 maxi { v3(
+        static_cast<float>(fmax(fmax(vert1.x, vert2.x), vert3.x)),
+        static_cast<float>(fmax(fmax(vert1.y, vert2.y), vert3.y)),
+        static_cast<float>(fmax(fmax(vert1.z, vert2.z), vert3.z))) };
     const float3 v { maxi - mini };
     // prevent degenerate AABBs with zero volume:
     if (min(v.x, min(v.y, v.z)) == 0.f) {
@@ -38,7 +40,7 @@ __global__ void generate_tree(const uint64_t* __restrict__ codes, const uint N,
         return;
 
     // find the range of values corresponding to the current node
-    const int2 range = determine_range(codes, N, (int)i);
+    const int2 range = determine_range(codes, N, static_cast<int>(i));
     const int first { range.x };
     const int last { range.y };
 
@@ -189,12 +191,12 @@ bool check_lbvh_correctness_leaf(const thrust::host_vector<AABB>& leaf_aabbs,
     CHECK(!(aabb.mini >= aabb.maxi));
     // load all vertices of the primitive
     const uint3 face { faces[i] };
-    const float3 vert1 { v3(
-        (float)vxs[face.x], (float)vys[face.x], (float)vzs[face.x]) };
-    const float3 vert2 { v3(
-        (float)vxs[face.y], (float)vys[face.y], (float)vzs[face.y]) };
-    const float3 vert3 { v3(
-        (float)vxs[face.z], (float)vys[face.z], (float)vzs[face.z]) };
+    const float3 vert1 { v3(static_cast<float>(vxs[face.x]),
+        static_cast<float>(vys[face.x]), static_cast<float>(vzs[face.x])) };
+    const float3 vert2 { v3(static_cast<float>(vxs[face.y]),
+        static_cast<float>(vys[face.y]), static_cast<float>(vzs[face.y])) };
+    const float3 vert3 { v3(static_cast<float>(vxs[face.z]),
+        static_cast<float>(vys[face.z]), static_cast<float>(vzs[face.z])) };
     // for each vertex, check if it is contained in the aabb and return the
     // result
     return aabb.contains(vert1) && aabb.contains(vert2) && aabb.contains(vert3);
@@ -390,12 +392,12 @@ TEST_CASE("LBVH Correctness")
     std::uniform_real_distribution<float> uniform_dist(0.f, 1.f);
 
     // compute volume of the mesh
-    const float min_x { (float)mesh_d.vxs.min() };
-    const float min_y { (float)mesh_d.vys.min() };
-    const float min_z { (float)mesh_d.vzs.min() };
-    const float max_x { (float)mesh_d.vxs.max() };
-    const float max_y { (float)mesh_d.vys.max() };
-    const float max_z { (float)mesh_d.vzs.max() };
+    const float min_x { static_cast<float>(mesh_d.vxs.min()) };
+    const float min_y { static_cast<float>(mesh_d.vys.min()) };
+    const float min_z { static_cast<float>(mesh_d.vzs.min()) };
+    const float max_x { static_cast<float>(mesh_d.vxs.max()) };
+    const float max_y { static_cast<float>(mesh_d.vys.max()) };
+    const float max_z { static_cast<float>(mesh_d.vzs.max()) };
     // sample random points in that volume
     for (uint i { 0 }; i < N_points; ++i) {
         xx_host[i] = (max_x - min_x) * uniform_dist(rng) + min_x;
@@ -554,12 +556,12 @@ TEST_CASE("LBVH Benchmarks")
     std::uniform_real_distribution<float> uniform_dist(0.f, 1.f);
 
     // compute volume of the mesh
-    const float min_x { (float)mesh_d.vxs.min() };
-    const float min_y { (float)mesh_d.vys.min() };
-    const float min_z { (float)mesh_d.vzs.min() };
-    const float max_x { (float)mesh_d.vxs.max() };
-    const float max_y { (float)mesh_d.vys.max() };
-    const float max_z { (float)mesh_d.vzs.max() };
+    const float min_x { static_cast<float>(mesh_d.vxs.min()) };
+    const float min_y { static_cast<float>(mesh_d.vys.min()) };
+    const float min_z { static_cast<float>(mesh_d.vzs.min()) };
+    const float max_x { static_cast<float>(mesh_d.vxs.max()) };
+    const float max_y { static_cast<float>(mesh_d.vys.max()) };
+    const float max_z { static_cast<float>(mesh_d.vzs.max()) };
     // sample random points in that volume
     for (uint i { 0 }; i < N_points; ++i) {
         xx_host[i] = (max_x - min_x) * uniform_dist(rng) + min_x;

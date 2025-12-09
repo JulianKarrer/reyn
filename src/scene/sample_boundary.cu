@@ -105,7 +105,7 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     if (relaxation_iters == 0)
         return;
     // get the number of boundary particles, resize tmp if appropriate
-    const uint N { (uint)xs.size() };
+    const uint N { static_cast<uint>(xs.size()) };
     DeviceBuffer<float> num_den(N);
 
     // get the bounds of the particles
@@ -114,8 +114,8 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     // in gridbuilder, use larger safety margin of 5h but reuse the
     // UniformGridBuilder across iterations
     UniformGridBuilder grid_builder { UniformGridBuilder(
-        min_bound - v3(5.f * (float)h_bdy), max_bound + v3(5.f * (float)h_bdy),
-        2.f * (float)h_bdy) };
+        min_bound - v3(5.f * h_bdy), max_bound + v3(5.f * h_bdy),
+        2.f * h_bdy) };
     // use any kernel function, `B3` is used here
     const B3 W(2.f * h_bdy);
     // compute the resting number density for perfect hexagonal sampling of
@@ -151,12 +151,13 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
         // finally, project shifted particles back onto the triangular mesh
         lbvh.project(xs, ys, zs);
 
+        const float ratio { num_den.max() / num_den.min() };
+        const float avg { num_den.avg() };
+        Log::InfoTagged("Boundary Relaxation",
+            "Biggest/Smallest Ratio {}\tAvg Number density {}", ratio, avg);
+
         // if requested, output debug information
         if (debug_stream) {
-            const float ratio { num_den.max() / num_den.min() };
-            const float avg { num_den.avg() };
-            Log::InfoTagged("Boundary Relaxation",
-                "Biggest/Smallest Ratio {}\tAvg Number density {}", ratio, avg);
             (*debug_stream) << i + 1 << "," << ratio << "," << avg << std::endl;
         }
     }
@@ -188,7 +189,8 @@ __global__ void _uniform_sample_tri_cdf(const uint N, float* __restrict__ xs,
     // create a stratified uniformly distributed number within (0; total_area)
     // by dividing the area into N bins, moving i bins over and then sampling
     // uniformly within the size of one bin
-    const double area_rand { ((double)i / (double)N) * total_area
+    const double area_rand { (static_cast<double>(i) / static_cast<double>(N))
+            * total_area
         + bin_size * curand_uniform_double(rng) };
     // by inverting the cdf, find the triangle that this random point along the
     // total area belongs to
@@ -238,9 +240,9 @@ __global__ void _uniform_sample_tri_cdf(const uint N, float* __restrict__ xs,
     const double3 sampled { v1 + s * e12 + t * e13 };
     // store the respective cooridnates after finally converting them to
     // floating point precision
-    xs[i] = (float)sampled.x;
-    ys[i] = (float)sampled.y;
-    zs[i] = (float)sampled.z;
+    xs[i] = static_cast<float>(sampled.x);
+    ys[i] = static_cast<float>(sampled.y);
+    zs[i] = static_cast<float>(sampled.z);
 };
 
 template <Resort R>
@@ -279,7 +281,7 @@ void calculate_boundary_masses(BoundarySamples& bdy, const float h,
     // result.grid.prefix = result.prefix.ptr();
 
     // refine masses iteratively
-    const uint N_bdy { (uint)bdy.xs.size() };
+    const uint N_bdy { static_cast<uint>(bdy.xs.size()) };
     if (mass_refinement_iterations <= 0) {
         throw std::runtime_error(
             "At least one iteration of mass refinements must be run, please "
@@ -296,8 +298,8 @@ void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     DeviceBuffer<float>& zs, DeviceMesh& mesh, const float h,
     const float oversampling_factor)
 {
-    const uint N_face { (uint)mesh.faces.size() };
-    const uint N_vert { (uint)mesh.vxs.size() };
+    const uint N_face { static_cast<uint>(mesh.faces.size()) };
+    const uint N_vert { static_cast<uint>(mesh.vxs.size()) };
     // calculate the surface areas of each face
     // then fuse this with a prefix sum to both compute the total area (last
     // element) and construct a discrete CDF for uniform sampling
@@ -338,17 +340,18 @@ void uniform_sample_mesh(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
             "`area` was empty, suggesting a mesh with no faces");
     }
     // compute the number of boundary samples to place
-    const double h_bdy { (double)h / oversampling_factor };
+    const double h_bdy { static_cast<double>(h) / oversampling_factor };
     const double total_area { // load the last element from the device to host
         // memory via thrust overload of operator[]
         area.get()[area.size() - 1]
     };
     // assume hexagonal dense packing of 2-manifold when calculating the desired
     // number of particles in terms of total area and desired spacing
-    const float bdy_particle_area { 1.5f * sqrtf(3.f) * (float)h_bdy
-        * (float)h_bdy };
-    const uint bdy_count { (uint)(ceil(total_area / bdy_particle_area)) };
-    const double bin_size { total_area / (double)(bdy_count) };
+    const float bdy_particle_area { 1.5f * sqrtf(3.f)
+        * static_cast<float>(h_bdy) * static_cast<float>(h_bdy) };
+    const uint bdy_count { static_cast<uint>(
+        ceil(total_area / bdy_particle_area)) };
+    const double bin_size { total_area / static_cast<double>(bdy_count) };
 
     Log::Info("BOUNDARY STATS\ttotal area: {}\th_bdy: {}\tbdy_count: "
               "{}\tface_count: {}",

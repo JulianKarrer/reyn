@@ -100,7 +100,7 @@ void UniformGridBuilder::_construct(const DeviceBuffer<float>& xx,
     DeviceBuffer<uint>& prefix)
 {
     // get the number of particles
-    const uint N { (uint)xx.size() };
+    const uint N { static_cast<uint>(xx.size()) };
     // the number of entires must be the same across all components
     assert(xx.size() == xy.size() && xx.size() == xz.size());
 
@@ -256,7 +256,7 @@ TEST_CASE("Test Uniform Grid")
 #endif
     const uint N { side_length * side_length * side_length };
     const float h { 1.1 };
-    const float box_size { h * (float)side_length };
+    const float box_size { h * static_cast<float>(side_length) };
     const float search_radius { 2. * h };
     const float r_c_2 { search_radius * search_radius };
 
@@ -351,9 +351,12 @@ TEST_CASE("Test Uniform Grid")
     for (uint x { 0 }; x < side_length; ++x)
         for (uint y { 0 }; y < side_length; ++y)
             for (uint z { 0 }; z < side_length; ++z) {
-                xx_host[i_grid] = (float)x * h + 0.5 * h * uniform_dist(rng);
-                xy_host[i_grid] = (float)y * h + 0.5 * h * uniform_dist(rng);
-                xz_host[i_grid] = (float)z * h + 0.5 * h * uniform_dist(rng);
+                xx_host[i_grid]
+                    = static_cast<float>(x) * h + 0.5 * h * uniform_dist(rng);
+                xy_host[i_grid]
+                    = static_cast<float>(y) * h + 0.5 * h * uniform_dist(rng);
+                xz_host[i_grid]
+                    = static_cast<float>(z) * h + 0.5 * h * uniform_dist(rng);
                 ++i_grid;
             }
     thrust::copy(xx_host.begin(), xx_host.end(), xx.get().begin());

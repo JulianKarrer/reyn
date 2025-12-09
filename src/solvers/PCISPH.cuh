@@ -1,18 +1,7 @@
 #ifndef SOLVERS_PCISPH_CUH_
 #define SOLVERS_PCISPH_CUH_
 
-///
-///@file PCISPH.cuh
-///@author Julian Karrer (github.com/JulianKarrer)
-///@brief
-///@version 0.1
-///@date 2025-11-21
-///
-///@copyright Copyright (c) 2025
-///
-///
-
-#include "common.h"
+#include "log.h"
 #include "buffer.cuh"
 #include "kernels.cuh"
 
@@ -60,30 +49,31 @@ private:
     static double k_c_pcisph(
         const double ρ₀, const K W, const double h, const int κ = 2)
     {
-        const float h_f { (float)h };
+        const float h_f { static_cast<float>(h) };
         float3 sumdW = v3(0.);
         /// Σ( || ∇W_ij ||²)
         double sum_of_sq = 0.;
         for (int x { -κ }; x <= κ; ++x) {
             for (int y { -κ }; y <= κ; ++y) {
                 for (int z { -κ }; z <= κ; ++z) {
-                    const float3 x_j { v3(
-                        (float)x * h_f, (float)y * h_f, (float)z * h_f) };
+                    const float3 x_j { v3(static_cast<float>(x) * h_f,
+                        static_cast<float>(y) * h_f,
+                        static_cast<float>(z) * h_f) };
                     const float3 dW_ij { W.nabla(-x_j) };
                     sumdW += dW_ij;
-                    sum_of_sq += (double)dot(dW_ij, dW_ij);
+                    sum_of_sq += static_cast<double>(dot(dW_ij, dW_ij));
                 }
             }
         }
         /// || Σ ∇W_ij ||²
-        const double sq_of_sum { (double)dot(sumdW, sumdW) };
+        const double sq_of_sum { static_cast<double>(dot(sumdW, sumdW)) };
         // m / ρ₀ = V₀ = (h³ * ρ₀)/ρ₀ = h³
         const double V₀ { h * h * h };
         const double beta { 2. * V₀ * V₀ };
         Log::Info("PCISPH template particle stats:\n\t| Σ ∇W_ij ||² = {}\n\tΣ( "
                   "|| ∇W_ij ||²) = {}\n\t β = {}",
             sq_of_sum, sum_of_sq, beta);
-        return (float)(1. / (beta * (sq_of_sum + sum_of_sq)));
+        return static_cast<float>(1. / (beta * (sq_of_sum + sum_of_sq)));
     }
 
 public:

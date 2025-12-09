@@ -24,10 +24,10 @@ Each `nanobench` epoch is set to at least 50 iterations to keep fluctuations in 
 |---|:---:|---:|---:|---|
 | `125Cells` | ✅ | <span style="color:#80EF80">+40.13%</span> | 597.4μs | 0.65% |
 | `125Branchless` | ✅ | <span style="color:#80EF80">+38.66%</span> | 612.1μs | 0.44% |
-| `Current` | ✅ | <span style="color:#80EF80">+35.34%</span> | 645.2μs | 0.38% |
 | `125Branchless` | ❌ | <span style="color:#80EF80">+34.56%</span> | 14387.3μs | 0.10% |
 | `125Cells` | ❌ | <span style="color:#80EF80">+34.28%</span> | 14448.6μs | 0.07% |
-| `Current` | ❌ | <span style="color:#80EF80">+29.38%</span> | 15526.1μs | 0.20% |
+| `Current` | ✅ | <span style="color:#80EF80">+32.84%</span> | 670.1μs | 1.61% |
+| `Current` | ❌ | <span style="color:#80EF80">+25.69%</span> | 16338.4μs | 2.02% |
 | `AABB_Check` | ❌ | <span style="color:#FFEE8C">+2.76%</span> | 21378.4μs | 3.75% |
 | `Initial_Version` | ❌ | <span style="color:#FFEE8C">+0.00%</span> | 21985.7μs | 0.52% |
 | `Initial_Version` | ✅ | <span style="color:#FFEE8C">+0.00%</span> | 997.8μs | 0.57% |
@@ -44,13 +44,13 @@ Each `nanobench` epoch is set to at least 50 iterations to keep fluctuations in 
 | `Initial_Version` | ✅ | <span style="color:#FFEE8C">+0.00%</span> | 197.2μs | 3.28% |
 | `125Branchless` | ✅ | <span style="color:#FFEE8C">-0.30%</span> | 197.8μs | 0.24% |
 | `125Cells` | ✅ | <span style="color:#FFEE8C">-2.84%</span> | 202.8μs | 1.88% |
-| `Current` | ✅ | <span style="color:#FFEE8C">-4.67%</span> | 206.4μs | 4.72% |
+| `Current` | ✅ | <span style="color:#FFEE8C">-4.72%</span> | 206.5μs | 2.85% |
 | `AABB_Check` | ✅ | <span style="color:#FF746C">-10.09%</span> | 217.1μs | 2.79% |
 | `AABB_Check` | ❌ | <span style="color:#FF746C">-17.48%</span> | 207.0μs | 2.37% |
-| `Current` | ❌ | <span style="color:#FF746C">-26.45%</span> | 222.8μs | 1.61% |
 | `125Branchless` | ❌ | <span style="color:#FF746C">-36.49%</span> | 240.5μs | 3.46% |
 | `Check_8of27` | ✅ | <span style="color:#FF746C">-38.03%</span> | 272.2μs | 5.57% |
 | `125Cells` | ❌ | <span style="color:#FF746C">-52.67%</span> | 269.0μs | 6.53% |
+| `Current` | ❌ | <span style="color:#FF746C">-53.86%</span> | 271.1μs | 3.68% |
 
 ## Details
 
@@ -72,10 +72,10 @@ Each `nanobench` epoch is set to at least 50 iterations to keep fluctuations in 
 | Query (No Reordering) | 62254.4μs| 597 | 0.01% | `Check_8of27` |
 | Construction (Reordering) | 272.2μs| 597 | 5.57% | `Check_8of27` |
 | Query (Reordering) | 5894.7μs| 597 | 0.32% | `Check_8of27` |
-| Construction (No Reordering) | 222.8μs| 597 | 1.61% | `Current` |
-| Query (No Reordering) | 15526.1μs| 597 | 0.20% | `Current` |
-| Construction (Reordering) | 206.4μs| 597 | 4.72% | `Current` |
-| Query (Reordering) | 645.2μs| 597 | 0.38% | `Current` |
+| Construction (No Reordering) | 271.1μs| 597 | 3.68% | `Current` |
+| Query (No Reordering) | 16338.4μs| 597 | 2.02% | `Current` |
+| Construction (Reordering) | 206.5μs| 597 | 2.85% | `Current` |
+| Query (Reordering) | 670.1μs| 597 | 1.61% | `Current` |
 | Construction (No Reordering) | 176.2μs| 597 | 2.64% | `Initial_Version` |
 | Query (No Reordering) | 21985.7μs| 597 | 0.52% | `Initial_Version` |
 | Construction (Reordering) | 197.2μs| 597 | 3.28% | `Initial_Version` |

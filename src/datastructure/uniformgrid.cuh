@@ -258,7 +258,7 @@ private:
         // use multiple cudaStreams reorder all position vectors to ensure the
         // query is correct, but also any of the variable number of additional
         // buffers that were passed in
-        uint N { (uint)sorted.size() };
+        uint N { static_cast<uint>(sorted.size()) };
         tmp.resize(sorted.size());
         DeviceBuffer<float>* buffers[] = { reorder... };
         for (DeviceBuffer<float>* buf : buffers) {

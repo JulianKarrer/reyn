@@ -52,7 +52,7 @@ int main()
                 gui.exit();
 
             dt = simple_dt_controller(
-                iters, dt, 1.0, scene.h, state, v3(0., -9.81, 0.), 10);
+                iters, dt, 1.0, scene.h, state, v3(0., -9.81, 0.), 5);
 
             // get an updated acceleration datastructure
             const auto grid { scene.get_grid(state, tmp1) };
