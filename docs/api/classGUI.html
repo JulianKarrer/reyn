@@ -474,7 +474,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp">
-<span class="target" id="classGUI_1aeda1115b55b97926665b960c81ffb22f"></span><span class="sig-name descname"><span class="pre">bool</span> <span class="pre">update_or_exit</span> <span class="pre">(Particles</span> <span class="pre">&amp;state,</span> <span class="pre">const</span> <span class="pre">float</span> <span class="pre">h,</span> <span class="pre">DeviceBuffer&lt;</span> <span class="pre">float</span> <span class="pre">&gt;</span> <span class="pre">*ρ=nullptr)</span></span></dt>
+<span class="target" id="classGUI_1a105e599214111dd7ab451aacbbf46a68"></span><span class="sig-name descname"><span class="pre">bool</span> <span class="pre">update_or_exit</span> <span class="pre">(Particles</span> <span class="pre">&amp;state,</span> <span class="pre">const</span> <span class="pre">float</span> <span class="pre">h,</span> <span class="pre">const</span> <span class="pre">float</span> <span class="pre">dt,</span> <span class="pre">const</span> <span class="pre">uint</span> <span class="pre">iters,</span> <span class="pre">DeviceBuffer&lt;</span> <span class="pre">float</span> <span class="pre">&gt;</span> <span class="pre">*ρ=nullptr)</span></span></dt>
 <dd><p>Update the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a>, rendering particles to screen, handling inputs and updating the UI if enough time has passed since the last update, otherwise exits early. </p>
 <p>Can be used as a <code class="docutils literal notranslate"><span class="pre">while</span></code> condition of the main loop since the return value signals whether the closing of the application has been requested through the <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a> </p>
 <dl class="field-list simple">
@@ -482,6 +482,8 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>state</strong> – current <code class="docutils literal notranslate"><a class="reference internal" href="classParticles.html#classParticles"><span class="std std-ref"><span class="pre">Particles</span></span></a></code> state to display </p></li>
 <li><p><strong>h</strong> – fluid particle spacing </p></li>
+<li><p><strong>dt</strong> – current time step size (plotted in <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a>) </p></li>
+<li><p><strong>iters</strong> – current solver iteration count (plotted in <a class="reference internal" href="#classGUI"><span class="std std-ref">GUI</span></a>) </p></li>
 <li><p><strong>ρ</strong> – optional pointer to a <code class="docutils literal notranslate"><a class="reference internal" href="classDeviceBuffer.html#classDeviceBuffer"><span class="std std-ref"><span class="pre">DeviceBuffer</span></span></a></code> of densities for visualization </p></li>
 </ul>
 </dd>

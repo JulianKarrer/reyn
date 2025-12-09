@@ -57,11 +57,30 @@ FetchContent_MakeAvailable(glfw)
 
 # fetch ImGUI
 FetchContent_Populate(imgui
-    URL https://github.com/ocornut/imgui/archive/docking.zip
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG v1.92.5-docking
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/imgui
 )
 
-add_library(imgui_glfw STATIC
+# add ImPlot
+FetchContent_Populate(
+  implot
+  GIT_REPOSITORY https://github.com/epezent/implot.git
+  GIT_TAG        v0.17
+  SOURCE_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/implot
+)
+add_library(implot STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/implot/implot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/implot/implot_items.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/implot/implot_demo.cpp
+)
+target_include_directories(implot
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/implot
+)
+
+
+add_library(imgui STATIC
     build/_deps/imgui/imgui.cpp
     build/_deps/imgui/imgui_draw.cpp
     build/_deps/imgui/imgui_demo.cpp
@@ -72,16 +91,18 @@ add_library(imgui_glfw STATIC
     build/_deps/imgui/backends/imgui_impl_opengl3.cpp
 )
 
-target_include_directories(imgui_glfw
+target_include_directories(imgui
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui
     ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui/backends
 )
 
-target_link_libraries(imgui_glfw PUBLIC glfw)
+target_link_libraries(imgui PUBLIC glfw)
 
 find_package(X11 REQUIRED)
-target_link_libraries(imgui_glfw PUBLIC ${X11_LIBRARIES})
+target_link_libraries(imgui PUBLIC ${X11_LIBRARIES})
+
+target_link_libraries(implot PRIVATE imgui) # link implot and imgui
 
 # fetch GLM
 FetchContent_Declare(
@@ -198,7 +219,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE CUDA::cudart)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${X11_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
-    imgui_glfw
+    imgui
+    implot
     glad
     glm::glm
     OpenGL::GL
@@ -254,7 +276,8 @@ target_link_libraries(tests PRIVATE
     CUDA::cudart
     ${X11_LIBRARIES}
     glfw
-    imgui_glfw
+    imgui
+    implot
     glad
     glm::glm
     OpenGL::GL

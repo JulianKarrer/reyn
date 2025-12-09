@@ -46,7 +46,7 @@ private:
     /// ρ₀
     const float eta_rho_max { 1.001 };
     /// @brief minimum iteration count
-    const uint min_iter { 5 };
+    const uint min_iter { 3 };
 
     /// @brief Function for pre-calculating PCISPH stifness for a template
     /// particle, sampled on a regular grid with particle spacing h
@@ -109,7 +109,7 @@ public:
         Log::Success("PCISPH Solver initialized");
     };
 
-    void step(Particles& state, const UniformGrid<R> grid,
+    uint step(Particles& state, const UniformGrid<R> grid,
         const BoundarySamples& bdy, const float dt);
 
     ~PCISPH() {};

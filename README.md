@@ -35,8 +35,8 @@
 - [x] Add screenshot functionality -> automatic generation of video for docs
 - [x] Add better logging
 - [x] Add fluid volume sampling and de-/serialization
+- [x] Add plots to UI
 - [ ] Implement IISPH
 - [ ] Add settings management with de-/serialization and expose solver and scene options to GUI and CLI
-- [ ] Add plots to UI
 - [ ] Optimize kernel launch configurations
 - [ ] Use type aliases for safety (e.g. separating vectors and positions) and flexibility (change float precision, smaller index types for smaller scenes etc.)

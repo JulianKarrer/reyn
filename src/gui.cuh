@@ -66,12 +66,14 @@ public:
     /// through the GUI
     /// @param state current `Particles` state to display
     /// @param h fluid particle spacing
+    /// @param dt current time step size (plotted in GUI)
+    /// @param iters current solver iteration count (plotted in GUI)
     /// @param ρ optional pointer to a `DeviceBuffer` of densities for
     /// visualization
     /// @return `false` if exit of the application is requested by the user
     /// through the GUI, `true` otherwise
-    bool update_or_exit(
-        Particles& state, const float h, DeviceBuffer<float>* ρ = nullptr);
+    bool update_or_exit(Particles& state, const float h, const float dt,
+        const uint iters, DeviceBuffer<float>* ρ = nullptr);
 
     /// @brief Resize the particle positions buffer. Must be called while mapped
     /// for use by CUDA.
@@ -336,6 +338,11 @@ private:
     /// @param fragment_shader fragment shader to compile
     GLuint compile_shaders(
         const char* vertex_shader, const char* fragment_shader);
+
+    /// @brief Collection of time step sizes for plotting
+    std::vector<float> plot_dts;
+    /// @brief Collection of iteration counts for plotting
+    std::vector<uint> plot_iters;
 
     /// @brief Process user input events provided by GLFW, in particular cursor
     /// events that enable clicking and dragging to use camera orbital controls.

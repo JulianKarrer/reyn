@@ -45,19 +45,20 @@ int main()
         // MAIN LOOP
         Log::Success("Fully initialized, starting main loop.");
         double time { 0. };
-        while (gui.update_or_exit(state, scene.h, &tmp1)) {
+        uint iters { 0 };
+        float dt { 0.0005 };
+        while (gui.update_or_exit(state, scene.h, dt, iters, &tmp1)) {
             if (interrupted) // catch CTRL+C on POSIX
                 gui.exit();
 
-            // const float dt { cfl_time_step(
-            //     0.1, scene.h, state, v3(0., -9.81, 0.)) };
-            const float dt { 0.0005 };
+            dt = simple_dt_controller(
+                iters, dt, 1.0, scene.h, state, v3(0., -9.81, 0.), 10);
 
             // get an updated acceleration datastructure
             const auto grid { scene.get_grid(state, tmp1) };
 
             // then invoke the fluid solver
-            solver.step(state, grid, scene.bdy, dt);
+            iters = solver.step(state, grid, scene.bdy, dt);
 
             // enforce boundary conditions by clamping since the grid relies
             // on scene bounds being strict for memory safety

@@ -8,6 +8,7 @@ using namespace std::literals;
 #include "scene/scene.cuh"
 #include "scene/sample_boundary.cuh"
 #include "io_bmp_writer.h"
+#include <implot.h>
 // constants
 const char* FONT_PATH { "res/JBM.ttf" };
 
@@ -505,6 +506,7 @@ GUI::GUI(
     // SET UP IMGUI
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     this->io = &ImGui::GetIO();
     (void)io;
     io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // keyboard controls
@@ -854,8 +856,8 @@ void GUI::set_boundary_to_render(const BoundarySamples* samples)
     CUDA_CHECK(cudaGraphicsUnregisterResource(cuda_z));
 };
 
-bool GUI::update_or_exit(
-    Particles& state, const float h, DeviceBuffer<float>* ρ)
+bool GUI::update_or_exit(Particles& state, const float h, const float dt,
+    const uint iters, DeviceBuffer<float>* ρ)
 {
     // declare a static variable for measuring how much time has passed since
     // the last re-render
@@ -915,6 +917,10 @@ bool GUI::update_or_exit(
     // then unmap the particle position buffer from CUDA so that OpenGL can use
     // it as a VBO for drawing spheres
     unmap_buffers();
+
+    // add data to plots
+    plot_dts.push_back(dt);
+    plot_iters.push_back(iters);
 
     // now the main update to the GUI can happen, drawing to the screen,
     // processing inputs and handling interaction with UI elements
@@ -1113,6 +1119,17 @@ void GUI::imgui_draw()
         ImGui::ColorEdit4("boundary colour", bdy_colour);
     }
 
+    ImPlot::SetNextAxesToFit();
+    if (ImPlot::BeginPlot("Timestep Sizes")) {
+        ImPlot::PlotLine("Δt", plot_dts.data(), plot_dts.size());
+        ImPlot::EndPlot();
+    }
+    ImPlot::SetNextAxesToFit();
+    if (ImPlot::BeginPlot("Pressure Solver Iteration Count")) {
+        ImPlot::PlotLine("k", plot_iters.data(), plot_iters.size());
+        ImPlot::EndPlot();
+    }
+
     // end of contents ~~~~~~~
 
     ImGui::PopFont();
@@ -1135,6 +1152,16 @@ GUI::~GUI()
     // join the timer thread to prevent leaks
     exit_requested.store(true);
     timer.join();
+
+    // clean up ImGui
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        ImGui::DestroyPlatformWindows();
+    ImPlot::DestroyContext();
+    ImGui::DestroyContext();
+
     // unmap, unregister VBOs from CUDA and delete them
     unmap_buffers();
     destroy_and_deregister_buffers();

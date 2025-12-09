@@ -46,8 +46,44 @@ run-benches:
     cmake -B build -DBENCH=OFF
 
 
-# Generate documentation
+# Generate documentation, but do not conduct benchmarks or render new videos for the docs
 docs:
+    # delete and recreate folders to purge previous docs
+    mkdir -p {{DOCS_DIR}}
+    rm -rf docs
+    mkdir -p docs
+    touch docs/.nojekyll
+    rm -rf {{DOCS_DIR}}/api
+    rm -rf {{DOCS_DIR}}/_build
+    rm -rf {{DOCS_DIR}}/_templates
+    rm -rf {{DOCS_DIR}}/doxygen-output
+
+    # run tests
+    just test
+
+    # generate markdown from benchmark results
+    mkdir -p {{DOCS_DIR}}/_staticc/benchmarks
+    python3 builddocs/scripts/generate_benchmarks.py \
+        --json-dir builddocs/_staticc/benchmarks \
+        --html-dir builddocs/_staticc/benchmarks \
+        --out-file builddocs/benchmarks/index.md
+    
+    # run doxygen
+    doxygen {{DOXYFILE}}
+
+    # run sphinx build
+    cd {{DOCS_DIR}} && {{PYTHON}} -m sphinx -b html . _build/html
+
+    # replace relative URLs in markdown
+    sed -i 's@<img src="./res/icon.png" width=300 height = 300/>@ @g' ./builddocs/_build/html/index.html
+    sed -i 's@<img src="./builddocs/_staticc/vid.gif" width=900 />@<video width="900" autoplay muted loop controls><source src="./_static/vid.mp4" type="video/mp4"></video>@g' ./builddocs/_build/html/index.html
+
+    # move the final html output to the docs directory for display on github pages
+    mv builddocs/_build/html/* docs
+
+
+# Generate documentation, conduct benchmarks, render new videos for the docs etc.
+docs-full:
     # delete and recreate folders to purge previous docs
     mkdir -p {{DOCS_DIR}}
     rm -rf docs

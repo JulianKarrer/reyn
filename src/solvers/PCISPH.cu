@@ -56,7 +56,7 @@ __global__ void _write_pcisph_prs_acc(const float* __restrict__ xx,
 }
 
 template <IsKernel K, Resort R>
-void PCISPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
+uint PCISPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
     const BoundarySamples& bdy, const float dt)
 {
     const Boundary bdy_d { bdy.get() };
@@ -99,6 +99,8 @@ void PCISPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
         state.xz.ptr(), state.vx.ptr(), state.vy.ptr(), state.vz.ptr(),
         ax.ptr(), ay.ptr(), az.ptr(), N, dt);
     CUDA_CHECK(cudaGetLastError());
+    // return the iteration count
+    return l;
 };
 
 #define X(K) template class PCISPH<K, Resort::no>;

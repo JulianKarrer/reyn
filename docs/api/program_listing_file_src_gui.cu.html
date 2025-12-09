@@ -428,6 +428,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scene/scene.cuh&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;scene/sample_boundary.cuh&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;io_bmp_writer.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;implot.h&gt;</span>
 <span class="c1">// constants</span>
 <span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">FONT_PATH</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;res/JBM.ttf&quot;</span><span class="w"> </span><span class="p">};</span>
 
@@ -900,6 +901,7 @@
 <span class="w">    </span><span class="c1">// SET UP IMGUI</span>
 <span class="w">    </span><span class="n">IMGUI_CHECKVERSION</span><span class="p">();</span>
 <span class="w">    </span><span class="n">ImGui</span><span class="o">::</span><span class="n">CreateContext</span><span class="p">();</span>
+<span class="w">    </span><span class="n">ImPlot</span><span class="o">::</span><span class="n">CreateContext</span><span class="p">();</span>
 <span class="w">    </span><span class="n">this</span><span class="o">-&gt;</span><span class="n">io</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ImGui</span><span class="o">::</span><span class="n">GetIO</span><span class="p">();</span>
 <span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">io</span><span class="p">;</span>
 <span class="w">    </span><span class="n">io</span><span class="o">-&gt;</span><span class="n">ConfigFlags</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">ImGuiConfigFlags_NavEnableKeyboard</span><span class="p">;</span><span class="w"> </span><span class="c1">// keyboard controls</span>
@@ -1249,8 +1251,8 @@
 <span class="w">    </span><span class="n">CUDA_CHECK</span><span class="p">(</span><span class="n">cudaGraphicsUnregisterResource</span><span class="p">(</span><span class="n">cuda_z</span><span class="p">));</span>
 <span class="p">};</span>
 
-<span class="kt">bool</span><span class="w"> </span><span class="nf">GUI::update_or_exit</span><span class="p">(</span>
-<span class="w">    </span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">ρ</span><span class="p">)</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">GUI::update_or_exit</span><span class="p">(</span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">dt</span><span class="p">,</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">uint</span><span class="w"> </span><span class="n">iters</span><span class="p">,</span><span class="w"> </span><span class="n">DeviceBuffer</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">ρ</span><span class="p">)</span>
 <span class="p">{</span>
 <span class="w">    </span><span class="c1">// declare a static variable for measuring how much time has passed since</span>
 <span class="w">    </span><span class="c1">// the last re-render</span>
@@ -1310,6 +1312,10 @@
 <span class="w">    </span><span class="c1">// then unmap the particle position buffer from CUDA so that OpenGL can use</span>
 <span class="w">    </span><span class="c1">// it as a VBO for drawing spheres</span>
 <span class="w">    </span><span class="n">unmap_buffers</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// add data to plots</span>
+<span class="w">    </span><span class="n">plot_dts</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">dt</span><span class="p">);</span>
+<span class="w">    </span><span class="n">plot_iters</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">iters</span><span class="p">);</span>
 
 <span class="w">    </span><span class="c1">// now the main update to the GUI can happen, drawing to the screen,</span>
 <span class="w">    </span><span class="c1">// processing inputs and handling interaction with UI elements</span>
@@ -1508,6 +1514,17 @@
 <span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">ColorEdit4</span><span class="p">(</span><span class="s">&quot;boundary colour&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bdy_colour</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
+<span class="w">    </span><span class="n">ImPlot</span><span class="o">::</span><span class="n">SetNextAxesToFit</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ImPlot</span><span class="o">::</span><span class="n">BeginPlot</span><span class="p">(</span><span class="s">&quot;Timestep Sizes&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ImPlot</span><span class="o">::</span><span class="n">PlotLine</span><span class="p">(</span><span class="s">&quot;Δt&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">plot_dts</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">plot_dts</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">        </span><span class="n">ImPlot</span><span class="o">::</span><span class="n">EndPlot</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">ImPlot</span><span class="o">::</span><span class="n">SetNextAxesToFit</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ImPlot</span><span class="o">::</span><span class="n">BeginPlot</span><span class="p">(</span><span class="s">&quot;Pressure Solver Iteration Count&quot;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ImPlot</span><span class="o">::</span><span class="n">PlotLine</span><span class="p">(</span><span class="s">&quot;k&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">plot_iters</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">plot_iters</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="w">        </span><span class="n">ImPlot</span><span class="o">::</span><span class="n">EndPlot</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
 <span class="w">    </span><span class="c1">// end of contents ~~~~~~~</span>
 
 <span class="w">    </span><span class="n">ImGui</span><span class="o">::</span><span class="n">PopFont</span><span class="p">();</span>
@@ -1530,6 +1547,16 @@
 <span class="w">    </span><span class="c1">// join the timer thread to prevent leaks</span>
 <span class="w">    </span><span class="n">exit_requested</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
 <span class="w">    </span><span class="n">timer</span><span class="p">.</span><span class="n">join</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// clean up ImGui</span>
+<span class="w">    </span><span class="n">ImGui_ImplOpenGL3_Shutdown</span><span class="p">();</span>
+<span class="w">    </span><span class="n">ImGui_ImplGlfw_Shutdown</span><span class="p">();</span>
+<span class="w">    </span><span class="n">ImGuiIO</span><span class="o">&amp;</span><span class="w"> </span><span class="n">io</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ImGui</span><span class="o">::</span><span class="n">GetIO</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">io</span><span class="p">.</span><span class="n">ConfigFlags</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ImGuiConfigFlags_ViewportsEnable</span><span class="p">)</span>
+<span class="w">        </span><span class="n">ImGui</span><span class="o">::</span><span class="n">DestroyPlatformWindows</span><span class="p">();</span>
+<span class="w">    </span><span class="n">ImPlot</span><span class="o">::</span><span class="n">DestroyContext</span><span class="p">();</span>
+<span class="w">    </span><span class="n">ImGui</span><span class="o">::</span><span class="n">DestroyContext</span><span class="p">();</span>
+
 <span class="w">    </span><span class="c1">// unmap, unregister VBOs from CUDA and delete them</span>
 <span class="w">    </span><span class="n">unmap_buffers</span><span class="p">();</span>
 <span class="w">    </span><span class="n">destroy_and_deregister_buffers</span><span class="p">();</span>
