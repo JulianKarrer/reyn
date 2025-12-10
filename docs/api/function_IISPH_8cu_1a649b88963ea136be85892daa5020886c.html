@@ -405,7 +405,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_IISPH_8cu_1ac77925603ac6a59e51ddb737c54cb7d2.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_IISPH_8cu_1a649b88963ea136be85892daa5020886c.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -424,7 +424,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="template-function-jacobi-update-pressures">
-<span id="exhale-function-iisph-8cu-1ac77925603ac6a59e51ddb737c54cb7d2"></span><h1>Template Function _jacobi_update_pressures<a class="headerlink" href="#template-function-jacobi-update-pressures" title="Link to this heading">¶</a></h1>
+<span id="exhale-function-iisph-8cu-1a649b88963ea136be85892daa5020886c"></span><h1>Template Function _jacobi_update_pressures<a class="headerlink" href="#template-function-jacobi-update-pressures" title="Link to this heading">¶</a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_src_solvers_IISPH.cu.html#file-src-solvers-iisph-cu"><span class="std std-ref">File IISPH.cu</span></a></p></li>
 </ul>
@@ -432,24 +432,24 @@
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve function “_jacobi_update_pressures” with arguments “(const float*, const float*, const float*, const float*, const float*, const float*, const float*, float*, const float*, const float*, float*, const float, const float, const uint, const K, const UniformGrid&lt;R&gt;, const Boundary)”.
+<p>doxygenfunction: Unable to resolve function “_jacobi_update_pressures” with arguments “(const float*, const float*, const float*, const float*, const float*, const float*, const float*, float*, const float*, const float*, uint32_t*, const float, const float, const float, const uint, const K, const UniformGrid&lt;R&gt;, const Boundary)”.
 Candidate function could not be parsed. Parsing error is
 Error when parsing function declaration.
 If the function has no return type:
   Error in declarator or parameters-and-qualifiers
   Invalid C++ declaration: Expected identifier in nested name, got keyword: void [error at 35]
-    template&lt;IsKernel K, Resort R&gt; void _jacobi_update_pressures (const float *xx, const float *xy, const float *xz, const float *ax, const float *ay, const float *az, const float *m, float *p, const float *a_ii, const float *s_i, float *ρ_err, const float dt, const float omega, const uint N, const K W, const UniformGrid&lt; R &gt; grid, const Boundary bdy)
+    template&lt;IsKernel K, Resort R&gt; void _jacobi_update_pressures (const float *xx, const float *xy, const float *xz, const float *ax, const float *ay, const float *az, const float *m, float *p, const float *a_ii, const float *s_i, uint32_t *ρ_err_indicator, const float dt, const float omega, const float ρ_err_threshold, const uint N, const K W, const UniformGrid&lt; R &gt; grid, const Boundary bdy)
     ———————————–^
 If the function has a return type:
   Error in declarator or parameters-and-qualifiers
   If pointer to member declarator:
     Invalid C++ declaration: Expected ‘::’ in pointer to member (function). [error at 61]
-      template&lt;IsKernel K, Resort R&gt; void _jacobi_update_pressures (const float *xx, const float *xy, const float *xz, const float *ax, const float *ay, const float *az, const float *m, float *p, const float *a_ii, const float *s_i, float *ρ_err, const float dt, const float omega, const uint N, const K W, const UniformGrid&lt; R &gt; grid, const Boundary bdy)
+      template&lt;IsKernel K, Resort R&gt; void _jacobi_update_pressures (const float *xx, const float *xy, const float *xz, const float *ax, const float *ay, const float *az, const float *m, float *p, const float *a_ii, const float *s_i, uint32_t *ρ_err_indicator, const float dt, const float omega, const float ρ_err_threshold, const uint N, const K W, const UniformGrid&lt; R &gt; grid, const Boundary bdy)
       ————————————————————-^
   If declarator-id:
-    Invalid C++ declaration: Expecting “,” or “)” in parameters-and-qualifiers, got “ρ”. [error at 234]
-      template&lt;IsKernel K, Resort R&gt; void _jacobi_update_pressures (const float *xx, const float *xy, const float *xz, const float *ax, const float *ay, const float *az, const float *m, float *p, const float *a_ii, const float *s_i, float *ρ_err, const float dt, const float omega, const uint N, const K W, const UniformGrid&lt; R &gt; grid, const Boundary bdy)
-      ——————————————————————————————————————————————————————————————————————————————^
+    Invalid C++ declaration: Expecting “,” or “)” in parameters-and-qualifiers, got “ρ”. [error at 237]
+      template&lt;IsKernel K, Resort R&gt; void _jacobi_update_pressures (const float *xx, const float *xy, const float *xz, const float *ax, const float *ay, const float *az, const float *m, float *p, const float *a_ii, const float *s_i, uint32_t *ρ_err_indicator, const float dt, const float omega, const float ρ_err_threshold, const uint N, const K W, const UniformGrid&lt; R &gt; grid, const Boundary bdy)
+      ———————————————————————————————————————————————————————————————————————————————^
 </p>
 </div>
 </section>

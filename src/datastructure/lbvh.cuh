@@ -661,62 +661,66 @@ public:
         const double3 volume { bounds_max - bounds_min };
         MortonCodeGenerator gen(bounds_min, volume, mesh);
 
-        // allocate buffer for morton codes
-        DeviceBuffer<uint64_t> codes(N_faces);
-
-        // compute codes
-        thrust::transform(mesh->faces.get().begin(), mesh->faces.get().end(),
-            codes.get().begin(), gen);
-
-        // sort the faces by morton code
-        Log::InfoTagged("LBVH", "Sorting Primitives By Morton Codes");
-        thrust::sort_by_key(
-            codes.get().begin(), codes.get().end(), mesh->faces.get().begin());
-
-        // append indices to morton codes, now that the faces are sorted
-        // note that this preserves the sorting but should make keys unique even
-        // if morton codes coincide
-        auto codes_start = thrust::make_zip_iterator(thrust::make_tuple(
-            thrust::counting_iterator<uint32_t>(0), codes.get().begin()));
-        auto codes_end = thrust::make_zip_iterator(thrust::make_tuple(
-            thrust::counting_iterator<uint32_t>(codes.get().size()),
-            codes.get().end()));
-        thrust::transform(
-            codes_start, codes_end, codes.get().begin(), MortonCodeExtender {});
-
         // create the tree internal nodes as a SoA
+        // these two buffers have to exist concurrently with the morton code
+        // buffers, increasing peak memory usage
+        DeviceBuffer<uint> parent(N_faces - 1);
+        DeviceBuffer<uint> leaf_parents(N_faces);
         {
-            DeviceBuffer<uint> parent(N_faces - 1);
-            DeviceBuffer<uint> leaf_parents(N_faces);
+            // allocate buffer for morton codes
+            DeviceBuffer<uint64_t> codes(N_faces);
+
+            // compute codes
+            thrust::transform(mesh->faces.get().begin(),
+                mesh->faces.get().end(), codes.get().begin(), gen);
+
+            // sort the faces by morton code
+            Log::InfoTagged("LBVH", "Sorting Primitives By Morton Codes");
+            thrust::sort_by_key(codes.get().begin(), codes.get().end(),
+                mesh->faces.get().begin());
+
+            // append indices to morton codes, now that the faces are sorted
+            // note that this preserves the sorting but should make keys unique
+            // even if morton codes coincide
+            auto codes_start = thrust::make_zip_iterator(thrust::make_tuple(
+                thrust::counting_iterator<uint32_t>(0), codes.get().begin()));
+            auto codes_end = thrust::make_zip_iterator(thrust::make_tuple(
+                thrust::counting_iterator<uint32_t>(codes.get().size()),
+                codes.get().end()));
+            thrust::transform(codes_start, codes_end, codes.get().begin(),
+                MortonCodeExtender {});
 
             // generate the tree
             Log::InfoTagged("LBVH", "Generating LBVH Tree");
             generate_tree<<<BLOCKS(N_faces - 1), BLOCK_SIZE>>>(codes.ptr(),
                 N_faces, children_l.ptr(), children_r.ptr(), parent.ptr(),
                 leaf_parents.ptr());
-
-            // create bounding boxes
-            Log::InfoTagged("LBVH", "Computing Bounding Boxes");
-            DeviceBuffer<uint> visited(N_faces, 0);
-            compute_aabbs<<<BLOCKS(N_faces), BLOCK_SIZE>>>(parent.ptr(),
-                leaf_parents.ptr(), visited.ptr(), children_l.ptr(),
-                children_r.ptr(), N_faces, mesh->vxs.ptr(), mesh->vys.ptr(),
-                mesh->vzs.ptr(), mesh->faces.ptr(), aabbs_leaf.ptr(),
-                aabbs_internal.ptr());
-
-            // compute the tree height, reusing the `visited` buffer
-            Log::InfoTagged("LBVH", "Computing Tree height");
-            compute_tree_height<<<BLOCKS(N_faces), BLOCK_SIZE>>>(
-                N_faces, leaf_parents.ptr(), parent.ptr(), visited.ptr());
-            tree_height = visited.max();
-            Log::InfoTagged(
-                "LBVH", "Height of the LBVH radix tree: {}", tree_height);
-
-            // end the current scope, which calls the destructors of the buffers
-            // containing information about the parent node of each leaf and
-            // internal node - this info is no longer needed after AABB
-            // construction
         }
+
+        // create bounding boxes
+        Log::InfoTagged("LBVH", "Computing Bounding Boxes");
+        // only allocate the visited buffer now that the morton code buffer has
+        // been freed for no extra peak memory cost
+        DeviceBuffer<uint> visited(N_faces, 0);
+
+        compute_aabbs<<<BLOCKS(N_faces), BLOCK_SIZE>>>(parent.ptr(),
+            leaf_parents.ptr(), visited.ptr(), children_l.ptr(),
+            children_r.ptr(), N_faces, mesh->vxs.ptr(), mesh->vys.ptr(),
+            mesh->vzs.ptr(), mesh->faces.ptr(), aabbs_leaf.ptr(),
+            aabbs_internal.ptr());
+
+        // compute the tree height, reusing the `visited` buffer
+        Log::InfoTagged("LBVH", "Computing Tree height");
+        compute_tree_height<<<BLOCKS(N_faces), BLOCK_SIZE>>>(
+            N_faces, leaf_parents.ptr(), parent.ptr(), visited.ptr());
+        tree_height = visited.max();
+        Log::InfoTagged(
+            "LBVH", "Height of the LBVH radix tree: {}", tree_height);
+
+        // end the current scope, which calls the destructors of the buffers
+        // containing information about the parent node of each leaf and
+        // internal node - this info is no longer needed after AABB
+        // construction
         CUDA_CHECK(cudaDeviceSynchronize());
         Log::SuccessTagged("LBVH", "Generated LBVH Tree");
     };

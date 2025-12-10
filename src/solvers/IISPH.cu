@@ -122,9 +122,9 @@ __global__ void _jacobi_update_pressures(const float* __restrict__ xx,
     const float* __restrict__ ax, const float* __restrict__ ay,
     const float* __restrict__ az, const float* __restrict__ m,
     float* __restrict__ p, const float* __restrict__ a_ii,
-    const float* __restrict__ s_i, float* __restrict__ ρ_err, const float dt,
-    const float omega, const uint N, const K W, const UniformGrid<R> grid,
-    const Boundary bdy)
+    const float* __restrict__ s_i, uint32_t* __restrict__ ρ_err_indicator,
+    const float dt, const float omega, const float ρ_err_threshold,
+    const uint N, const K W, const UniformGrid<R> grid, const Boundary bdy)
 {
     const auto i { blockIdx.x * blockDim.x + threadIdx.x };
     if (i >= N)
@@ -149,8 +149,16 @@ __global__ void _jacobi_update_pressures(const float* __restrict__ xx,
     // zero.
     const float s_i_i { s_i[i] };
     p[i] = p[i] + jacobi_update(omega, a_ii[i], Ap, s_i_i);
-    // keep track of predicted density error / residual
-    ρ_err[i] = (Ap - s_i_i) * dt;
+
+    // check if the predicted density deviation exceed the threshold and pack
+    // the corresponding bit
+    const float ρ_err_predicted { (Ap - s_i_i) * dt };
+    const uint bitpack_adress { i / 32 }; // divisor of i/32
+    const uint32_t bit_pos { i - (bitpack_adress * 32) }; // remainder of i/32
+    assert(bit_pos < 32);
+    const uint32_t bitmask { (ρ_err_predicted > ρ_err_threshold ? 1u : 0u)
+        << bit_pos };
+    atomicOr(&(ρ_err_indicator[bitpack_adress]), bitmask);
 }
 
 template <IsKernel K, Resort R>
@@ -202,6 +210,10 @@ uint IISPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
     // start iterative pressure solve
     uint l { 0 };
     do {
+        // reset density error indicators
+        thrust::fill(
+            ρ_err_threshold.get().begin(), ρ_err_threshold.get().end(), 0);
+
         // compute pressure accelerations for current iterate of pressure
         _set_pressure_accelerations<K, R>
             <<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(), state.xy.ptr(),
@@ -213,16 +225,18 @@ uint IISPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
         _jacobi_update_pressures<K, R><<<BLOCKS(N), BLOCK_SIZE>>>(
             state.xx.ptr(), state.xy.ptr(), state.xz.ptr(), ax.ptr(), ay.ptr(),
             az.ptr(), state.m.ptr(), p.ptr(), a_ii.ptr(), s_i.ptr(),
-            ρ_err.ptr(), dt, ω, N, W, grid, bdy_d);
+            ρ_err_threshold.ptr(), dt, ω, eta_rho_max * ρ₀, N, W, grid, bdy_d);
         CUDA_CHECK(cudaGetLastError());
 
         // Log::InfoTagged("IISPH",
-        //     "iteration {}, avg error {}, threshold {}, avg prs {}", l,
-        //     ρ_err.avg(), eta_rho_max * ρ₀, p.avg());
+        //     "iteration {}, error sum {}, threshold {}, avg prs {}", l,
+        //     ρ_err_threshold.sum(), eta_rho_max * ρ₀, p.avg());
 
-        // repeat while predicted density deviation is above target threshold
+        // repeat while predicted density deviation is above target threshold.
+        // The sum acts as a check if any of the bitpacked values is different
+        // from zero, de facto implementing a maximum reduction
         l += 1;
-    } while (l < min_iter || ρ_err.avg() > eta_rho_max * ρ₀);
+    } while (l < min_iter || ρ_err_threshold.sum() > 0);
 
     // set pressure accelerations one last time with final updated pressures
     _set_pressure_accelerations<K, R><<<BLOCKS(N), BLOCK_SIZE>>>(state.xx.ptr(),

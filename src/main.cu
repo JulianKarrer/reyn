@@ -41,10 +41,10 @@ int main()
         DeviceBuffer<float> tmp4(1);
         DeviceBuffer<float> tmp5(1);
         DeviceBuffer<float> tmp6(1);
-        DeviceBuffer<float> tmp7(1);
+        DeviceBuffer<uint32_t> tmp7(1);
 
         Scene scene { Scene::from_obj(
-            "scenes/dragonbox.obj", 90_million, 1., state, tmp1, 3., 1.) };
+            "scenes/dragonbox.obj", 1_million, 1., state, tmp1, 3., 1.) };
         gui.set_boundary_to_render(&scene.bdy);
 
         // initialize kernel function and solver

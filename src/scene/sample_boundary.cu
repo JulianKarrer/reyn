@@ -42,10 +42,11 @@ __global__ void _compute_number_densities(const uint N, const B3 W,
             auto j, const float3 x_ij, auto _x_ij_l2) { return W(x_ij); }) };
 };
 
+template <Resort R>
 __global__ void _shift_neg_rho_grad(const uint N, const B3 W,
-    const UniformGrid<Resort::no> grid, float* __restrict__ xs,
-    float* __restrict__ ys, float* __restrict__ zs, const float h_bdy,
-    float* __restrict__ num_den, const float k, const float rho_0_sq_inv)
+    const UniformGrid<R> grid, float* __restrict__ xs, float* __restrict__ ys,
+    float* __restrict__ zs, const float h_bdy, float* __restrict__ num_den,
+    const float k, const float rho_0_sq_inv)
 {
     // compute index of current boundary sample
     const auto i { blockIdx.x * blockDim.x + threadIdx.x };
@@ -128,11 +129,11 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
 
     for (uint i { 0 }; i < relaxation_iters; ++i) {
         // build an acceleration datastructure to quickly find neighbours of
-        // boundary samples. Don't use resorting, since that would obscur the
-        // mapping to faces, which are needed to find the vertices associated
-        // with each sample
-        const UniformGrid<Resort::no> grid
-            = grid_builder.construct(2.f * h_grid, xs, ys, zs);
+        // boundary samples. Use number density as a resort buffer to save
+        // memory, since it is overwritten next anyways
+        const UniformGrid<Resort::yes> grid
+            = grid_builder.construct_and_reorder(
+                2.f * h_grid, num_den, xs, ys, zs);
 
         // relax the sampling by moving each boundary particle in the direction
         // of the negative number density gradient, then projecting them back
@@ -140,7 +141,7 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
         // query
 
         // first compute number densities
-        _compute_number_densities<Resort::no><<<BLOCKS(N), BLOCK_SIZE>>>(
+        _compute_number_densities<Resort::yes><<<BLOCKS(N), BLOCK_SIZE>>>(
             N, W, grid, xs.ptr(), ys.ptr(), zs.ptr(), num_den.ptr());
 
         // then shift particles in direction of negative 3D number density

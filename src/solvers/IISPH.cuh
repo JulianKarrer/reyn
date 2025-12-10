@@ -24,8 +24,9 @@ private:
     DeviceBuffer<float>& a_ii;
     /// @brief IISPH density invariance source term
     DeviceBuffer<float>& s_i;
-    /// @brief predicted density error
-    DeviceBuffer<float>& ρ_err;
+    /// @brief bitpacked indicators of booleans: does the predicted density
+    /// violate the constraint?
+    DeviceBuffer<uint32_t>& ρ_err_threshold;
     /// @brief acceleration buffer (x-component)
     DeviceBuffer<float>& ax;
     /// @brief acceleration buffer (y-component)
@@ -37,7 +38,7 @@ private:
     /// @brief rest density
     float ρ₀;
     /// @brief predicted density deviation threshold in units of rest density ρ₀
-    const float eta_rho_max { 0.001 };
+    const float eta_rho_max { 0.005 };
     /// @brief minimum iteration count
     const uint min_iter { 3 };
     /// @brief Jacobi weight ∈ (0,2)
@@ -46,15 +47,15 @@ private:
 public:
     IISPH(K _W, uint _N, float _nu, const float _h, const float _rho_0,
         DeviceBuffer<float>& _rho, DeviceBuffer<float>& _a_ii,
-        DeviceBuffer<float>& _s_i, DeviceBuffer<float>& _ρ_err,
-        DeviceBuffer<float>& _ax, DeviceBuffer<float>& _ay,
-        DeviceBuffer<float>& _az)
+        DeviceBuffer<float>& _s_i, DeviceBuffer<float>& _ax,
+        DeviceBuffer<float>& _ay, DeviceBuffer<float>& _az,
+        DeviceBuffer<uint32_t>& _ρ_err_threshold)
         : W(_W)
         , N(_N)
         , p(_N) // pressure buffer is owned here, since it should be persistent
         , a_ii(_a_ii)
         , s_i(_s_i)
-        , ρ_err(_ρ_err)
+        , ρ_err_threshold(_ρ_err_threshold)
         , nu(_nu)
         , h(_h)
         , ρ(_rho)
@@ -67,7 +68,9 @@ public:
         ρ.resize(_N);
         a_ii.resize(_N);
         s_i.resize(_N);
-        ρ_err.resize(_N);
+        // number of blocks of 32 bits required to store N bits: (unsigned ceil
+        // divide, initialize to zero)
+        ρ_err_threshold.resize((_N + 31) / 32, 0);
         ax.resize(_N);
         ay.resize(_N);
         az.resize(_N);
