@@ -7,7 +7,7 @@
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Function simple_dt_controller(const uint, const float, const float, const float, const Particles&amp;, const float3, const uint, const float, const float) - REYN documentation</title>
+        <title>Function jacobi_update - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -406,7 +406,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/function_cfl_8cu_1a9e46d30323d6f57c23b599efbbd7c6ad.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_IISPH_8cu_1a2504de443a84729ba7ebfb2db569d2ff.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -424,23 +424,32 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="function-simple-dt-controller-const-uint-const-float-const-float-const-float-const-particles-const-float3-const-uint-const-float-const-float">
-<span id="exhale-function-cfl-8cu-1a9e46d30323d6f57c23b599efbbd7c6ad"></span><h1>Function simple_dt_controller(const uint, const float, const float, const float, const Particles&amp;, const float3, const uint, const float, const float)<a class="headerlink" href="#function-simple-dt-controller-const-uint-const-float-const-float-const-float-const-particles-const-float3-const-uint-const-float-const-float" title="Link to this heading">¶</a></h1>
+          <section id="function-jacobi-update">
+<span id="exhale-function-iisph-8cu-1a2504de443a84729ba7ebfb2db569d2ff"></span><h1>Function jacobi_update<a class="headerlink" href="#function-jacobi-update" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_src_timestep_cfl.cu.html#file-src-timestep-cfl-cu"><span class="std std-ref">File cfl.cu</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_solvers_IISPH.cu.html#file-src-solvers-iisph-cu"><span class="std std-ref">File IISPH.cu</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve function “simple_dt_controller” with arguments (const uint, const float, const float, const float, const Particles&amp;, const float3, const uint, const float, const float) in doxygen xml output for project “REYN” from directory: /home/julian/Code/reyn/builddocs/doxygen-output/xml.
-Potential matches:
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="nb">float</span> <span class="n">simple_dt_controller</span><span class="p">(</span><span class="n">const</span> <span class="n">uint</span> <span class="n">iter_last</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">dt_last</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="k">lambda</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="n">Particles</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">,</span> <span class="n">const</span> <span class="n">float3</span> <span class="n">g</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">iter_target</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">increase</span> <span class="o">=</span> <span class="mf">1.01</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">decrease</span> <span class="o">=</span> <span class="mf">0.99</span><span class="p">)</span>
-<span class="o">-</span> <span class="nb">float</span> <span class="n">simple_dt_controller</span><span class="p">(</span><span class="n">const</span> <span class="n">uint</span> <span class="n">iter_last</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">dt_last</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="k">lambda</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="n">Particles</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">,</span> <span class="n">const</span> <span class="n">float3</span> <span class="n">g</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">iter_target</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">increase</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">decrease</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413jacobi_updateKfKfKfKf">
+<span id="_CPPv313jacobi_updateKfKfKfKf"></span><span id="_CPPv213jacobi_updateKfKfKfKf"></span><span id="jacobi_update__floatC.floatC.floatC.floatC"></span><span class="target" id="IISPH_8cu_1a2504de443a84729ba7ebfb2db569d2ff"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">jacobi_update</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">omega</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a_ii</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">Ap_i</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s_i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413jacobi_updateKfKfKfKf" title="Link to this definition">¶</a><br /></dt>
+<dd><p>Computes the Jacobi update ω (sᵢ - (𝔸p)ᵢ)/𝔸ᵢᵢ if 𝔸ᵢᵢ is sufficiently large, otherwise returns zero. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>omega</strong> – Jacobi weighting factor </p></li>
+<li><p><strong>a_ii</strong> – diagonal system matrix element 𝔸ᵢᵢ </p></li>
+<li><p><strong>Ap_i</strong> – i-th row of the system matrix, multiplied with the pressure vector, i.e. (𝔸p)ᵢ </p></li>
+<li><p><strong>s_i</strong> – i-th source term </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an increment to the pressure iterate (to be used in p_i += …) </p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -481,8 +490,11 @@ Potential matches:
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Function simple_dt_controller(const uint, const float, const float, const float, const Particles&amp;, const float3, const uint, const float, const float)</a><ul>
-<li><a class="reference internal" href="#function-documentation">Function Documentation</a></li>
+<li><a class="reference internal" href="#">Function jacobi_update</a><ul>
+<li><a class="reference internal" href="#function-documentation">Function Documentation</a><ul>
+<li><a class="reference internal" href="#_CPPv413jacobi_updateKfKfKfKf"><code class="docutils literal notranslate"><span class="pre">jacobi_update()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

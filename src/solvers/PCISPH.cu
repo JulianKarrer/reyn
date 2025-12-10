@@ -22,8 +22,8 @@ template <IsKernel K, Resort R>
 __global__ void _write_pcisph_prs_acc(const float* __restrict__ xx,
     const float* __restrict__ xy, const float* __restrict__ xz,
     float* __restrict__ ax, float* __restrict__ ay, float* __restrict__ az,
-    const float* __restrict__ m, const float* ρ, const uint N, const K W,
-    const float k, const float rho_0, const float rho_0_sq_inv,
+    const float* __restrict__ m, const float* __restrict__ ρ, const uint N,
+    const K W, const float k, const float rho_0, const float rho_0_sq_inv,
     const UniformGrid<R> grid, const Boundary bdy)
 {
     const auto i { blockIdx.x * blockDim.x + threadIdx.x };
@@ -96,9 +96,9 @@ uint PCISPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
             state.xy.ptr(), state.xz.ptr(), ax.ptr(), ay.ptr(), az.ptr(),
             state.m.ptr(), ρ.ptr(), N, W, k, ρ₀, 1.f / (ρ₀ * ρ₀), grid, bdy_d);
 
-        // repeat while maximum density is above target threshold
+        // repeat while density is above target threshold
         l += 1;
-    } while (l < min_iter || ρ.avg() > eta_rho_max * ρ₀);
+    } while (l < min_iter || ρ.avg() > (eta_rho_max + 1.f) * ρ₀);
 
     // incorporate pressure accelerations and update positions from accumulated
     // velocity

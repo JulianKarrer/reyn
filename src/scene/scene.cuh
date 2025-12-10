@@ -80,7 +80,8 @@ private:
         , bdy(std::move(_bdy))
         , bound_min(_bound_min)
         , bound_max(_bound_max)
-        , grid_builder(UniformGridBuilder(_bound_min, _bound_max, 2.f * _h)) {};
+        , grid_builder(
+              UniformGridBuilder(_bound_min, _bound_max, 2.f * _h)) { };
 
 public:
     /// @brief Construct a scene with a box filled with fluid at as close as

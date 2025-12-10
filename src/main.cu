@@ -3,6 +3,7 @@
 #include "scene/scene.cuh"
 #include "kernels.cuh"
 #include "solvers/PCISPH.cuh"
+#include "solvers/IISPH.cuh"
 #include "datastructure/uniformgrid.cuh"
 #include "utils/vector.cuh"
 #include "scene/loader.h"
@@ -32,15 +33,18 @@ int main()
         DeviceBuffer<float> tmp2(1);
         DeviceBuffer<float> tmp3(1);
         DeviceBuffer<float> tmp4(1);
+        DeviceBuffer<float> tmp5(1);
+        DeviceBuffer<float> tmp6(1);
+        DeviceBuffer<float> tmp7(1);
 
         Scene scene { Scene::from_obj(
-            "scenes/dragonbox.obj", 1000000, 1., state, tmp1, 3., 1.) };
+            "scenes/dragonbox.obj", 5000000, 1., state, tmp1, 3., 1.) };
         gui.set_boundary_to_render(&scene.bdy);
 
         // initialize kernel function and solver
         const B3 W(2.f * scene.h);
-        auto solver { PCISPH<B3, Resort::yes>(
-            W, scene.N, 0.001f, scene.h, scene.ρ₀, tmp1, tmp2, tmp3, tmp4) };
+        auto solver { IISPH<B3, Resort::yes>(W, scene.N, 0.001f, scene.h,
+            scene.ρ₀, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7) };
 
         // MAIN LOOP
         Log::Success("Fully initialized, starting main loop.");

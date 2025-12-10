@@ -24,12 +24,11 @@ float cfl_time_step(
 ///@param state `Particles` state
 ///@param g gravity (used for lower bound on acceleration)
 ///@param iter_target target solver iteration count
-///@param increase percentage increase in Δt if iteration count is too low
-///@param decrease percentage decrease in Δt if iteration count is too high
+///@param change_factor factor of increase or decrease in Δt per iteration, must
+/// be < 1
 ///@return float
 float simple_dt_controller(const uint iter_last, const float dt_last,
     const float lambda, const float h, const Particles& state, const float3 g,
-    const uint iter_target = 5, const float increase = 1.01,
-    const float decrease = 0.99);
+    const uint iter_target = 5, const float change_factor = 0.01);
 
 #endif // TIMSTEP_CFL_CUH_

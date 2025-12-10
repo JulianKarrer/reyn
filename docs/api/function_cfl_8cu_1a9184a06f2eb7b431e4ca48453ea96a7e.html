@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="File cfl.cuh" href="file_src_timestep_cfl.cuh.html"><link rel="prev" title="File cfl.cu" href="file_src_timestep_cfl.cu.html">
+    <link href="../_static/icon.png" sizes="1024x1024" rel="icon" type="image/png"><link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html">
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Program Listing for File cfl.cu - REYN documentation</title>
+        <title>Function simple_dt_controller(const uint, const float, const float, const float, const Particles&amp;, const float3, const uint, const float) - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -174,7 +174,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -194,11 +194,11 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul class="current">
+  <ul>
 <li class="toctree-l1"><a class="reference internal" href="../samplings/index.html">Relaxed Boundary Sampling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/index.html">Neighbour Search Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../lbvh/index.html">LBVH</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="library_root.html">C++ Documentation</a><input aria-label="Toggle navigation of C++ Documentation" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="structAABB.html">Struct AABB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBitmapFileHeader.html">Struct BitmapFileHeader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structBitmapInformationHeader.html">Struct BitmapInformationHeader</a></li>
@@ -244,8 +244,8 @@
 <li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_buffer.cuh.html">Program Listing for File buffer.cuh</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="file_src_timestep_cfl.cu.html">File cfl.cu</a><input aria-label="Toggle navigation of File cfl.cu" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Program Listing for File cfl.cu</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="file_src_timestep_cfl.cu.html">File cfl.cu</a><input aria-label="Toggle navigation of File cfl.cu" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="program_listing_file_src_timestep_cfl.cu.html">Program Listing for File cfl.cu</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="file_src_timestep_cfl.cuh.html">File cfl.cuh</a><input aria-label="Toggle navigation of File cfl.cuh" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -406,7 +406,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/program_listing_file_src_timestep_cfl.cu.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_cfl_8cu_1a9184a06f2eb7b431e4ca48453ea96a7e.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -419,68 +419,29 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="program-listing-for-file-cfl-cu">
-<span id="program-listing-file-src-timestep-cfl-cu"></span><h1>Program Listing for File cfl.cu<a class="headerlink" href="#program-listing-for-file-cfl-cu" title="Link to this heading">¶</a></h1>
-<p>↰ <a class="reference internal" href="file_src_timestep_cfl.cu.html#file-src-timestep-cfl-cu"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">src/timestep/cfl.cu</span></code>)</p>
-<div class="highlight-cuda notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;cfl.cuh&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thrust/transform_reduce.h&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;utils/vector.cuh&quot;</span>
-
-<span class="kt">float</span><span class="w"> </span><span class="nf">cfl_time_step</span><span class="p">(</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">lambda</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">g</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">N_fld</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">xx</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="c1">// compute the maximum velocity among particles</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">vx</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">vx</span><span class="p">.</span><span class="n">ptr</span><span class="p">()</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">vy</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">vy</span><span class="p">.</span><span class="n">ptr</span><span class="p">()</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="o">*</span><span class="w"> </span><span class="n">vz</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">.</span><span class="n">vz</span><span class="p">.</span><span class="n">ptr</span><span class="p">()</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">v_max</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">thrust</span><span class="o">::</span><span class="n">transform_reduce</span><span class="p">(</span>
-<span class="w">        </span><span class="n">thrust</span><span class="o">::</span><span class="n">counting_iterator</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
-<span class="w">        </span><span class="n">thrust</span><span class="o">::</span><span class="n">counting_iterator</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">N_fld</span><span class="p">),</span>
-<span class="w">        </span><span class="p">[</span><span class="n">vx</span><span class="p">,</span><span class="w"> </span><span class="n">vy</span><span class="p">,</span><span class="w"> </span><span class="n">vz</span><span class="p">]</span><span class="w"> </span><span class="kt">__device__</span><span class="p">(</span>
-<span class="w">            </span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">norm</span><span class="p">(</span><span class="n">v3</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">vx</span><span class="p">,</span><span class="w"> </span><span class="n">vy</span><span class="p">,</span><span class="w"> </span><span class="n">vz</span><span class="p">));</span><span class="w"> </span><span class="p">},</span>
-<span class="w">        </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="o">::</span><span class="n">cuda</span><span class="o">::</span><span class="n">maximum</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">())</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="c1">// compute velocity based CFL time step from the constraint:</span>
-<span class="w">    </span><span class="c1">// Δt v_max &lt; λ h       limit 1st order Taylor approx of Δx to λh</span>
-<span class="w">    </span><span class="c1">// Δt &lt; λ h / v_max</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">dt_vel</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">v_max</span><span class="w"> </span><span class="p">};</span>
-
-<span class="w">    </span><span class="c1">// Δt can be at least be lower bounded by the influence of gravity in the</span>
-<span class="w">    </span><span class="c1">// time step, if no better estimate for acceleration is available:</span>
-<span class="w">    </span><span class="c1">// - especially effective if velocity is close to zero so dt_vel grows to</span>
-<span class="w">    </span><span class="c1">// infinity since second order is neglected</span>
-<span class="w">    </span><span class="c1">// 1/2 g Δt² &lt; λ/2 h</span>
-<span class="w">    </span><span class="c1">// Δt &lt; √(λ h / g)</span>
-<span class="w">    </span><span class="c1">// use only λ/2 here</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">dt_g</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sqrtf</span><span class="p">(</span><span class="mf">2.</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">lambda</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">norm</span><span class="p">(</span><span class="n">g</span><span class="p">))</span><span class="w"> </span><span class="p">};</span>
-
-<span class="w">    </span><span class="c1">// for a conservative upper bound on time step, return minimum of all</span>
-<span class="w">    </span><span class="c1">// calculated estimated upper bounds. Note that fminf takes care of NaN due</span>
-<span class="w">    </span><span class="c1">// to division by zero in dt_vel for example</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">fminf</span><span class="p">(</span><span class="n">dt_vel</span><span class="p">,</span><span class="w"> </span><span class="n">dt_g</span><span class="p">);</span>
-<span class="p">};</span>
-
-<span class="kt">float</span><span class="w"> </span><span class="nf">simple_dt_controller</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">uint</span><span class="w"> </span><span class="n">iter_last</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">dt_last</span><span class="p">,</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">lambda</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Particles</span><span class="o">&amp;</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float3</span><span class="w"> </span><span class="n">g</span><span class="p">,</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">uint</span><span class="w"> </span><span class="n">iter_target</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">change_factor</span><span class="p">)</span>
-<span class="p">{</span>
-<span class="w">    </span><span class="c1">// if iteration count was surpassed, decrease time step, if it was not</span>
-<span class="w">    </span><span class="c1">// reached then increase</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">signed_factor</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">iter_last</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">iter_target</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mf">1.f</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">change_factor</span>
-<span class="w">                                                        </span><span class="o">:</span><span class="w"> </span><span class="mf">1.f</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">change_factor</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">dt_suggested</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">dt_last</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">signed_factor</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="c1">// get the current maximum allowed timestep according to CFL condition</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">Δt_cfl</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">cfl_time_step</span><span class="p">(</span><span class="n">lambda</span><span class="p">,</span><span class="w"> </span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">g</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
-<span class="w">    </span><span class="c1">// clamp the suggested timestep to that value</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">min</span><span class="p">(</span><span class="n">Δt_cfl</span><span class="p">,</span><span class="w"> </span><span class="n">dt_suggested</span><span class="p">);</span>
-<span class="p">}</span>
+          <section id="function-simple-dt-controller-const-uint-const-float-const-float-const-float-const-particles-const-float3-const-uint-const-float">
+<span id="exhale-function-cfl-8cu-1a9184a06f2eb7b431e4ca48453ea96a7e"></span><h1>Function simple_dt_controller(const uint, const float, const float, const float, const Particles&amp;, const float3, const uint, const float)<a class="headerlink" href="#function-simple-dt-controller-const-uint-const-float-const-float-const-float-const-particles-const-float3-const-uint-const-float" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p>Defined in <a class="reference internal" href="file_src_timestep_cfl.cu.html#file-src-timestep-cfl-cu"><span class="std std-ref">File cfl.cu</span></a></p></li>
+</ul>
+<section id="function-documentation">
+<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve function “simple_dt_controller” with arguments (const uint, const float, const float, const float, const Particles&amp;, const float3, const uint, const float) in doxygen xml output for project “REYN” from directory: /home/julian/Code/reyn/builddocs/doxygen-output/xml.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="nb">float</span> <span class="n">simple_dt_controller</span><span class="p">(</span><span class="n">const</span> <span class="n">uint</span> <span class="n">iter_last</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">dt_last</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="k">lambda</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="n">Particles</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">,</span> <span class="n">const</span> <span class="n">float3</span> <span class="n">g</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">iter_target</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">change_factor</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">)</span>
+<span class="o">-</span> <span class="nb">float</span> <span class="n">simple_dt_controller</span><span class="p">(</span><span class="n">const</span> <span class="n">uint</span> <span class="n">iter_last</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">dt_last</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="k">lambda</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">h</span><span class="p">,</span> <span class="n">const</span> <span class="n">Particles</span> <span class="o">&amp;</span><span class="n">state</span><span class="p">,</span> <span class="n">const</span> <span class="n">float3</span> <span class="n">g</span><span class="p">,</span> <span class="n">const</span> <span class="n">uint</span> <span class="n">iter_target</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">change_factor</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+</section>
 </section>
 
         </article>
@@ -488,26 +449,8 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="file_src_timestep_cfl.cuh.html">
-              <div class="page-info">
-                <div class="context">
-                  <span>Next</span>
-                </div>
-                <div class="title">File cfl.cuh</div>
-              </div>
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-            </a>
-          <a class="prev-page" href="file_src_timestep_cfl.cu.html">
-              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
-              <div class="page-info">
-                <div class="context">
-                  <span>Previous</span>
-                </div>
-                
-                <div class="title">File cfl.cu</div>
-                
-              </div>
-            </a>
+          
+          
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -526,8 +469,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Function simple_dt_controller(const uint, const float, const float, const float, const Particles&amp;, const float3, const uint, const float)</a><ul>
+<li><a class="reference internal" href="#function-documentation">Function Documentation</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

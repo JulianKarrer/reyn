@@ -1123,7 +1123,7 @@ void GUI::imgui_draw()
     ImGui::Text("GUI interval %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
         io->Framerate);
     ImGui::Text("SIM interval %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
-    ImGui::Text("Δt = %.3fms", 1000.0f * plot_dts.back());
+    ImGui::Text("Δt = %.3fms", plot_dts.back());
     if (ImGui::Button("SCREENSHOT")) {
         char filename[50];
         time_t t = time(NULL);

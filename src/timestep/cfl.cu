@@ -38,12 +38,13 @@ float cfl_time_step(
 
 float simple_dt_controller(const uint iter_last, const float dt_last,
     const float lambda, const float h, const Particles& state, const float3 g,
-    const uint iter_target, const float increase, const float decrease)
+    const uint iter_target, const float change_factor)
 {
     // if iteration count was surpassed, decrease time step, if it was not
     // reached then increase
-    const float change_factor { iter_last < iter_target ? increase : decrease };
-    const float dt_suggested { dt_last * change_factor };
+    const float signed_factor { iter_last < iter_target ? 1.f + change_factor
+                                                        : 1.f - change_factor };
+    const float dt_suggested { dt_last * signed_factor };
     // get the current maximum allowed timestep according to CFL condition
     const float Δt_cfl { cfl_time_step(lambda, h, state, g) };
     // clamp the suggested timestep to that value

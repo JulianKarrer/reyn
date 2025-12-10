@@ -17,6 +17,15 @@ private:
     float nu;
     /// @brief density buffer
     DeviceBuffer<float>& ρ;
+    /// @brief pressure buffer (this buffer is owned by the solver and therefore
+    /// guaranteed to persist across steps)
+    DeviceBuffer<float> p;
+    /// @brief IISPH diagonal element
+    DeviceBuffer<float>& a_ii;
+    /// @brief IISPH density invariance source term
+    DeviceBuffer<float>& s_i;
+    /// @brief predicted density error
+    DeviceBuffer<float>& ρ_err;
     /// @brief acceleration buffer (x-component)
     DeviceBuffer<float>& ax;
     /// @brief acceleration buffer (y-component)
@@ -27,18 +36,25 @@ private:
     float3 g { v3(0.f, -9.81f, 0.f) };
     /// @brief rest density
     float ρ₀;
-    /// @brief maximum accepted average density as a factor of rest density
-    /// ρ₀
-    const float eta_rho_max { 1.001 };
+    /// @brief predicted density deviation threshold in units of rest density ρ₀
+    const float eta_rho_max { 0.001 };
     /// @brief minimum iteration count
     const uint min_iter { 3 };
+    /// @brief Jacobi weight ∈ (0,2)
+    const float ω { 0.5f };
 
 public:
     IISPH(K _W, uint _N, float _nu, const float _h, const float _rho_0,
-        DeviceBuffer<float>& _rho, DeviceBuffer<float>& _ax,
-        DeviceBuffer<float>& _ay, DeviceBuffer<float>& _az)
+        DeviceBuffer<float>& _rho, DeviceBuffer<float>& _a_ii,
+        DeviceBuffer<float>& _s_i, DeviceBuffer<float>& _ρ_err,
+        DeviceBuffer<float>& _ax, DeviceBuffer<float>& _ay,
+        DeviceBuffer<float>& _az)
         : W(_W)
         , N(_N)
+        , p(_N) // pressure buffer is owned here, since it should be persistent
+        , a_ii(_a_ii)
+        , s_i(_s_i)
+        , ρ_err(_ρ_err)
         , nu(_nu)
         , h(_h)
         , ρ(_rho)
@@ -49,6 +65,9 @@ public:
     {
         // ensure that the buffer can hold all densitites
         ρ.resize(_N);
+        a_ii.resize(_N);
+        s_i.resize(_N);
+        ρ_err.resize(_N);
         ax.resize(_N);
         ay.resize(_N);
         az.resize(_N);
