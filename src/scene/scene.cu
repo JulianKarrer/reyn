@@ -159,17 +159,18 @@ template <uint STACK_SIZE> struct LaunchInsidePredicate {
     };
 };
 
-///@brief Struct used for static assertion that predicates passed into
-///`cull_particles_by_predicate` have a fitting `operator()` implementation.
-template <typename T, typename Tuple, typename = void>
-struct has_templated_call_operator : std::false_type { };
-
-///@brief Struct used for static assertion that predicates passed into
-///`cull_particles_by_predicate` have a fitting `operator()` implementation.
-template <typename T, typename Tuple>
-struct has_templated_call_operator<T, Tuple,
-    std::void_t<decltype(std::declval<T>().template operator()<Tuple>(
-        std::declval<Tuple const&>()))>> : std::true_type { };
+template <uint STACK_SIZE> struct LaunchInsidePredicateBatched {
+    void operator()(const DeviceLBVH& lbvh_pod, const DeviceMesh& fluid_mesh,
+        const uint N_cur, const uint N_new_count, float h, Particles& state,
+        uint& new_N) const
+    {
+        InsidePredicate<STACK_SIZE> inside_predicate { lbvh_pod,
+            fluid_mesh.vxs.ptr(), fluid_mesh.vys.ptr(), fluid_mesh.vzs.ptr(),
+            fluid_mesh.faces.ptr() };
+        new_N = cull_batched_noresize(
+            N_cur, N_new_count, h, state, inside_predicate);
+    };
+};
 
 template <typename Pred>
 /// @brief From the `Particles`, remove all fluid particles that fulfill the
@@ -193,15 +194,6 @@ uint cull_particles_by_predicate(const uint N, const float h, Particles& state,
         state.m.get().begin()));
     auto last = first + N;
 
-    using Tuple = thrust::tuple<decltype(dx[0]), decltype(dy[0]),
-        decltype(dz[0]), decltype(state.vx.get().begin()[0]),
-        decltype(state.vy.get().begin()[0]),
-        decltype(state.vz.get().begin()[0]),
-        decltype(state.m.get().begin()[0])>;
-    static_assert(has_templated_call_operator<Pred, Tuple>::value,
-        "Pred must provide: template <typename Tuple> bool operator()(Tuple "
-        "const&) (callable with the particle thrust::tuple).");
-
     // apply remove_if using the culling predicate for particles too close to
     // the boundary
     auto new_end { thrust::remove_if(thrust::device, first, last, predicate) };
@@ -214,6 +206,27 @@ uint cull_particles_by_predicate(const uint N, const float h, Particles& state,
     state.resize_truncate(new_N, tmp);
 
     return new_N;
+}
+
+template <typename Pred>
+uint cull_batched_noresize(const uint N_cur, const uint N_new_count,
+    const float h, Particles& state, Pred predicate)
+{
+    // build a zipped iterator to apply remove_if to positions, velocities and
+    // masses in one go using the same predicate functor
+    auto dx = thrust::device_pointer_cast(state.xx.ptr());
+    auto dy = thrust::device_pointer_cast(state.xy.ptr());
+    auto dz = thrust::device_pointer_cast(state.xz.ptr());
+    auto first = thrust::make_zip_iterator(thrust::make_tuple(dx, dy, dz));
+    auto last = first + N_new_count + N_cur;
+
+    // apply remove_if using the culling predicate for particles too close to
+    // the boundary
+    auto new_end { thrust::remove_if(
+        thrust::device, first + N_cur, last, predicate) };
+
+    // return the remaining number of particles
+    return thrust::distance(first, new_end);
 }
 
 /// @brief Add a small, normally distributed jitter with (σ = `jitter_stddev *
@@ -332,32 +345,97 @@ Scene Scene::from_obj(const std::filesystem::path& path, const uint N_desired,
     // compute an upper bound of the fluid particle count from LBVH bounds
     const float3 dxyz { fluid_max - fluid_min };
     const int3 nxyz { floor_div(dxyz, h) };
-    uint N { static_cast<uint>(abs(nxyz.x)) * static_cast<uint>(abs(nxyz.y))
-        * static_cast<uint>(abs(nxyz.z)) };
+    uint N_all_candidates { static_cast<uint>(abs(nxyz.x))
+        * static_cast<uint>(abs(nxyz.y)) * static_cast<uint>(abs(nxyz.z)) };
     // exit early if the fluid domain is empty
-    if (N == 0)
+    if (N_all_candidates == 0)
         throw std::domain_error(
             "Initialization of box failed, zero particles placed");
 
+    // If all candidate particles were created at once and then culled until
+    // those in the fluid volume are left, peak memory consumption would be much
+    // higher than necessary, limiting scene size.
+
+    // Since there are at least 7 float buffers in the state for positions,
+    // velocities and scalar masses, we can afford at least 2 times the size of
+    // the positions buffer and still have a buffer of N_desired floats to spare
+    // for resorting, meaning peak memory usage does not spike beyond the
+    // required memory for the simulation.
+
+    // We batch the candidate fluid  positions into batches of this size, cull
+    // the candidates outside the fluid volume and repeat until the position
+    // buffer is filled with ~N_desired valid fluid particles inside the desired
+    // volume.
+    // If all candidate positions fit immediately, use that number (e.g.
+    // well-placed axis aligned cuboid volume)
+    const uint N_batch { min(N_all_candidates, N_desired * 2) };
+
     // resize without regard for existing data in `state`, just allocate
     // sufficient amount of uninitialized memory
-    state.resize_uninit(N);
+    // SPECIAL: use optional parameter to only allocate positions! velocities
+    // and masses take up no memory yet
+    state.resize_uninit(N_batch, true);
 
-    // place fluid particles
-    _init_box_kernel<<<BLOCKS(N), BLOCK_SIZE>>>(fluid_min, state.xx.ptr(),
-        state.xy.ptr(), state.xz.ptr(), state.vx.ptr(), state.vy.ptr(),
-        state.vz.ptr(), state.m.ptr(), nxyz, N, h, ρ₀);
-    CUDA_CHECK(cudaGetLastError());
-
-    // cull fluid particles that are outside of the specified volume:
-    // if the triangle normal at the closest point on the mesh points towards
-    // the sample, cull it
+    // get required pointers and set up variables
     const DeviceLBVH lbvh_pod { lbvh.get_pod() };
-    uint new_N_inside { N };
+    auto dx { thrust::device_pointer_cast(state.xx.ptr()) };
+    auto dy { thrust::device_pointer_cast(state.xy.ptr()) };
+    auto dz { thrust::device_pointer_cast(state.xz.ptr()) };
+    uint N_cur { 0 };
+    uint N_sampled { 0 };
+    do {
+        // number of slots in the buffer available
+        const uint N_available = N_batch - N_cur;
+        // number of candidates left to sample
+        const uint N_left = N_all_candidates - N_sampled;
+        // generate as many candidates as fit as fit in the buffer, not
+        // exceeding the number left to sample
+        const uint N_sampled_this_iter = min(N_available, N_left);
 
-    RuntimeTemplateSelectList<LaunchInsidePredicate, 2, 4, 8, 16, 32, 64,
-        128>::dispatch(lbvh_pod.tree_height, lbvh_pod, fluid_mesh, N, h, state,
-        tmp, new_N_inside);
+        // spawn candidate fluid particles
+        thrust::transform(thrust::make_counting_iterator(N_sampled),
+            thrust::make_counting_iterator(N_sampled + N_sampled_this_iter),
+            thrust::make_zip_iterator(
+                thrust::make_tuple(dx + N_cur, dy + N_cur, dz + N_cur)),
+            [nxyz, fluid_min, h] __device__(
+                uint i) -> thrust::tuple<float, float, float> {
+                auto nx { nxyz.x };
+                auto ny { nxyz.y };
+                auto ix { i };
+                auto iz { ix / (nx * ny) };
+                ix -= iz * nx * ny;
+                auto iy { ix / nx };
+                ix -= iy * nx;
+                const float3 sample { fluid_min + v3(ix * h, iy * h, iz * h) };
+                return thrust::make_tuple(sample.x, sample.y, sample.z);
+            });
+
+        // keep track of the number of total sampled candidates
+        N_sampled += N_sampled_this_iter;
+
+        // cull particles outside the fluid volume mesh using the LBVH
+        RuntimeTemplateSelectList<LaunchInsidePredicateBatched, 2, 4, 8, 16, 32,
+            64, 128>::dispatch(lbvh_pod.tree_height, lbvh_pod, fluid_mesh,
+            N_cur, N_sampled_this_iter, h, state, N_cur /* Ncur is updated! */);
+
+        Log::InfoTagged("Sample Fluid Volume",
+            "Sampled {} particles\ttried {}/{} candidate positions", N_cur,
+            N_sampled, N_all_candidates);
+        // exit the loop when all candidate indices were sampled
+    } while (N_sampled < N_all_candidates && N_cur < N_batch);
+
+    // resize the state to fit all fluid particles including velocities and
+    // masses, using the masses as a buffer for resorting (no extra peak memory
+    // usage! tmp buffer of size N_cur is required by solver later anyways)
+    state.resize_truncate(N_cur, tmp);
+    // now fill velocities with zero and masses with rest mass
+    const float m₀ { ρ₀ * h * h * h };
+    thrust::fill(state.m.get().begin(), state.m.get().end(), m₀);
+    // velocities might already be zero but just to be safe in case of scene
+    // resets etc.:
+    thrust::fill(state.vx.get().begin(), state.vx.get().end(), 0.f);
+    thrust::fill(state.vy.get().begin(), state.vy.get().end(), 0.f);
+    thrust::fill(state.vz.get().begin(), state.vz.get().end(), 0.f);
 
     // cull fluid particles that are too close to the boundary
     const auto bx { bdy.xs.ptr() };
@@ -367,13 +445,13 @@ Scene Scene::from_obj(const std::filesystem::path& path, const uint N_desired,
     const auto bdy_grid { bdy.grid }; // get POD for device-lambda
     CullPredicate cull_predicate { bdy_grid, bx, by, bz, cull_sq };
     const uint new_N { cull_particles_by_predicate(
-        new_N_inside, h, state, tmp, cull_predicate) };
+        N_cur, h, state, tmp, cull_predicate) };
+    tmp.resize(N_cur);
 
-    if (new_N != N) {
+    if (new_N != N_cur) {
         Log::Warn("Culled particles closer than {}h to boundary: {} -> {}",
-            cull_bdy_radius, new_N_inside, new_N);
+            cull_bdy_radius, N_cur, new_N);
     }
-    N = new_N;
 
     // add a pseudorandom jitter to the coordinates
     jitter_positions(new_N, h, state, jitter_stddev);
@@ -381,8 +459,8 @@ Scene Scene::from_obj(const std::filesystem::path& path, const uint N_desired,
     // block and wait for operation to complete
     CUDA_CHECK(cudaDeviceSynchronize());
     Log::Success(
-        "Scene initialized:\tN={}, Nbdy={}, h={}", N, bdy.xs.size(), h);
-    return Scene(ρ₀, h, N, std::move(bdy), bound_min, bound_max);
+        "Scene initialized:\tN={}, Nbdy={}, h={}", new_N, bdy.xs.size(), h);
+    return Scene(ρ₀, h, new_N, std::move(bdy), bound_min, bound_max);
 }
 
 __global__ void _hard_enforce_bounds(const float3 bound_min,

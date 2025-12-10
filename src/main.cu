@@ -18,6 +18,12 @@
 bool interrupted { false };
 void sigint_handler(int s) { interrupted = true; }
 
+/// @brief Custom literal operator to make specifying large numbers of particles
+/// more convenient
+/// @param x number to multiply by a million
+/// @return a million times the prefix
+unsigned operator""_million(const unsigned long long x) { return 1000000 * x; };
+
 int main()
 {
     // register the cusomt SIGINT handler
@@ -38,7 +44,7 @@ int main()
         DeviceBuffer<float> tmp7(1);
 
         Scene scene { Scene::from_obj(
-            "scenes/dragonbox.obj", 5000000, 1., state, tmp1, 3., 1.) };
+            "scenes/dragonbox.obj", 90_million, 1., state, tmp1, 3., 1.) };
         gui.set_boundary_to_render(&scene.bdy);
 
         // initialize kernel function and solver

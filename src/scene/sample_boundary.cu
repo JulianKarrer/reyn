@@ -99,7 +99,7 @@ static float _hex_plane_rest_density(
 void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     DeviceBuffer<float>& zs, DeviceMesh& mesh, const float h_bdy,
     std::ostream* debug_stream, const float relaxation_factor,
-    const uint relaxation_iters)
+    const uint relaxation_iters, const float save_memory_factor)
 {
     // early exit if no iterations are requested
     if (relaxation_iters == 0)
@@ -113,9 +113,10 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     const float3 max_bound { v3(xs.max(), ys.max(), zs.max()) };
     // in gridbuilder, use larger safety margin of 5h but reuse the
     // UniformGridBuilder across iterations
+    const float h_grid { h_bdy * save_memory_factor };
     UniformGridBuilder grid_builder { UniformGridBuilder(
-        min_bound - v3(5.f * h_bdy), max_bound + v3(5.f * h_bdy),
-        2.f * h_bdy) };
+        min_bound - v3(5.f * h_grid), max_bound + v3(5.f * h_grid),
+        2.f * h_grid) };
     // use any kernel function, `B3` is used here
     const B3 W(2.f * h_bdy);
     // compute the resting number density for perfect hexagonal sampling of
@@ -131,7 +132,7 @@ void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
         // mapping to faces, which are needed to find the vertices associated
         // with each sample
         const UniformGrid<Resort::no> grid
-            = grid_builder.construct(2.f * h_bdy, xs, ys, zs);
+            = grid_builder.construct(2.f * h_grid, xs, ys, zs);
 
         // relax the sampling by moving each boundary particle in the direction
         // of the negative number density gradient, then projecting them back
@@ -405,7 +406,7 @@ BoundarySamples sample_mesh(const Mesh mesh_host, const float h, const float œÅ‚
         // 2: optionally relax the sampling
         Log::Info("Relaxing boundary sampling");
         relax_sampling(xs, ys, zs, mesh, h_bdy, debug_stream, relaxation_factor,
-            relaxation_iters);
+            relaxation_iters, oversampling_factor);
     };
 
     // build the final acceleration structure for the boundary samples:

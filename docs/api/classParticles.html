@@ -211,10 +211,9 @@
 <li class="toctree-l2"><a class="reference internal" href="structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGenJitter.html">Struct GenJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator.html">Template Struct has_templated_call_operator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator_3_01T_00_01Tuple_00_01std_1_1void__t_3_01decltype_07std_1_1de6d0a016993f2cbb04a203bdb7b2b88.html">Template Struct has_templated_call_operator&lt; T, Tuple, std::void_t&lt; decltype(std::declval&lt; T &gt;, ().template operator()&lt; Tuple &gt;, (std::declval&lt; Tuple const &amp; &gt;, ())) &gt; &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structInsidePredicate.html">Template Struct InsidePredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structLaunchInsidePredicate.html">Template Struct LaunchInsidePredicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structLaunchInsidePredicateBatched.html">Template Struct LaunchInsidePredicateBatched</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
@@ -456,12 +455,15 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N9Particles13resize_uninitE4uint">
-<span id="_CPPv3N9Particles13resize_uninitE4uint"></span><span id="_CPPv2N9Particles13resize_uninitE4uint"></span><span id="Particles::resize_uninit__uint"></span><span class="target" id="classParticles_1ac47f07fe6ee1636fdd65281fc1e6a59a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resize_uninit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Particles13resize_uninitE4uint" title="Link to this definition">¶</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N9Particles13resize_uninitE4uintb">
+<span id="_CPPv3N9Particles13resize_uninitE4uintb"></span><span id="_CPPv2N9Particles13resize_uninitE4uintb"></span><span id="Particles::resize_uninit__uint.b"></span><span class="target" id="classParticles_1a84316faff04c78cb217b46fba039ecbd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">resize_uninit</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">positions_only</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N9Particles13resize_uninitE4uintb" title="Link to this definition">¶</a><br /></dt>
 <dd><p>Resize all buffers. This leaves the positions buffer uninitialized if externally handled by the <a class="reference internal" href="classGUI.html#classGUI"><span class="std std-ref">GUI</span></a> for OpenGL interop! </p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>N</strong> – new desired number of particles </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> – new desired number of particles </p></li>
+<li><p><strong>positions_only</strong> – only resize and initialize positions, leaving all other fields untouched. ATTENTION! this leaves the buffer sizes inconsistent and should only be used in conjunction with e.g. a later <code class="docutils literal notranslate"><span class="pre">resize_truncate</span></code>, such as when batching candidate initial particle positions in <code class="docutils literal notranslate"><span class="pre">Scene</span></code> construction to reduce peak memory usage </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -618,7 +620,7 @@
 <li><a class="reference internal" href="#class-documentation">Class Documentation</a><ul>
 <li><a class="reference internal" href="#_CPPv49Particles"><code class="docutils literal notranslate"><span class="pre">Particles</span></code></a><ul>
 <li><a class="reference internal" href="#_CPPv4N9Particles9ParticlesEP3GUIf"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>
-<li><a class="reference internal" href="#_CPPv4N9Particles13resize_uninitE4uint"><code class="docutils literal notranslate"><span class="pre">resize_uninit()</span></code></a></li>
+<li><a class="reference internal" href="#_CPPv4N9Particles13resize_uninitE4uintb"><code class="docutils literal notranslate"><span class="pre">resize_uninit()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles15resize_truncateE4uintR12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">resize_truncate()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles7reorderERK12DeviceBufferI4uintER12DeviceBufferIfE"><code class="docutils literal notranslate"><span class="pre">reorder()</span></code></a></li>
 <li><a class="reference internal" href="#_CPPv4N9Particles9ParticlesERK9Particles"><code class="docutils literal notranslate"><span class="pre">Particles()</span></code></a></li>

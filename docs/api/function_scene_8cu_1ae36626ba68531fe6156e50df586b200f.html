@@ -7,7 +7,7 @@
         <link rel="prefetch" href="../_static/icon.png" as="image">
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Namespace std - REYN documentation</title>
+        <title>Template Function cull_batched_noresize - REYN documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
@@ -211,10 +211,9 @@
 <li class="toctree-l2"><a class="reference internal" href="structDeviceMesh.html">Struct DeviceMesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGenJitter.html">Struct GenJitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structGUI_1_1DragState.html">Struct GUI::DragState</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator.html">Template Struct has_templated_call_operator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="structhas__templated__call__operator_3_01T_00_01Tuple_00_01std_1_1void__t_3_01decltype_07std_1_1de6d0a016993f2cbb04a203bdb7b2b88.html">Template Struct has_templated_call_operator&lt; T, Tuple, std::void_t&lt; decltype(std::declval&lt; T &gt;, ().template operator()&lt; Tuple &gt;, (std::declval&lt; Tuple const &amp; &gt;, ())) &gt; &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structInsidePredicate.html">Template Struct InsidePredicate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structLaunchInsidePredicate.html">Template Struct LaunchInsidePredicate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="structLaunchInsidePredicateBatched.html">Template Struct LaunchInsidePredicateBatched</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted.html">Template Struct MaybeSorted</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1no_01_4.html">Template Struct MaybeSorted&lt; Resort::no &gt;</a></li>
 <li class="toctree-l2"><a class="reference internal" href="structMaybeSorted_3_01Resort_1_1yes_01_4.html">Template Struct MaybeSorted&lt; Resort::yes &gt;</a></li>
@@ -406,7 +405,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/namespace_std.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/function_scene_8cu_1ae36626ba68531fe6156e50df586b200f.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -424,13 +423,18 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="namespace-std">
-<span id="id1"></span><h1>Namespace std<a class="headerlink" href="#namespace-std" title="Link to this heading">¶</a></h1>
-<section id="namespaces">
-<h2>Namespaces<a class="headerlink" href="#namespaces" title="Link to this heading">¶</a></h2>
+          <section id="template-function-cull-batched-noresize">
+<span id="exhale-function-scene-8cu-1ae36626ba68531fe6156e50df586b200f"></span><h1>Template Function cull_batched_noresize<a class="headerlink" href="#template-function-cull-batched-noresize" title="Link to this heading">¶</a></h1>
 <ul class="simple">
-<li><p><a class="reference internal" href="namespace_std__literals.html#namespace-std-literals"><span class="std std-ref">Namespace std::literals</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_src_scene_scene.cu.html#file-src-scene-scene-cu"><span class="std std-ref">File scene.cu</span></a></p></li>
 </ul>
+<section id="function-documentation">
+<h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading">¶</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0E21cull_batched_noresize4uintK4uintK4uintKfR9Particles4Pred">
+<span id="_CPPv3I0E21cull_batched_noresizeK4uintK4uintKfR9Particles4Pred"></span><span id="_CPPv2I0E21cull_batched_noresizeK4uintK4uintKfR9Particles4Pred"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Pred</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="scene_8cu_1ae36626ba68531fe6156e50df586b200f"></span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cull_batched_noresize</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N_cur</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N_new_count</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h</span></span>, <a class="reference internal" href="classParticles.html#_CPPv49Particles" title="Particles"><span class="n"><span class="pre">Particles</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">state</span></span>, <a class="reference internal" href="#_CPPv4I0E21cull_batched_noresize4uintK4uintK4uintKfR9Particles4Pred" title="cull_batched_noresize::Pred"><span class="n"><span class="pre">Pred</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">predicate</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0E21cull_batched_noresize4uintK4uintK4uintKfR9Particles4Pred" title="Link to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
 </section>
 </section>
 
@@ -471,8 +475,11 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Namespace std</a><ul>
-<li><a class="reference internal" href="#namespaces">Namespaces</a></li>
+<li><a class="reference internal" href="#">Template Function cull_batched_noresize</a><ul>
+<li><a class="reference internal" href="#function-documentation">Function Documentation</a><ul>
+<li><a class="reference internal" href="#_CPPv4I0E21cull_batched_noresize4uintK4uintK4uintKfR9Particles4Pred"><code class="docutils literal notranslate"><span class="pre">cull_batched_noresize()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

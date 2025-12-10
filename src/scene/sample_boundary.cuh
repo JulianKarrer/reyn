@@ -106,10 +106,13 @@ void calculate_boundary_masses(BoundarySamples& bdy, const float h,
 /// as a fraction of boundary particle spacing (-> typical range from 0 to 1)
 /// @param relaxation_iters maximum number of iterations of the relaxation
 /// procedure
+/// @param save_memory_factor increase the grid size of the datastructure used
+/// for sample relaxation by this factor, which increases runtime but decreases
+/// memory usage
 void relax_sampling(DeviceBuffer<float>& xs, DeviceBuffer<float>& ys,
     DeviceBuffer<float>& zs, DeviceMesh& mesh, const float h_bdy,
     std::ostream* debug_stream, const float relaxation_factor,
-    const uint relaxation_iters);
+    const uint relaxation_iters, const float save_memory_factor);
 
 /// @brief Uniformly randomly sample a mesh. Uses stratified sampling of
 /// triangles by area using a discrete CDF from the prefix sum of triangle

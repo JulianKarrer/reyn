@@ -37,7 +37,7 @@
 - [x] Add fluid volume sampling and de-/serialization
 - [x] Add plots to UI
 - [x] Implement IISPH
-- [ ] Reduce peak memory usage during initialization to enable bigger scenes
+- [x] Reduce peak memory usage during initialization to enable bigger scenes
 - [ ] Add settings management with de-/serialization and expose solver and scene options to GUI and CLI
 - [ ] Optimize kernel launch configurations
 - [ ] Use type aliases for safety (e.g. separating vectors and positions) and flexibility (change float precision, smaller index types for smaller scenes etc.)

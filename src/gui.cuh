@@ -32,7 +32,6 @@ class GUI {
 public:
     /// @brief Construct a GUI window using GLFW and OpenGL for display of the
     /// particles.
-    /// @param N initial number of particles
     /// @param init_w initial window width
     /// @param init_h initial window height
     /// @param on_failure a parameter-less void callback to execute when
@@ -199,7 +198,7 @@ private:
     bool fps_gui_sim_coupled { false };
     /// @brief Target maximum FPS in case throttling is required
     double target_fps { 60. };
-    /// @brief Measuered frames per second of the simulation
+    /// @brief Measured frames per second of the simulation
     double sim_fps { 0. };
     /// @brief A atomic boolean set by a timer thread, indicating whether enough
     /// time has elapsed for the GUI (main) thread to render an update to

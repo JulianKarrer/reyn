@@ -32,7 +32,7 @@ Particles::Particles(const int N, float _rho_0)
     Log::Success("State allocated, `Particles` initialized");
 };
 
-void Particles::resize_uninit(uint N)
+void Particles::resize_uninit(uint N, bool positions_only)
 {
     if (gui) {
         gui->resize_mapped_buffers(N, *this);
@@ -41,14 +41,19 @@ void Particles::resize_uninit(uint N)
         xy.resize(N);
         xz.resize(N);
     }
-    vx.resize(N);
-    vy.resize(N);
-    vz.resize(N);
-    m.resize(N);
+    if (!positions_only) {
+        vx.resize(N);
+        vy.resize(N);
+        vz.resize(N);
+        m.resize(N);
+    }
 }
 
 void Particles::resize_truncate(uint N, DeviceBuffer<float>& tmp)
 {
+    // order matters for scene initialization: resize position buffers first
+    // since this might truncate the size while velocities etc. might be
+    // extended to fit after only positions were initialized
     if (gui) {
         // ensure tmp has sufficient size
         tmp.resize(N);

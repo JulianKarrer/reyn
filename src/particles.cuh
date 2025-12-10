@@ -39,7 +39,12 @@ public:
     /// @brief Resize all buffers. This leaves the positions buffer
     /// uninitialized if externally handled by the GUI for OpenGL interop!
     /// @param N new desired number of particles
-    void resize_uninit(uint N);
+    /// @param positions_only only resize and initialize positions, leaving all
+    /// other fields untouched. ATTENTION! this leaves the buffer sizes
+    /// inconsistent and should only be used in conjunction with e.g. a later
+    /// `resize_truncate`, such as when batching candidate initial particle
+    /// positions in `Scene` construction to reduce peak memory usage
+    void resize_uninit(uint N, bool positions_only = false);
 
     /// @brief Resize all buffers, keeping the data but potentially truncating
     /// it if the size decreases
