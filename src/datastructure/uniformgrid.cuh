@@ -269,13 +269,62 @@ private:
                 throw std::runtime_error(
                     "Attempted to resort an array of grid construction the "
                     "dimensions of which don't match the number of particles "
-                    "in "
-                    "the sorting.");
+                    "in the sorting.");
             }
         }
         xx.reorder(sorted, tmp);
         xy.reorder(sorted, tmp);
         xz.reorder(sorted, tmp);
+
+        // return datastructure indicating that corresponding buffers are sorted
+        // so no indirection is needed in the query
+        return UniformGrid<Resort::yes> {
+            .bound_min = _bound_min,
+            .cell_size = _cell_size,
+            .r_c_2 = search_radius * search_radius,
+            .nx = nxyz.x,
+            .nxny = nxyz.x * nxyz.y,
+            .prefix = prefix.ptr(),
+        };
+    }
+
+    ///@brief  a variation of `_construct_reorder_variadic` that resorts accepts
+    /// a `Particles` state as well as additional buffers to resort
+    template <IsFltDevBufPtr... MoreBufs>
+        requires(sizeof...(MoreBufs) >= 0) // at least one buffer to reorder
+    UniformGrid<Resort::yes> _construct_reorder_variadic_state(
+        const float search_radius, DeviceBuffer<float>& tmp, Particles& state,
+        DeviceBuffer<uint>& prefix, MoreBufs... reorder)
+    {
+        // implementation needs to be here to be visible to other translation
+        // units due to the template arguments, unfortunately
+
+        // construct
+        _construct(state.xx, state.xy, state.xz, prefix);
+
+        // reorder (variadic)
+        // reuse the tmp buffer to save memory at the cost of not being able to
+        // use multiple cudaStreams reorder all position vectors to ensure the
+        // query is correct, but also any of the variable number of additional
+        // buffers that were passed in
+        uint N { static_cast<uint>(sorted.size()) };
+        tmp.resize(sorted.size());
+        DeviceBuffer<float>* buffers[] = { reorder... };
+        for (DeviceBuffer<float>* buf : buffers) {
+            buf->reorder(sorted, tmp);
+            // ensure that all resorted buffers fit to reduce the risk of
+            // misusage and runtime errors
+            if (buf->size() != N) {
+                throw std::runtime_error(
+                    "Attempted to resort an array of grid construction the "
+                    "dimensions of which don't match the number of particles "
+                    "in "
+                    "the sorting.");
+            }
+        }
+        // use the reordering function of the state to ensure all relevant
+        // buffers are resorted
+        state.reorder(sorted, tmp);
 
         // return datastructure indicating that corresponding buffers are sorted
         // so no indirection is needed in the query
@@ -392,7 +441,7 @@ public:
     /// @return a POD usable in a `__device__` context to providee functors that
     /// map and reduce over neighbouring particles around some query position
     template <IsFltDevBufPtr... MoreBufs>
-        requires(sizeof...(MoreBufs) >= 0) // at least one buffer to reorder
+        requires(sizeof...(MoreBufs) >= 0)
     UniformGrid<Resort::yes> construct_and_reorder(const float search_radius,
         DeviceBuffer<float>& tmp, DeviceBuffer<uint>& prefix,
         DeviceBuffer<float>& xx, DeviceBuffer<float>& xy,
@@ -401,6 +450,36 @@ public:
         // in this overload, use the prefix provided via argument
         return _construct_reorder_variadic(
             search_radius, tmp, prefix, xx, xy, xz, reorder...);
+    };
+
+    /// @brief Construct the uniform grid for the given buffer of query points,
+    /// returning a POD structure that may be used on the device for querying
+    /// neighbouring particles at positions within the AABB defined at
+    /// construction of this `UniformGridBuilder`.
+    ///
+    /// In contrast to the `construct` method, this calls on the `Particles` to
+    /// reorder according to the sorting used by the grid to improve memory
+    /// coherency.
+    /// @tparam ...MoreBufs Variable number of zero or more
+    /// `DeviceBuffer<float>*` to resort along the space-filling curve, must all
+    /// have the same number of entries
+    /// @param search_radius radius outside of which candidate neighbours around
+    /// the query point are pruned
+    /// @param tmp a temporary buffer used for the gathering operation that
+    /// reorders particle quantities
+    /// @param state `Particles` state to resort
+    /// @param ...reorder pack of zero or more `DeviceBuffer<float>` to resort
+    /// along the space-filling curve
+    /// @return a POD usable in a `__device__` context to providee functors that
+    /// map and reduce over neighbouring particles around some query position
+    template <IsFltDevBufPtr... MoreBufs>
+        requires(sizeof...(MoreBufs) >= 0) // at least one buffer to reorder
+    UniformGrid<Resort::yes> construct_and_reorder(const float search_radius,
+        DeviceBuffer<float>& tmp, Particles& state, MoreBufs... reorder)
+    {
+        // in this overload, use the private prefix member
+        return _construct_reorder_variadic_state(
+            search_radius, tmp, state, _prefix, reorder...);
     };
 
     // no copying allowed, protect owned data in DeviceBuffers

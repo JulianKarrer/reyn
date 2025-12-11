@@ -19,7 +19,7 @@ private:
     DeviceBuffer<float>& ρ;
     /// @brief pressure buffer (this buffer is owned by the solver and therefore
     /// guaranteed to persist across steps)
-    DeviceBuffer<float> p;
+    DeviceBuffer<float>& p;
     /// @brief IISPH diagonal element
     DeviceBuffer<float>& a_ii;
     /// @brief IISPH density invariance source term
@@ -43,18 +43,21 @@ private:
     const uint min_iter { 3 };
     /// @brief Jacobi weight ∈ (0,2)
     const float ω { 0.5f };
+    /// @brief Whether or not to use a warm start, i.e. halve pressure values
+    /// instead of resetting to zero in every timestep
+    const bool warmstart { true };
 
 public:
     IISPH(K _W, uint _N, float _nu, const float _h, const float _rho_0,
         DeviceBuffer<float>& _rho, DeviceBuffer<float>& _a_ii,
         DeviceBuffer<float>& _s_i, DeviceBuffer<float>& _ax,
         DeviceBuffer<float>& _ay, DeviceBuffer<float>& _az,
-        DeviceBuffer<uint32_t>& _ρ_err_threshold)
+        DeviceBuffer<float>& _p, DeviceBuffer<uint32_t>& _ρ_err_threshold)
         : W(_W)
         , N(_N)
-        , p(_N) // pressure buffer is owned here, since it should be persistent
         , a_ii(_a_ii)
         , s_i(_s_i)
+        , p(_p)
         , ρ_err_threshold(_ρ_err_threshold)
         , nu(_nu)
         , h(_h)
@@ -65,6 +68,7 @@ public:
         , ρ₀(_rho_0)
     {
         // ensure that the buffer can hold all densitites
+        p.resize(_N);
         ρ.resize(_N);
         a_ii.resize(_N);
         s_i.resize(_N);
@@ -80,7 +84,7 @@ public:
     uint step(Particles& state, const UniformGrid<R> grid,
         const BoundarySamples& bdy, const float dt);
 
-    ~IISPH() {};
+    ~IISPH() { };
 
     /// disallow copying
     IISPH(const IISPH&) = delete;

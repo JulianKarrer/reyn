@@ -18,11 +18,10 @@
 bool interrupted { false };
 void sigint_handler(int s) { interrupted = true; }
 
-/// @brief Custom literal operator to make specifying large numbers of particles
-/// more convenient
-/// @param x number to multiply by a million
-/// @return a million times the prefix
+/// @brief Custom literal that multiplies an integer by one million
 unsigned operator""_million(const unsigned long long x) { return 1000000 * x; };
+/// @brief Custom literal that multiplies an integer by one thousand
+unsigned operator""_k(const unsigned long long x) { return 1000 * x; };
 
 int main()
 {
@@ -41,7 +40,8 @@ int main()
         DeviceBuffer<float> tmp4(1);
         DeviceBuffer<float> tmp5(1);
         DeviceBuffer<float> tmp6(1);
-        DeviceBuffer<uint32_t> tmp7(1);
+        DeviceBuffer<float> prs(1);
+        DeviceBuffer<uint32_t> tmp_u32(1);
 
         Scene scene { Scene::from_obj(
             "scenes/dragonbox.obj", 1_million, 1., state, tmp1, 3., 1.) };
@@ -50,22 +50,22 @@ int main()
         // initialize kernel function and solver
         const B3 W(2.f * scene.h);
         auto solver { IISPH<B3, Resort::yes>(W, scene.N, 0.001f, scene.h,
-            scene.ρ₀, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7) };
+            scene.ρ₀, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, prs, tmp_u32) };
 
         // MAIN LOOP
         Log::Success("Fully initialized, starting main loop.");
         double time { 0. };
         uint iters { 0 };
         float dt { 0.0005 };
-        while (gui.update_or_exit(state, scene.h, dt, iters, &tmp1)) {
+        while (gui.update_or_exit(state, scene.h, dt, iters, time, &tmp1)) {
             if (interrupted) // catch CTRL+C on POSIX
                 gui.exit();
 
             dt = simple_dt_controller(
-                iters, dt, 1.0, scene.h, state, v3(0., -9.81, 0.), 5);
+                iters, dt, 1.0, scene.h, state, v3(0., -9.81, 0.), 10, 0.001f);
 
             // get an updated acceleration datastructure
-            const auto grid { scene.get_grid(state, tmp1) };
+            const auto grid { scene.get_grid(state, tmp1, 2.f, &prs) };
 
             // then invoke the fluid solver
             iters = solver.step(state, grid, scene.bdy, dt);

@@ -891,7 +891,7 @@ void GUI::set_boundary_to_render(const BoundarySamples* samples)
 };
 
 bool GUI::update_or_exit(Particles& state, const float h, const float dt,
-    const uint iters, DeviceBuffer<float>* ρ)
+    const uint iters, const float time, DeviceBuffer<float>* ρ)
 {
     // declare a static variable for measuring how much time has passed since
     // the last re-render
@@ -958,12 +958,12 @@ bool GUI::update_or_exit(Particles& state, const float h, const float dt,
 
     // now the main update to the GUI can happen, drawing to the screen,
     // processing inputs and handling interaction with UI elements
-    update(h);
+    update(h, time);
 
     // repeat the update while the simulation is stopped
     while (stopped) {
         std::this_thread::sleep_for(1s / 60.);
-        update(h);
+        update(h, time);
     }
 
     // before returning, remap the positions buffers and reflect that change in
@@ -996,7 +996,7 @@ void GUI::screenshot(const std::filesystem::path& path)
     write_bmp(pixels, this->_window_width, this->_window_height, path);
 }
 
-void GUI::update(float h)
+void GUI::update(const float h, const float time)
 {
     // process inputs
     glfw_process_input();
@@ -1081,13 +1081,13 @@ void GUI::update(float h)
     }
 
     // update ImGUI
-    imgui_draw();
+    imgui_draw(time);
 
     // swap back and front buffers
     glfwSwapBuffers(window);
 }
 
-void GUI::imgui_draw()
+void GUI::imgui_draw(const float cur_time)
 {
     // update the FPS count in the window title using the ImGui framerate
     // counter
@@ -1123,7 +1123,7 @@ void GUI::imgui_draw()
     ImGui::Text("GUI interval %.3fms (%.1f FPS)", 1000.0f / io->Framerate,
         io->Framerate);
     ImGui::Text("SIM interval %.3fms (%.1f FPS)", 1000.0f / sim_fps, sim_fps);
-    ImGui::Text("Δt = %.3fms", plot_dts.back());
+    ImGui::Text("Δt = %.3fms, t=%.5fs", plot_dts.back(), cur_time);
     if (ImGui::Button("SCREENSHOT")) {
         char filename[50];
         time_t t = time(NULL);

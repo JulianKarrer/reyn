@@ -143,13 +143,16 @@ public:
     /// @param state `Particles` to query and potentially reorder during grid
     /// construction
     /// @param tmp temporary buffer used for non in-place reordering of buffers
+    /// @param reorder other buffers to reorder
     /// @return a `UniformGrid` to use on the device-side for neigbhbourhood
     /// queries
+    template <IsFltDevBufPtr... MoreBufs>
     UniformGrid<Resort::yes> get_grid(Particles& state,
-        DeviceBuffer<float>& tmp, const float search_radius = 2.0)
+        DeviceBuffer<float>& tmp, const float search_radius = 2.f,
+        MoreBufs... reorder)
     {
         return grid_builder.construct_and_reorder(
-            search_radius * h, tmp, state);
+            search_radius * h, tmp, state, reorder...);
     };
 };
 

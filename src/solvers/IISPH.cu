@@ -196,16 +196,23 @@ uint IISPH<K, R>::step(Particles& state, const UniformGrid<R> grid,
         s_i.ptr(), ρ₀, dt, N, W, grid, bdy_d);
     CUDA_CHECK(cudaGetLastError());
 
-    // initialize pressure values using jacobi update with (𝔸p)ᵢ = 0
-    // -> exactly the same result as one iteration after cold start with p=0
-    const float* a_ii_d { a_ii.ptr() };
-    const float* s_i_d { s_i.ptr() };
-    const float omega { ω };
-    thrust::transform(thrust::counting_iterator<uint>(0),
-        thrust::counting_iterator<uint>(N), p.get().begin(),
-        [a_ii_d, s_i_d, omega] __device__(uint i) -> float {
-            return jacobi_update(omega, a_ii_d[i], 0.f, s_i_d[i]);
-        });
+    if (warmstart) {
+        // warm start the solver, using half the pressure values from the
+        // previous iteration as a starting value at each particle
+        thrust::transform(p.get().begin(), p.get().end(), p.get().begin(),
+            [] __device__(const float& p_i) -> float { return p_i * 0.5f; });
+    } else {
+        // initialize pressure values using jacobi update with (𝔸p)ᵢ = 0
+        // -> exactly the same result as one iteration after cold start with p=0
+        const float* a_ii_d { a_ii.ptr() };
+        const float* s_i_d { s_i.ptr() };
+        const float omega { ω };
+        thrust::transform(thrust::counting_iterator<uint>(0),
+            thrust::counting_iterator<uint>(N), p.get().begin(),
+            [a_ii_d, s_i_d, omega] __device__(uint i) -> float {
+                return jacobi_update(omega, a_ii_d[i], 0.f, s_i_d[i]);
+            });
+    }
 
     // start iterative pressure solve
     uint l { 0 };

@@ -67,12 +67,13 @@ public:
     /// @param h fluid particle spacing
     /// @param dt current time step size (plotted in GUI)
     /// @param iters current solver iteration count (plotted in GUI)
+    /// @param time current time simulated
     /// @param ρ optional pointer to a `DeviceBuffer` of densities for
     /// visualization
     /// @return `false` if exit of the application is requested by the user
     /// through the GUI, `true` otherwise
     bool update_or_exit(Particles& state, const float h, const float dt,
-        const uint iters, DeviceBuffer<float>* ρ = nullptr);
+        const uint iters, const float time, DeviceBuffer<float>* ρ = nullptr);
 
     /// @brief Resize the particle positions buffer. Must be called while mapped
     /// for use by CUDA.
@@ -357,14 +358,14 @@ private:
     void destroy_and_deregister_buffers();
 
     ///  Update and manage the ImGui contents
-    void imgui_draw();
+    void imgui_draw(const float time);
 
     /// @brief Set up ImGui style, based on 'Deep Dark Theme' by janekb04
     void setup_imgui_style();
 
     // main functions for running the gui
     /// @brief Update the GUI, rendering the current particles to screen.
-    void update(float h);
+    void update(const float h, const float time);
 };
 
 #endif // GUI_H_
